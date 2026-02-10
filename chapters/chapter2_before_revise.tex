@@ -1,0 +1,334 @@
+\chapter{MIMO系统及线性预编码技术}\label{chap:MIMOLP}
+MIMO技术已广泛应用于如今的无线通信系统中，其在逻辑上可分为三类：P2P MIMO，MU-MIMO和大规模MIMO。 本章将快速概述这三种模型，并详细介绍MIMO下的典型线性预编码技术以及比较它们之间的性能。
+\section{MIMO系统模型}
+在通信系统中，收发器均采用多天线的抗衰落的空间分集系统称为MIMO系统。特别地，收发器均采用单天线，发射端采用单天线接收端采用多天线以及发射端采用多天线接收端采用单天线的系统，分别称为单输入单输出（Single Input Single Output, SISO），单输入多输出（Single Input Multiple Output, SIMO）和多输入单输出（Multiple Input Single Output, MISO）系统。本节将介绍主要介绍P2P MIMO，MU-MIMO和大规模MIMO三种系统模型，并给出对应的频谱效率表达式。
+\subsection{P2P MIMO系统}
+点到点MIMO出现在1990年代后期，它代表着最简单MIMO形式，如图\ref{fig:P2PMIMO}所示，配备有${N_{\rm{t}}}$根发射天线阵列的基站服务于配备有${N_{\rm{r}}}$根接收天线阵列的终端。不同终端通过时分复用(Time Division Multiplexing, TDM)和频分复用(Frequency Division Multiplexing, FDM)的组合而被正交复用。 考虑该P2P MIMO系统的下行链路，接收信号可表述为：
+\begin{equation}\label{chap2:eq1}
+  {\bf{y}} = {\bf{H}}{\bf{x}} + {\bf{n}},
+\end{equation}
+其中${\bf{y}}$表示${N_{\rm{r}}}$维终端接收信号矢量，${{\bf{H}} \in {\mathbb{C}^{{N_{\rm{r}}} \times {N_{\rm{t}}}}}}$为${{{N_{\rm{r}}} \times {N_{\rm{t}}}}}$维复信道矩阵，表示基站阵列和终端阵列之间信道的频率响应，${\bf{x}}$表示${N_{\rm{t}}}$维基站发送信号矢量，${\bf{n}}$为${N_{\rm{r}}}$维AWGN矢量。
+\begin{figure}[htb]
+ \centering
+ \includegraphics[width=0.9\textwidth]{figures/fig1.pdf}
+ \caption{P2P MIMO系统下行链路模型}\label{fig:P2PMIMO}
+\end{figure}
+
+假设CSI在接收端是已知的，噪声是独立同分布（Independent and Identically Distributed, i.i.d.）的满足均值为${\bf{0}}$，协方差矩阵为${\sigma _{\rm{n}}^2{{\bf{I}}_{{{N_{\rm{r}}}}}}}$的循环对称复高斯矢量，即，${{\bf{n}}\sim \mathcal{CN}({\bf{0}},\sigma _{\rm{n}}^2{{\bf{I}}_{{{N_{\rm{r}}}}}})}$。此外，输入信号为高斯信号且总发射功率满足${\mathbb{E}\{ {{\bf{x}}^H}{\bf{x}}\}  = \mathbb{E}\{ \left\| {\bf{x}} \right\|_2^2\}  = P}$，并假设功率均匀分配。根据Shannon信息理论得出下行链路频谱效率的表达式（以bit/s/Hz为单位）为：
+\begin{align}\label{chap2:eq2}
+  \nonumber C & = {\log _2}\left| {{{\bf{I}}_{{N_r}}} + \frac{P}{{{N_t}\sigma _{\rm{n}}^2}}{\bf{H}}{{\bf{H}}^H}} \right| \\
+  & \mathop  = \limits^{(a)} {\log _2}\left| {{{\bf{I}}_{{N_t}}} + \frac{P}{{{N_t}\sigma _{\rm{n}}^2}}{{\bf{H}}^H}{\bf{H}}} \right|,
+\end{align}
+式\eqref{chap2:eq2}的${(a)}$是采用Sylvester行列式定理\upcite{Horn2012matrix}得到的。注意到，该频谱效率值要求接收机已知信道矩阵，但不要求发射机知道。如果发射机也获取CSI，则性能会有所提高， 但这需要特别的实行措施，并且在实践中很少见到。
+
+显然，从理论上讲，通过同时在发射机和接收机处使用大型阵列，也就是将${N_{\rm{t}}}$和${N_{\rm{r}}}$增大，可以提高链路频谱效率。但是，实际上，即使链路两端的阵列较大，P2P MIMO的有效性也将受到限制。首先，终端设备很复杂，每个天线需要独立的RF链，并且需要使用先进的数字处理来分离数据流。其次，从根本上讲，传播环境必须支持${N_{\rm{r}}}$个独立的流,而使用紧凑型阵列时通常不是这种情况。第三，在小区边缘附近，由于高路径损耗，SNR通常较低，频谱效率随着${N_{\rm{t}}}$ (${N_{\rm{r}}}$)缓慢增大。
+
+\subsection{MU-MIMO系统}\label{subsec:MUMIMO}
+多用户MIMO的思想是使单个基站使用相同的时频资源同时与多个终端进行通信。 实际上，通过将${K}$-天线终端分解为多个自治终端，可以从P2P MIMO设置中获得MU-MIMO方案。在信息理论分析中，将MU-MIMO系统的下行信道称为广播信道。 而在广播信道中，每个终端接收不同的数据。 将相同数据发送到所有终端的特殊情况称为“多播”信道。P2P MIMO与MU-MIMO的主要区别在于：i) 在P2P MIMO系统的接收端和发送端，阵列中的天线通过联合地和相位相干地处理所有信号进行协作；而MU-MIMO情况下，基站天线协作，每个终端独立的执行编码和解码并不合作。 ii) 在MU-MIMO上行信道中，每个终端受限于一个独立的功率限制；而在P2P MIMO或MU-MIMO下行信道中，功率限制为整个辐射功率的总和。
+
+在本小节中,仅讨论终端具有单天线的MU-MIMO下行链路场景，如图\ref{fig:MUMIMO}所示，则第${k}$个用户的接收信号为
+\begin{equation}\label{chap2:eq3}
+  {y_k} = {\bf{h}}_k^T{\bf{x}} + {n_k},
+\end{equation}
+其中，${{y_k}}$表示第${k}$个终端的接收信号，${{\bf{h}}_k^T \in {\mathbb{C}^{{N_{\rm{t}}} \times 1}}}$表示基站到第${k}$个终端的信道矢量，${\bf{x}}$为基站发送的${N_{\rm{t}}}$维信号矢量，${{n_k}}$为第${k}$个终端接收到的AWGN。
+\begin{figure}[htb]
+ \centering
+ \includegraphics[width=0.9\textwidth]{figures/fig2.pdf}
+ \caption{MU-MIMO系统下行链路模型}\label{fig:MUMIMO}
+\end{figure}
+
+将${K}$个终端的接收信号整合成矢量形式得到与式\eqref{chap2:eq1}相同的形式。其中${{\bf{y}} = {[{y_1},...,{y_K}]^T}}$, ${{\bf{H}} = {[{\bf{h}}_1^T,...,{\bf{h}}_K^T]^T}}$并且${{\bf{n}} = {[{n_1},...,{n_K}]^T}}$。假设CSI在基站和终端均是已知的，每个终端接收的噪声均服从相同的循环对称复高斯分布，即，${{n_k} \sim \mathcal{CN}(0,{\sigma ^2})}$。输入信号为高斯信号且总发射功率满足约束${\mathbb{E}\{ \left\| {\bf{x}} \right\|_2^2\}  = P}$。得出下行链路频谱效率的表达式\upcite{Marzetta2016MIMO}为
+\begin{equation}\label{chap2:eq4}
+{C_{\rm{sum}}} = \mathop {\max }\limits_{\scriptstyle{\gamma _k} \ge 0,\atop
+\scriptstyle\sum\nolimits_{k = 1}^K {{\gamma _k}}  = 1} {\log _2}\left| {{{\bf{I}}_{{N_{\rm{t}}}}} + \frac{P}{{{\sigma ^2}}}{{\bf{H}}^H}{\rm{diag}}({\gamma _1},...,{\gamma _K}){\bf{H}}} \right|,
+\end{equation}
+其中，${{\rm{diag}}({\gamma _1},...,{\gamma _K})}$表示对角元素由${{\gamma _1},\ldots,{\gamma _K}}$构成的对角阵。注意到，式\eqref{chap2:eq4}中的容量计算需要解决凸优化问题。
+
+与点对点MIMO相比，多用户MIMO具有两个基本优势。首先，它对有关传播环境的假设不敏感。其次，多用户MIMO仅需要单天线终端。尽管有这些优点，但是有两个因素严重限制了MU-MIMO形式的实用性。首先，要实现式\eqref{chap2:eq4}中的频谱效率，需要基站和终端都进行复杂的信号处理。更重要的是，在下行链路上，基站和终端都必须知道CSI，这需要预留大量资源来在两个方向上传输导频。
+
+\subsection{大规模MIMO系统}
+大规模MIMO是MU-MIMO的一种有用且可扩展的版本，代表了传统MU-MIMO的全新突破，获得了更好的性能。大规模MIMO与常规MU-MIMO之间存在三个基本区别。首先，只有基站知道CSI。大规模MIMO通过以TDD模式工作并利用传播信道的互易性，导频所需的资源量仅取决于同时服务的终端天线数量。其次，基站天线数量通常比终端天线数量总和大得多。第三，在上行链路和下行链路上都采用简单的线性信号处理。
+
+图\ref{fig:mMIMO}展现了大规模MIMO下行链路的基本设置。 每个基站都配备有大量天线${N_{\rm{t}}}$，并为具有大量终端${K}$的小区服务。不同的基站服务于不同的小区，除了功率控制和导频分配外，大规模MIMO不使用基站之间的协作。在上行或下行链路传输中，所有终端同时占用全部时频资源。通过利用大量天线和CSI，可以实现基站的多路复用和多路解复用信号处理。
+\begin{figure}[htb]
+ \centering
+ \includegraphics[width=0.9\textwidth]{figures/fig3.pdf}
+ \caption{大规模MIMO系统下行链路模型}\label{fig:mMIMO}
+\end{figure}
+
+就减少辐射功率和可同时服务的终端数量而言，增加基站天线数量总是可以提高系统性能。 具体来说，在基站处使用大量天线不仅有助于在小区中获得高的总频谱效率，而且可以同时为许多终端提供统一的优质服务。此外，使用大量天线会产生一种称为信道硬化的现象，这简化了所需的信号处理，资源分配和功率控制。信道硬化带来的好处有三个：i) 导致小规模衰落和频率依赖性的影响消失，这意味着在每个终端和基站之间得到的有效信道是已知的。 ii) 使得在大多数情况下不需要在终端进行信道估计以及相关联的下行链路导频传输。 iii) 每个终端处的有效标量信道与AWGN信道类似，因此，为AWGN信道设计的标准编码和调制技术可以很好地工作。
+
+\section{线性预编码算法}
+线性预编码技术在大规模MIMO系统中是必不可少的，其不仅可以减少信道干扰和噪声带来的性能损失，而且可以简化接收端设备的设计。本节将详细介绍了第\ref{chap:intro}章 \ref{subsec:LP}节中提出的五种线性预编码算法，包括SVD, MF, ZF, BD和RZF预编码。其中对于RZF预编码，采用典型的MMSE以及SLNR最大化波束成形实现方式。
+
+本节考虑单小区场景，与\ref{subsec:MUMIMO}节相同，${N_{\rm{t}}}$表示发射机（基站）天线数量，${K}$表示终端（用户）数量。不同的是，本节将考虑更一般的情形，每个用户不再是单天线，而是令${{N_{{\rm{r}},k}}}$表示第${k}$个用户的天线数，${N_{\rm{s}}}$为每个用户接收的数据流的数量（假设每个用户接收到相同数量的数据流）。此外，${N_{\rm{t}}}$, ${{N_{{\rm{r}},k}}}$和${N_{\rm{s}}}$满足约束${K{N_{\rm{s}}} \le K{N_{{\rm{r}},k}} \le {N_{\rm{t}}}}$, 除了基站处的预编码处理，还在接收端对接收信号进行检测判决，并得到遍历的总和速率表达式。
+\subsection{SVD预编码}
+令${{\bf{s}} \in {\mathbb{C}^{K{N_{\rm{s}}} \times 1}}}$为基站发送给所有用户的总数据流矢量，${{\bf{F}} \in {\mathbb{C}^{{N_{\rm{t}}} \times K{N_{\rm{s}}}}}}$表示所有数据流的预编码矩阵，则所有用户经预编码处理后的发送信号矢量可表示为${{\bf{x}} = {\bf{F}}{\bf{s}}}$，于是，第${k}$个用户的接收信号矢量${{{\bf{y}}_k} \in {\mathbb{C}^{{N_{{\rm{r}},k}} \times 1}}}$可表述为
+\begin{equation}\label{chap2:eq5}
+  {{\bf{y}}_k} = {{\bf{H}}_k}{\bf{Fs}} + {{\bf{n}}_k},
+\end{equation}
+类似地，${{{\bf{H}}_k} \in {\mathbb{C}^{{N_{{\rm{r}},k}} \times {N_{\rm{t}}}}}}$表示基站和第${k}$个用户间的信道矩阵，${{\bf{n}}_k} \in {\mathbb{C}^{{N_{{\rm{r}},k}} \times 1}}$为第${k}$个用户接收端的AWGN矢量。
+将${K}$个终端的接收信号整合得到，
+\begin{equation}\label{chap2:eq6}
+  {\bf{y}} = \begin{bmatrix}
+               {{{\bf{y}}_1}} \\
+               {{{\bf{y}}_2}} \\
+               \vdots \\
+               {{{\bf{y}}_K}}
+             \end{bmatrix}
+           = \begin{bmatrix}
+                {{{\bf{H}}_1}}\\
+                {{{\bf{H}}_2}}\\
+                 \vdots \\
+                {{{\bf{H}}_K}}
+             \end{bmatrix}{\bf{Fs}} +
+             \begin{bmatrix}
+                {{{\bf{n}}_1}}\\
+                {{{\bf{n}}_2}}\\
+                 \vdots \\
+                {{{\bf{n}}_K}}
+             \end{bmatrix} = {\bf{HFs}} + {\bf{n}},
+\end{equation}
+其中，${{\bf{y}} \in {\mathbb{C}^{K{N_{{\rm{r}},k}} \times 1}}}$为所有用户的总接收信号，${\bf{H}} \in {\mathbb{C}^{K{N_{{\rm{r}},k}} \times {N_{\rm{t}}}}}$为基站到所有用户的总信道矩阵，${{\bf{n}} \in {\mathbb{C}^{K{N_{{\rm{r}},k}} \times 1}}}$为所有用户的总接收噪声。所有用户的接收信号经过信号检测后所得的判决信号${\bf{r}} \in {\mathbb{C}^{K{N_{\rm{s}}} \times 1}}$为
+\begin{equation}\label{chap2:eq7}
+  {\bf{r}} = {{\bf{W}}^H}{\bf{y}} = {{\bf{W}}^H}{\bf{HFs}} + {{\bf{W}}^H}{\bf{n}},
+\end{equation}
+式\eqref{chap2:eq7}中，${\bf{W}} \in {\mathbb{C}^{K{N_{{\rm{r}},k}} \times K{N_{\rm{s}}}}}$为所有用户接收端的总信号检测（组合）矩阵。
+
+式\eqref{chap2:eq5}$-$\eqref{chap2:eq7}已经分析了多用户多流传输下的MIMO系统模型，接下来，将具体分析SVD预编码的算法原理。已经得知，SVD预编码来自对信道矩阵的奇异值分解（SVD），对信道矩阵进行SVD，有
+\begin{equation}\label{chap2:eq8}
+  {\bf{H}}={\bf{U}}{\bm{\Sigma}}{{\bf{V}}^H},
+\end{equation}
+其中，${{\bf{U}} \in {\mathbb{C}^{K{N_{{\rm{r}},k}} \times K{N_{{\rm{r}},k}}}}}$, ${{\bf{V}} \in {\mathbb{C}^{{N_{\rm{t}}} \times {N_{\rm{t}}}}}}$为酉矩阵，注意到，${{\bm{\Sigma}} \in {\mathbb{C}^{K{N_{{\rm{r}},k}} \times {N_{\rm{t}}}}}}$中的奇异值均为非负实数，并且在本文中，奇异值是按大小降序排列的。
+
+取信道的右奇异矩阵${{\bf{V}}}$的前${K{N_{\rm{s}}}}$列矢量（对应于前${K{N_{\rm{s}}}}$个奇异值）作为预编码矩阵(不满足功率约束)，得到
+\begin{equation}\label{chap2:eq9}
+  {\bf{F}} = \beta {{\bf{V}}_1},
+\end{equation}
+式\eqref{chap2:eq9}中，${{\bf{V}}_1 \in {\mathbb{C}^{{N_{\rm{t}}} \times K{N_{\rm{s}}}}}}$, ${\beta}$是用于使预编码后的发送信号满足功率约束的常数。假设基站只知道信道的统计信息，且发送数据流满足${\mathbb{E}\{ {\bf{s}}{{\bf{s}}^H}\}  = {{\bf{I}}_{K{N_{\rm{s}}}}}}$，为了满足发送信号总功率约束${\mathbb{E}\{ \left\| {\bf{x}} \right\|_2^2\}  = P}$，相应地，预编码矩阵${\bf{F}}$应满足${\left\| {\bf{F}} \right\|_F^2 = {\rm{tr}}({{\bf{F}}^H}{\bf{F}})= P}$。于是，功率约束因子${\beta}$满足以下等式
+\begin{equation}\label{chap2:eq10}
+  \beta  = \sqrt {\frac{P}{{K{N_{\rm{s}}}}}} .
+\end{equation}
+
+对应地，在接收端的信号检测矩阵（未进行自动增益控制）为信道的左奇异矩阵${{\bf{U}}}$的前${K{N_{\rm{s}}}}$列矢量，即
+\begin{equation}\label{chap2:eq11}
+  {\bf{W}} = \frac{1}{\beta }{{\bf{U}}_1},
+\end{equation}
+其中，对${{{\bf{U}}_1} \in {\mathbb{C}^{K{N_{{\rm{r}},k}} \times K{N_{\rm{s}}}}}}$缩放${{1 \mathord{\left/
+ {\vphantom {1 \beta }} \right. \kern-\nulldelimiterspace} \beta }}$是为了补偿发射机的放大影响，必须使用自动增益控制（Automatic Gain Control, AGC）对接收信号进行调整。于是，所有用户的判决信号可以简化为
+\begin{align}\label{chap2:eq12}
+\nonumber  {\bf{r}} = & {\frac{1}{\beta }}{{\bf{U}}_1^H}{\begin{bmatrix}
+                                             {{{\bf{U}}_1}} & {{{\bf{U}}_2}}
+                                                         \end{bmatrix}}
+                                                        {\begin{bmatrix}
+                                                            {{{\bm{\Sigma }}_1}} & {\bf{0}} \\
+                                                            {\bf{0}} & {{{\bm{\Sigma }}_2}}
+                                                         \end{bmatrix}}
+                                                        {\begin{bmatrix}
+                                                            {{\bf{V}}_1^H} \\
+                                                            {{\bf{V}}_2^H}
+                                                         \end{bmatrix}}
+                                                         \beta {{\bf{V}}_1}{\bf{s}}+\frac{1}{\beta }{\bf{U}}_1^H{\bf{n}} \\
+  = & {{\bm{\Sigma }}_1}{\bf{s}} + \frac{1}{\beta }{\bf{U}}_1^H{\bf{n}},
+\end{align}
+式\eqref{chap2:eq12}中，${{{\bf{U}}_2}}$, ${{{\bf{V}}_2}}$分别表示${{\bf{U}}}$, ${{\bf{V}}}$的后${{K{N_{{\rm{r}},k}} - K{N_{\rm{s}}}}}$, ${{{N_{\rm{t}}} - K{N_{\rm{s}}}}}$列矢量构成的矩阵。${{{\bm{\Sigma }}_1}}$为对应于${{{\bf{U}}_1}}$, ${{{\bf{V}}_1}}$的${K{N_{\rm{s}}}}$个奇异值构成的${{K{N_{\rm{s}}} \times K{N_{\rm{s}}}}}$维对角阵，${{{\bm{\Sigma }}_2} \in {\mathbb{C}^{\left( {K{N_{{\rm{r}},k}} - K{N_{\rm{s}}}} \right) \times \left( {{N_{\rm{t}}} - K{N_{\rm{s}}}} \right)}}}$为${{{\bm{\Sigma }}}}$中剩余的子矩阵。观察发现，SVD预编码和组合处理将MU-MIMO信道等效地表达为${K{N_{\rm{s}}}}$个去耦合的SISO子信道，输出为
+\begin{equation}\label{chap2:eq13}
+  {r_i} = {\sigma _{1,i}}{s_i} + \frac{1}{\beta }{n'_i},
+\end{equation}
+其中，${{\sigma _{1,i}}}$为对角阵${{{\bm{\Sigma }}_1}}$中的${i}$行${i}$列元素，${{r_i}}$, ${s_i}$, ${n'_i}$分别为矢量${{\bf{r}}}$, ${{\bf{s}}}$, ${{\bf{U}}_1^H{\bf{n}}}$的第${i}$个元素(${i = 1,...,K{N_{\rm{s}}}}$)。若输入高斯信号且所有用户的总接收噪声服从${\mathcal{CN}({\bf{0}},\sigma _{\rm{n}}^2{{\bf{I}}_{K{{N_{{\rm{r}},k}}}}})}$的复高斯分布，那么，遍历的总和速率表达式为
+\begin{align}\label{chap2:eq14}
+  \nonumber R = & {\log _2}\left| {{{\bf{I}}_{K{N_{\rm{s}}}}} + \frac{{{\beta ^2}}}{{\sigma _{\rm{n}}^2}}{\bm{\Sigma }}_1^2} \right| \\
+  = & \sum\limits_{i = 1}^{K{N_{\rm{s}}}} {{{\log }_2}\left| {1 + \frac{{P\sigma _{1,i}^2}}{{K{N_{\rm{s}}}\sigma _{\rm{n}}^2}}} \right|},
+\end{align}
+注意到，式\eqref{chap2:eq14}中的遍历MIMO信道容量是在假设条件${\mathbb{E}\{ {\bf{s}}{{\bf{s}}^H}\}  = {{\bf{I}}_{K{N_{\rm{s}}}}}}$下得到的。在该条件下，由于基站未知信道信息（只知统计信息），使得所有发射天线均分总的发射功率。若基站完全已知CSI，则可以给每个发射天线分配不同的功率，使总和速率达到最大。此时，设总数据流矢量满足${\mathbb{E}\{ {\bf{s}}{{\bf{s}}^H}\}  = {\rm{diag}}({\gamma _1},...,{\gamma _{K{N_{\rm{s}}}}})}$, 则式\eqref{chap2:eq14}可以重写为
+\begin{equation}\label{chap2:eq15}
+  R = \mathop {\max }\limits_{\scriptstyle{\gamma _i} \ge 0,\atop
+\scriptstyle\sum\nolimits_{i = 1}^{K{N_{\rm{s}}}} {{\gamma _i}}  = K{N_{\rm{s}}}} \sum\limits_{i = 1}^{K{N_{\rm{s}}}} {{{\log }_2}\left| {1 + \frac{{P{\gamma _i}\sigma _{1,i}^2}}{{K{N_{\rm{s}}}\sigma _{\rm{n}}^2}}} \right|} ,
+\end{equation}
+显然，式\eqref{chap2:eq15}是一个凹的功率分配问题，可以通过注水（Water Filling）算法\upcite{Proakis2001digital, Boyd2004convex}得出最大容量。首先，对于不等式约束${{\gamma _i} \ge 0}$和等式约束${\sum\nolimits_{i = 1}^{K{N_s}} {{\gamma _i}}  = K{N_s}}$分别引入Lagrange乘子${{\lambda _i}}$和${\nu}$，那么优化问题\eqref{chap2:eq15}的Lagrange函数为
+\begin{equation}\label{chap2:eq16}
+  L({\gamma _i},{\lambda _i},\nu ) =  - \sum\limits_{i = 1}^{K{N_{\rm{s}}}} {{{\log }_2}\left| {1 + \frac{{P{\gamma _i}\sigma _{1,i}^2}}{{K{N_{\rm{s}}}\sigma _{\rm{n}}^2}}} \right|}  - \sum\limits_{i = 1}^{K{N_{\rm{s}}}} {{\lambda _i}{\gamma _i}}  + \nu \left( {\sum\limits_{i = 1}^{K{N_{\rm{s}}}} {{\gamma _i}}  - K{N_{\rm{s}}}} \right),
+\end{equation}
+得到如下Karush-Kuhn-Tucker (KKT)最优性条件：
+\begin{subequations}\label{chap2:eq17}
+  \begin{equation}\label{chap2:eq17a}
+    {\gamma _i} \ge 0,~\sum\limits_{i = 1}^{K{N_{\rm{s}}}} {{\gamma _i}}  = K{N_{\rm{s}}},~{\lambda _i} \ge 0,~{\lambda _i}{\gamma _i} = 0,
+  \end{equation}
+  \begin{equation}\label{chap2:eq17b}
+     - \frac{{P\sigma _{1,i}^2}}{{K{N_{\rm{s}}}\sigma _{\rm{n}}^2 + P{\gamma _i}\sigma _{1,i}^2}} - {\lambda _i} + \nu  = 0,
+  \end{equation}
+\end{subequations}
+其中，式\eqref{chap2:eq17b}是对Lagrange函数${L({\gamma _i},{\lambda _i},\nu )}$求导，并令其为零得到的。观察到，${{\lambda _i}}$在\eqref{chap2:eq17b}中是一个松弛变量，可以直接消去，得到
+\begin{subequations}\label{chap2:eq18}
+  \begin{equation}\label{chap2:eq18a}
+    {\gamma _i} \ge 0,~\sum\limits_{i = 1}^{K{N_{\rm{s}}}} {{\gamma _i}}  = K{N_{\rm{s}}},~ {\gamma _i}\left( {\nu  - \frac{{P\sigma _{1,i}^2}}{{K{N_{\rm{s}}}\sigma _{\rm{n}}^2 + P{\gamma _i}\sigma _{1,i}^2}}} \right) = 0,
+  \end{equation}
+  \begin{equation}\label{chap2:eq18b}
+     \nu  \ge \frac{{P\sigma _{1,i}^2}}{{K{N_{\rm{s}}}\sigma _{\rm{n}}^2 + P{\gamma _i}\sigma _{1,i}^2}},
+  \end{equation}
+\end{subequations}
+若${\nu  < \frac{{P\sigma _{1,i}^2}}{{K{N_{\rm{s}}}\sigma _{\rm{n}}^2}}}$，只有当${{\gamma _i} > 0}$时，式\eqref{chap2:eq18b}才成立，而由式\eqref{chap2:eq18a}中第三个条件可知，此时，${{\nu  = \frac{{P\sigma _{1,i}^2}}{{K{N_{\rm{s}}}\sigma _{\rm{n}}^2 + P{\gamma _i}\sigma _{1,i}^2}}}}$。求解${{\gamma _i}}$，得出结论：当${\nu  < \frac{{P\sigma _{1,i}^2}}{{K{N_{\rm{s}}}\sigma _{\rm{n}}^2}}}$时，有${{\gamma _i} = \frac{1}{\nu } - \frac{{K{N_{\rm{s}}}\sigma _{\rm{n}}^2}}{{P\sigma _{1,i}^2}}}$；而若${\nu  \geq \frac{{P\sigma _{1,i}^2}}{{K{N_{\rm{s}}}\sigma _{\rm{n}}^2}}}$，那么${{\gamma _i} = 0}$。这是因为如果${{\gamma _i} > 0}$，那么${\nu  \ge \frac{{P\sigma _{1,i}^2}}{{K{N_{\rm{s}}}\sigma _{\rm{n}}^2}} > \frac{{P\sigma _{1,i}^2}}{{K{N_{\rm{s}}}\sigma _{\rm{n}}^2 + P{\gamma _i}\sigma _{1,i}^2}}}$，这违背了互补松弛条件（式\eqref{chap2:eq18a}中的第三个条件）。所以，得出下式
+\begin{equation}\label{chap2:eq19}
+  {\gamma _i^{\star}} = \max \left\{ {0,~\frac{1}{\nu } - \frac{{K{N_{\rm{s}}}\sigma _{\rm{n}}^2}}{{P\sigma _{1,i}^2}}} \right\}.
+\end{equation}
+
+将${{\gamma _i^{\star}}}$的表达式\eqref{chap2:eq19}代入条件${\sum\nolimits_{i = 1}^{K{N_{\rm{s}}}} {{\gamma _i}}  = K{N_{\rm{s}}}}$中得到
+关于${\nu}$的线性方程，该方程有唯一确定的解。于是，可以得到式\eqref{chap2:eq15}的最优解。
+%SVD预编码/组合算法简单，没有差错传播效应，是一种直接有效的预编码算法。
+
+\subsection{MF预编码}\label{subsec:MFPrecoding}
+在\ref{subsec:LP}节已经得知，MF预编码是信道矩阵的共轭转置，于是有
+\begin{equation}\label{chap2:eq20}
+  {\bf{F}} = \beta {{\bf{H}}^H},
+\end{equation}
+这里，假设每个用户的接收天线数量均相同且等于其接收数据流的数量，即，${{N_{{\rm{r}},k}} = {N_{\rm{s}}}}$。 同样地，式\eqref{chap2:eq20}中的${\beta}$也是用于使预编码后的发送信号满足功率约束${\mathbb{E}\{ \left\| {\bf{x}} \right\|_2^2\}  = P}$的常数，
+\begin{equation}\label{chap2:eq21}
+  \beta  = \sqrt {\frac{P}{{{\rm{tr}}\left( {{\bf{H}}{{\bf{H}}^H}} \right)}}},
+\end{equation}
+于是，${K}$个用户的接收信号可以表示为
+\begin{equation}\label{chap2:eq22}
+  {\bf{y}} = \beta {\bf{H}}{{\bf{H}}^H}{\bf{s}} + {\bf{n}}.
+\end{equation}
+
+为了在接收端准确的恢复出所有信号的数据流，信号检测矩阵取
+\begin{equation}\label{chap2:eq23}
+  {\bf{W}} = \frac{1}{\beta }{\left( {{\bf{H}}{{\bf{H}}^H}} \right)^{ - 1}},
+\end{equation}
+则经过信号检测后所得的判决信号为
+\begin{equation}\label{chap2:eq24}
+  {\bf{r}} = {\bf{s}} + \frac{1}{\beta }{\left( {{\bf{H}}{{\bf{H}}^H}} \right)^{ - 1}}{\bf{n}}.
+\end{equation}
+
+假设基站未知CSI，发送数据流满足${\mathbb{E}\{ {\bf{s}}{{\bf{s}}^H}\}  = {{\bf{I}}_{K{N_{\rm{s}}}}}}$且${{\bf{n}} \sim \mathcal{CN}({\bf{0}},\sigma _{\rm{n}}^2{{\bf{I}}_{K{{N_{{\rm{r}},k}}}}})}$。若输入为高斯信号，那么，遍历的总和速率表达式为
+\begin{equation}\label{chap2:eq25}
+  R = {\log _2}\left| {{{\bf{I}}_{K{N_s}}} + \frac{{{\beta ^2}}}{{\sigma _{\rm{n}}^2}}{{\left( {{\bf{H}}{{\bf{H}}^H}} \right)}^2}} \right|.
+\end{equation}
+
+随着基站天线的增加，${\bf{H}}$中的信道矢量变得更加接近相互正交。结果是项${{{\bf{H}}{{\bf{H}}^H}}}$接近对角阵，这将导致最优解\upcite{Zhu2014secure}。因此，只要基站天线的数量远大于用户端天线的数量，MF预编码就接近最优。当基站天线与所有用户端的总天线数量接近时，会导致退化的大规模MIMO情况，此时渐近的大规模MIMO属性不成立。 在这种情况下，系统会受到强烈的用户间干扰，并且每个用户的速率很小。
+
+\subsection{ZF预编码}
+ZF预编码（CI预编码）为信道矩阵的Moore-Penrose伪逆，即
+\begin{equation}\label{chap2:eq26}
+  {\bf{F}} = \beta {{\bf{H}}^+} = \beta {{\bf{H}}^H}{\left( {{\bf{H}}{{\bf{H}}^H}} \right)^{ - 1}},
+\end{equation}
+与\ref{subsec:MFPrecoding}节相同，每个用户的接收天线数量等于接收数据流的数量${({N_{{\rm{r}},k}} = {N_{\rm{s}}})}$。功率约束因子${\beta}$为
+\begin{equation}\label{chap2:eq27}
+  \beta  = \sqrt {\frac{P}{{tr\left( {{{\left( {{\bf{H}}{{\bf{H}}^H}} \right)}^{ - 1}}} \right)}}} ,
+\end{equation}
+${K}$个用户的总接收信号可以表示为
+\begin{align}\label{chap2:eq28}
+  \nonumber {\bf{y}} = &  \beta {\bf{H}}{{\bf{H}}^H}{\left( {{\bf{H}}{{\bf{H}}^H}} \right)^{ - 1}}{\bf{s}} + {\bf{n}} \\
+   = & \beta {\bf{s}} + {\bf{n}}.
+\end{align}
+
+为了补偿发射机的放大影响，信号检测矩阵取
+\begin{equation}\label{chap2:eq29}
+  {\bf{W}} = \frac{1}{\beta }{{\bf{I}}_{K{N_{\rm{s}}}}},
+\end{equation}
+那么经过信号检测后所得的判决信号为
+\begin{equation}\label{chap2:eq30}
+  {\bf{r}} = {\bf{s}} + \frac{1}{\beta }{\bf{n}}.
+\end{equation}
+
+假设基站未知CSI，发送信号数据流满足${\mathbb{E}\{ {\bf{s}}{{\bf{s}}^H}\}  = {{\bf{I}}_{K{N_{\rm{s}}}}}}$且${{\bf{n}} \sim \mathcal{CN}({\bf{0}},\sigma _{\rm{n}}^2{{\bf{I}}_{K{{N_{{\rm{r}},k}}}}})}$, 输入为高斯信号，那么，遍历的总和速率可表述为
+\begin{align}\label{chap2:eq31}
+ \nonumber R = & {\log _2}\left| {{{\bf{I}}_{K{N_{\rm{s}}}}} + \frac{{{\beta ^2}}}{{\sigma _{\rm{n}}^2}}{{\bf{I}}_{K{N_{\rm{s}}}}}} \right| \\
+  = & K{N_{\rm{s}}}{\log _2}\left| {1 + \frac{{{\beta ^2}}}{{\sigma _{\rm{n}}^2}}} \right|.
+\end{align}
+
+ZF预编码矩阵${\bf{F}}$中的项${{{\bf{H}}{{\bf{H}}^H}}}$是一个Gram矩阵\upcite{Horn2012matrix, Lutkepohl1996handbook}，其对角线元素表示信道之间的功率不平衡，而非对角线元素表征信道之间的互关联性。当存在高度相关的信道时，ZF预编码会以丢失信道容量的代价对信道进行去相关。在没有加性噪声的情况下，它是一种最佳预编码方案。当存在加性噪声时，这种预编码技术可以放大噪声效应。
+
+\subsection{BD预编码}
+与之前的预编码方法不同，BD预编码为了消除用户间干扰，对基站到每个用户之间的信道分别进行预处理。令第${k}$个用户信道预编码矩阵为${{{\bf{F}}_k} \in {\mathbb{C}^{{N_{\rm{t}}} \times {N_{\rm{s}}}}}}$，则总的预编码矩阵可表示为${{\bf{F}} = \left[ {{{\bf{F}}_1},...,{{\bf{F}}_K}} \right]}$；令基站发送给第${k}$个用户的数据流为${{\bf{s}}_k} \in {\mathbb{C}^{{N_{\rm{s}}} \times 1}}$，则总数据流矢量为${\bf{s}} = {\left[ {{\bf{s}}_1^T,...,{\bf{s}}_K^T} \right]^T}$。于是，发送信号矢量可重写为${{\bf{x}} = \sum\nolimits_{u = 1}^K {{{\bf{F}}_u}{{\bf{s}}_u}}}$，相应地，${K}$个用户的接收信号可整合为，
+\begin{equation}\label{chap2:eq32}
+  {\bf{y}} = \begin{bmatrix}
+               {{{\bf{H}}_1}} & {{{\bf{H}}_1}} & \cdots & {{{\bf{H}}_1}} \\
+               {{{\bf{H}}_2}} & {{{\bf{H}}_2}} & \cdots & {{{\bf{H}}_2}} \\
+               \vdots & \vdots & \vdots & \vdots \\
+               {{{\bf{H}}_K}} & {{{\bf{H}}_K}} & \cdots & {{{\bf{H}}_K}}
+             \end{bmatrix}
+             \begin{bmatrix}
+               {{{\bf{F}}_{\rm{1}}}{{\bf{s}}_{\rm{1}}}} \\
+               {{{\bf{F}}_{\rm{2}}}{{\bf{s}}_{\rm{2}}}} \\
+               \vdots \\
+               {{{\bf{F}}_K}{{\bf{s}}_K}}
+             \end{bmatrix} +
+             \begin{bmatrix}
+               {{{\bf{n}}_1}} \\
+               {{{\bf{n}}_2}} \\
+               \vdots \\
+               {{{\bf{n}}_K}}
+             \end{bmatrix}.
+\end{equation}
+
+同样地，在接收端，令第${k}$个用户的检测矩阵为${{\bf{W}}_k} \in {\mathbb{C}^{{N_{{\rm{r}},k}} \times {N_{\rm{s}}}}}$，则用户${k}$的接收信号经过信号检测后所得的判决信号${{\bf{r}}_k} \in {\mathbb{C}^{{N_{\bf{s}}} \times 1}}$可表示为
+\begin{equation}\label{chap2:eq33}
+  {{\bf{r}}_k} = {\bf{W}}_k^H{{\bf{H}}_k}\sum\limits_{u = 1}^K {{{\bf{F}}_u}{{\bf{s}}_u}}  + {\bf{W}}_k^H{{\bf{n}}_k},
+\end{equation}
+所有用户的接收信号经过信号检测后所得的判决信号为
+\begin{equation}\label{chap2:eq34}
+  {\bf{r}} = \begin{bmatrix}
+                {{\bf{W}}_1^H{{\bf{H}}_1}{{\bf{F}}_1}}&{{\bf{W}}_1^H{{\bf{H}}_1}{{\bf{F}}_2}}& \cdots &{{\bf{W}}_1^H{{\bf{H}}_1}{{\bf{F}}_K}}\\
+                {{\bf{W}}_2^H{{\bf{H}}_2}{{\bf{F}}_1}}&{{\bf{W}}_2^H{{\bf{H}}_2}{{\bf{F}}_2}}& \cdots &{{\bf{W}}_2^H{{\bf{H}}_2}{{\bf{F}}_K}}\\
+                 \vdots & \vdots & \ddots & \vdots \\
+                {{\bf{W}}_K^H{{\bf{H}}_K}{{\bf{F}}_1}}&{{\bf{W}}_K^H{{\bf{H}}_K}{{\bf{F}}_2}}& \cdots &{{\bf{W}}_K^H{{\bf{H}}_K}{{\bf{F}}_K}}
+             \end{bmatrix}
+             \begin{bmatrix}
+                {{{\bf{s}}_1}}\\
+                {{{\bf{s}}_2}}\\
+                 \vdots \\
+                {{{\bf{s}}_K}}
+             \end{bmatrix} +
+             \begin{bmatrix}
+                {{\bf{W}}_1^H{{\bf{n}}_1}}\\
+                {{\bf{W}}_2^H{{\bf{n}}_2}}\\
+                 \vdots \\
+                {{\bf{W}}_K^H{{\bf{n}}_K}}
+             \end{bmatrix}.
+\end{equation}
+
+为了消除IUI ${({{\bf{W}}_i^H{{\bf{H}}_i}{{\bf{F}}_j}} = 0, i \ne j)}$，每个用户的预编码矩阵必须位于其它所有用户信道矩阵的零空间内。首先，构建除第${k}$个用户外的其他所有用户的信道矩阵，
+\begin{equation}\label{chap2:eq35}
+  {\tilde{{\bf{H}}}} = {{\begin{bmatrix}
+                       {{\bf{H}}_1^T} & \cdots & {{\bf{H}}_{k - 1}^T} & {{\bf{H}}_{u + 1}^T} & \cdots & {{\bf{H}}_K^T}
+                     \end{bmatrix}}^T},
+\end{equation}
+对${{\tilde{{\bf{H}}}} \in {\mathbb{C}^{(K - 1){N_{{\rm{r}},k}} \times {N_{\rm{t}}}}}}$进行SVD得到其零空间，${{\tilde{{\bf{H}}}} = {\tilde{{\bf{U}}}}{\tilde{{\bm{\Sigma}}}}{{\tilde{{\bf{V}}}}^H}}$。令${{\tilde{{\bf{V}}}} = \left[{{\tilde{{\bf{V}}}}^{\rm{nz}}},~ {{\tilde{{\bf{V}}}}^{\rm{z}}} \right]}$, ${{\tilde{r}} = {\rm{rank}}({\tilde{{\bf{H}}}})}$，其中，${{{\tilde{{\bf{V}}}}^{\rm{nz}}} \in {\mathbb{C}^{{N_{\rm{t}}} \times {\tilde{r}}}}}$为前${{\tilde{r}}}$列的右奇异矢量组成的矩阵（对应于非零奇异值），${{{\tilde{{\bf{V}}}}^{\rm{z}}} \in {\mathbb{C}^{{N_{\rm{t}}} \times ({N_{\rm{t}}}-{\tilde{r}})}}}$为剩余的右奇异矩阵（对应于零奇异值）。于是得到${{\tilde{{\bf{H}}}}{{\tilde{{\bf{V}}}}^{\rm{z}}} = {\bf{0}}}$，从而当${{{\bf{F}}_k} \subset {{\tilde{{\bf{V}}}}^{\rm{z}}}}$时，有${{{\bf{W}}_i^H{{\bf{H}}_i}{{\bf{F}}_j}} = {\bf{0}}}$, ${i \ne j,~ i,j = 1,\ldots,K}$。为了消除每个用户内的数据流之间的干扰，可以对${{{\bf{H}}_k}{{\tilde{{\bf{V}}}}^{\rm{z}}} \in {\mathbb{C}^{{N_{{\rm{r}},k}} \times \left( {{N_{\rm{t}}} - {\tilde{r}}} \right)}}}$进一步执行SVD得到
+\begin{align}\label{chap2:eq36}
+  \nonumber {{\bf{H}}_k}{{\tilde{{\bf{V}}}}^{\rm{z}}} = & {{\bf{U}}_k}{{\bm{\Sigma }}_k}{{\bf{V}}_k^H} \\
+  \nonumber  = & \begin{bmatrix}
+                   {{{\bf{U}}_{k1}}} & {{{\bf{U}}_{k2}}}
+                 \end{bmatrix}
+                 \begin{bmatrix}
+                   {{\bm{\Sigma }}_{k1}} & {\bf{0}} \\
+                   {\bf{0}} & {{\bm{\Sigma }}_{k2}}
+                 \end{bmatrix}
+                 \begin{bmatrix}
+                   {{\bf{V}}_{k1}^H} \\
+                   {{\bf{V}}_{k2}^H}
+                 \end{bmatrix}\\
+  = & {{\bf{U}}_{k1}}{{\bm{\Sigma }}_{k1}}{{\bf{V}}_{k1}^H} + {{\bf{U}}_{k2}}{{\bm{\Sigma }}_{k2}}{{\bf{V}}_{k2}^H},
+\end{align}
+其中，${{{\bf{U}}_{k1}} \in {\mathbb{C}^{{N_{{\rm{r}},k}} \times {N_{\rm{s}}}}}}$, ${{{\bf{V}}_{k1}} \in {\mathbb{C}^{\left( {{N_{\rm{t}}} - {\tilde{r}}} \right) \times {N_{\rm{s}}}}}}$分别为对应于奇异值矩阵${{{\bm{\Sigma }}_{k1}} \in {\mathbb{C}^{{N_{\rm{s}}} \times {N_{\rm{s}}}}}}$的左奇异矩阵和右奇异矩阵，${{{\bf{U}}_{k2}}}$, ${{{\bm{\Sigma }}_{k2}}}$, ${{{\bf{V}}_{k2}}}$为各部分中剩余的子矩阵，不失一般性的假设${{N_{\rm{t}}}-{N_{\rm{s}}}-{\tilde{r}} \geq 0}$。
+
+至此，得到第${k}$个用户的预编码矩阵为
+\begin{equation}\label{chap2:eq37}
+  {{\bf{F}}_k} = \beta {{\tilde{{\bf{V}}}}^{\rm{z}}}{{\bf{V}}_{k1}},
+\end{equation}
+从而，总预编码矩阵为${{\bf{F}} = \left[ {{{\bf{F}}_1},...,{{\bf{F}}_K}} \right]}$。同样地，为了满足${\left\| {\bf{F}} \right\|_F^2 = P}$，有 ${\beta  = \sqrt {\frac{P}{{K{N_{\rm{s}}}}}}}$。相应地，第${k}$个用户的组合矩阵可以设置为
+\begin{equation}\label{chap2:eq38}
+  {{\bf{W}}_k} = \frac{1}{\beta }{{\bf{U}}_{k1}},
+\end{equation}
+于是有${{\bf{W}}_k^H{{\bf{H}}_k}{{\bf{F}}_k} = \frac{1}{\beta }{{\bf{U}}_{k1}}{{\bf{H}}_k}\beta {{\tilde{{\bf{V}}}}^{\rm{z}}}{{\bf{V}}_{k1}} = {{\bm{\Sigma }}_{k1}}}$。与总预编码矩阵的形式不同，总的接收矩阵为
+\begin{equation}\label{chap2:eq39}
+  {\bf{W}} = \begin{bmatrix}
+               {{{\bf{W}}_1}}&{\bf{0}}& \cdots &{\bf{0}} \\
+               {\bf{0}}&{{{\bf{W}}_2}}& \cdots &{\bf{0}} \\
+                \vdots & \vdots & \ddots & \vdots \\
+               {\bf{0}}&{\bf{0}}& \cdots &{{{\bf{W}}_K}}
+             \end{bmatrix}.
+\end{equation}
+所有用户的总判决信号
+
+\subsection{RZF预编码}
+

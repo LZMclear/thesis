@@ -1,0 +1,134 @@
+\documentclass[twoside, doctor]{HTU-thesis-grd}
+%模板选项： 硕士论文 master； 博士论文 doctor
+%oneside选项表示单页打印,twoside选项表示双页打印. 默认单面打印 oneside,硕士论文模板 master
+%==============更改数学字体设置，Latin Modern Math 默认的的确有点细，看个人需要，下面提供一种方法，需要的可以取消注释=========%
+% \usepackage[bold-style=ISO]{unicode-math} %采用unicode-math，可以直接输入Unicode公式，当然传统的输入就行
+% \setmathfont{XITS Math}  %目前unicode-math 支持几种数学字体，具体用法可以查看帮助文档，这里采用类似times字体科学数学字体，可以取消注释对比
+
+\begin{document}
+
+% 中文封面内容
+
+% 单位代码
+\institutenumber{10476}
+ 
+% 学号
+\confidential{2308283080}
+
+% 分类号
+\classification{TP18}
+
+% 中文题目
+\title{中文题目中文题目中文题目中文题目中文题目}
+
+% 专业学位领域
+\major{电子技术}
+
+% 专业学位类别
+\degree{工学硕士}
+
+% 申请人
+\author{张小四}
+
+% 指导教师
+\advisor{王五五 ~~ 教授}
+
+
+
+\interest{***}
+
+
+\defenddate{二零二一年五月}
+
+% 英文封面内容
+\englishtitle{英文题目英文题目英文题目英文题目英文题目}
+\englishauthor{\emph{Zhang Xiaosi}}
+\englishadvisor{Prof. Wang Wuwu}
+\englishdate{May, 2021}
+
+% 首页封面绘制
+%\maketitle
+
+% 中文标题页绘制
+\makeInfo
+
+% 英文标题页绘制
+\makeEnglishInfo
+
+
+
+%%%%%%%%%%%%前置部分%%%%%%%%%%%%
+\frontmatter
+
+% 摘要
+\include{chapters/abstract}
+
+% 加入目录
+\tableofcontents
+
+%加入图、表索引(同时取消图表索引中章之间的垂直间隔)
+\let\origaddvspace\addvspace
+\renewcommand{\addvspace}[1]{}
+\listoffigures
+\addcontentsline{toc}{chapter}{\heiti{插图索引}}
+\listoftables
+\addcontentsline{toc}{chapter}{\heiti{表格索引}}
+\renewcommand{\addvspace}[1]{\origaddvspace{#1}}
+
+%\RequirePackage[numbers,square,comma,super,sort&compress]{natbib}
+% “上标”引用
+%\newcommand{\upcite}[1]{\textsuperscript{\cite{#1}}}}
+
+
+% 参考文献的"文本"引用     “\mycite”
+\newcommand{\textcite}[1]{\scalebox{1.3}[1.3]{\raisebox{-0.65ex}{\cite{#1}}}}
+
+% 主要符号对照表
+\input{chapters/denotation}
+% 缩略词列表
+\input{chapters/abbreviation}
+
+%%%%%%%%%%%%正文主体部分%%%%%%%%%%%%
+\mainmatter
+
+%% 各章正文内容
+\include{chapters/chapter1}
+\include{chapters/chapter2}
+\include{chapters/chapter3}
+\include{chapters/chapter4}
+\include{chapters/chapter5}
+\include{chapters/chapter6}
+% 参考文献，五号字，使用 BibTeX，包含参考文献文件.bib
+%\bibliography{reference/chap1,reference/chap2} %多个章节的参考文献
+
+%\bibliography{reference/chap1}
+
+%\bibliographystyle{plain}
+%\bibliography{ref}
+
+%%%%%%%%%%%%后置部分%%%%%%%%%%%%
+% 附录(章节编号重新计算，使用字母进行编号)
+\appendix
+\renewcommand\theequation{\Alph{chapter}--\arabic{equation}}  % 附录中编号形式是"A-1"的样子
+\renewcommand\thefigure{\Alph{chapter}--\arabic{figure}}
+\renewcommand\thetable{\Alph{chapter}--\arabic{table}}
+%\include{chapters/app1}
+\include{reference/reference}
+\backmatter
+%(其后部分无编号)
+\include{chapters/thanks}
+\include{chapters/pub}
+\include{chapters/app2}
+
+
+
+% 发表文章目录
+% 致谢
+
+\include{chapters/DeclareOriginal}
+%\include{chapters/DeclareOriginal}
+
+% 论文原创性声明和使用授权声明绘制
+%\makeDeclareOriginal
+
+\end{document} 
