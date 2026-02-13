@@ -8,6 +8,18 @@
 \contentsline {figure}{\numberline {1-2}{\ignorespaces ******}}{1}{figure.caption.10}%
 \addvspace {10.0pt}
 \addvspace {10.0pt}
+\contentsline {figure}{\numberline {3-1}{\ignorespaces DMAGNN-AC网络架构图。}}{16}{figure.caption.13}%
+\contentsline {figure}{\numberline {3-2}{\ignorespaces Network architecture of MADQIN.}}{22}{figure.caption.14}%
+\contentsline {figure}{\numberline {3-3}{\ignorespaces Achievable uplink sum-rate versus the number of APs, with $K=20$, $N=20$.}}{25}{figure.caption.17}%
+\contentsline {figure}{\numberline {3-4}{\ignorespaces Uplink per-user rate under different numbers of APs and UEs during full power transmission, with $N$ = 4, $b_m$ = 10.}}{26}{figure.caption.18}%
+\contentsline {figure}{\numberline {3-5}{\ignorespaces The relationship between uplink sum-rate and the number of bits of low resolution ADCs under different numbers of AP antennas, with $M$ = 100, $K$ = 20.}}{26}{figure.caption.19}%
+\contentsline {figure}{\numberline {3-6}{\ignorespaces The impact of ADC bit count and AP count on uplink sum-rate, with $K$ = 20.}}{26}{figure.caption.20}%
+\contentsline {figure}{\numberline {3-7}{\ignorespaces Comparing the uplink sum-rate in a CF-mMIMO system with nonlinear PAs and low-resolution ADCs versus the ideal hardware scenario, with $b_m$ = 10.}}{27}{figure.caption.21}%
+\contentsline {figure}{\numberline {3-8}{\ignorespaces Rate comparison based on different hardware impairments, with $b_m$ = 10, $K$ = 20.}}{28}{figure.caption.22}%
+\contentsline {figure}{\numberline {3-9}{\ignorespaces Comparison of per-user rate between full power transmission, DDPG$\_$Based, and DMAGNN-AC algorithm, with $b_m$ = 10, $N$ = 4.}}{28}{figure.caption.23}%
+\contentsline {figure}{\numberline {3-10}{\ignorespaces Comparison of average allocation and the MADQIN algorithm under the same total bit count, with $b_\text {total}$ =135, $M$ = 15, and $K$ = 5.}}{29}{figure.caption.24}%
+\contentsline {figure}{\numberline {3-11}{\ignorespaces Convergence of DMAGNN-AC algorithm.}}{30}{figure.caption.25}%
+\contentsline {figure}{\numberline {3-12}{\ignorespaces Convergence of MADQIN algorithm.}}{30}{figure.caption.26}%
 \addvspace {10.0pt}
 \addvspace {10.0pt}
 \addvspace {10.0pt}
