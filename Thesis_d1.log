@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2026.1.18)  16 FEB 2026 16:07
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2026.1.18)  16 FEB 2026 19:11
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1908,24 +1908,24 @@ File: fig9.pdf Graphic file (type pdf)
 
 ]
 第四章
-)
 
-[33]
+
+[33])
+
+[34]
 \openout2 = `chapters/chapter5.aux'.
 
  (./chapters/chapter5.tex
+第五章
+)
 
-[34
+[35
 
 
 
 
 
 ]
-第五章
-)
-
-[35]
 \openout2 = `chapters/chapter6.aux'.
 
  (./chapters/chapter6.tex
@@ -2045,13 +2045,13 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 LaTeX Warning: There were multiply-defined labels.
 
 Package rerunfilecheck Info: File `Thesis_d1.out' has not changed.
-(rerunfilecheck)             Checksum: 27536385494CEB9DD0D12A80F859BE7E;6214.
+(rerunfilecheck)             Checksum: 9AE0B25C58FAC4B681B4A16AC7609519;6358.
  ) 
 Here is how much of TeX's memory you used:
- 38564 strings out of 475795
- 870058 string characters out of 5773172
- 1202786 words of memory out of 5000000
- 60703 multiletter control sequences out of 15000+600000
+ 38573 strings out of 475795
+ 870657 string characters out of 5773172
+ 1201930 words of memory out of 5000000
+ 60712 multiletter control sequences out of 15000+600000
  580205 words of font info for 205 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
  107i,18n,125p,1204b,1363s stack positions out of 10000i,1000n,20000p,200000b,200000s

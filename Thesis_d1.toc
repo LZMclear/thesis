@@ -34,11 +34,11 @@
 \contentsline {section}{\numberline {3.5}MADQIN算法设计}{24}{section.3.5}%
 \contentsline {section}{\numberline {3.6}数值结果与分析}{25}{section.3.6}%
 \contentsline {section}{\numberline {3.7}本章小结}{31}{section.3.7}%
-\contentsline {chapter}{\numberline {第四章\hspace {.3em}}标题标题标题标题标题标题}{33}{chapter.4}%
-\contentsline {section}{\numberline {4.1}标题1}{33}{section.4.1}%
-\contentsline {section}{\numberline {4.2}标题2}{33}{section.4.2}%
-\contentsline {section}{\numberline {4.3}标题3}{33}{section.4.3}%
-\contentsline {section}{\numberline {4.4}本章小结}{33}{section.4.4}%
+\contentsline {chapter}{\numberline {第四章\hspace {.3em}}非理想硬件条件下去蜂窝大规模MIMO系统的URLLC服务资源分配策略}{33}{chapter.4}%
+\contentsline {section}{\numberline {4.1}引言}{33}{section.4.1}%
+\contentsline {section}{\numberline {4.2}标题2}{34}{section.4.2}%
+\contentsline {section}{\numberline {4.3}标题3}{34}{section.4.3}%
+\contentsline {section}{\numberline {4.4}本章小结}{34}{section.4.4}%
 \contentsline {chapter}{\numberline {第五章\hspace {.3em}}标题标题标题标题标题标题}{35}{chapter.5}%
 \contentsline {section}{\numberline {5.1}标题1}{35}{section.5.1}%
 \contentsline {section}{\numberline {5.2}标题2}{35}{section.5.2}%
