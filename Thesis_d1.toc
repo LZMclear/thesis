@@ -23,16 +23,16 @@
 \contentsline {subsection}{\numberline {3.2.1}信道估计}{8}{subsection.3.2.1}%
 \contentsline {subsection}{\numberline {3.2.2}上行数据传输}{11}{subsection.3.2.2}%
 \contentsline {subsection}{\numberline {3.2.3}可实现速率分析}{12}{subsection.3.2.3}%
-\contentsline {section}{\numberline {3.3}上行和速率最大化}{14}{section.3.3}%
-\contentsline {section}{\numberline {3.4}DMAGNN-AC算法设计}{15}{section.3.4}%
-\contentsline {subsection}{\numberline {3.4.1}DMAGNN-AC 组件}{16}{subsection.3.4.1}%
-\contentsline {subsection}{\numberline {3.4.2}算法设计}{17}{subsection.3.4.2}%
-\contentsline {subsubsection}{\numberline {3.4.2.1}Actor 网络分层设计}{17}{subsubsection.3.4.2.1}%
-\contentsline {subsubsection}{\numberline {3.4.2.2}网络更新频率的优化策略}{19}{subsubsection.3.4.2.2}%
-\contentsline {subsubsection}{\numberline {3.4.2.3}训练回滚策略}{20}{subsubsection.3.4.2.3}%
-\contentsline {subsubsection}{\numberline {3.4.2.4}训练过程}{20}{subsubsection.3.4.2.4}%
-\contentsline {section}{\numberline {3.5}MADQIN算法设计}{21}{section.3.5}%
-\contentsline {section}{\numberline {3.6}数值结果与分析}{23}{section.3.6}%
+\contentsline {section}{\numberline {3.3}上行和速率最大化}{16}{section.3.3}%
+\contentsline {section}{\numberline {3.4}DMAGNN-AC算法设计}{17}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}DMAGNN-AC 组件}{18}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}算法设计}{19}{subsection.3.4.2}%
+\contentsline {subsubsection}{\numberline {3.4.2.1}Actor 网络分层设计}{19}{subsubsection.3.4.2.1}%
+\contentsline {subsubsection}{\numberline {3.4.2.2}网络更新频率的优化策略}{22}{subsubsection.3.4.2.2}%
+\contentsline {subsubsection}{\numberline {3.4.2.3}训练回滚策略}{22}{subsubsection.3.4.2.3}%
+\contentsline {subsubsection}{\numberline {3.4.2.4}训练过程}{22}{subsubsection.3.4.2.4}%
+\contentsline {section}{\numberline {3.5}MADQIN算法设计}{24}{section.3.5}%
+\contentsline {section}{\numberline {3.6}数值结果与分析}{25}{section.3.6}%
 \contentsline {section}{\numberline {3.7}本章小结}{31}{section.3.7}%
 \contentsline {chapter}{\numberline {第四章\hspace {.3em}}标题标题标题标题标题标题}{33}{chapter.4}%
 \contentsline {section}{\numberline {4.1}标题1}{33}{section.4.1}%
@@ -47,9 +47,9 @@
 \contentsline {chapter}{\numberline {第六章\hspace {.3em}}总结与展望}{37}{chapter.6}%
 \contentsline {section}{\numberline {6.1}主要研究结论}{37}{section.6.1}%
 \contentsline {section}{\numberline {6.2}不足与展望}{37}{section.6.2}%
-\contentsline {chapter}{参考文献}{39}{appendix*.27}%
-\contentsline {chapter}{致~~谢}{43}{appendix*.28}%
-\contentsline {chapter}{攻读硕士学位期间发表的学术论文}{45}{appendix*.29}%
-\contentsline {chapter}{攻读硕士学位期间参加的科研项目}{47}{appendix*.30}%
-\contentsline {chapter}{独创性声明和关于论文使用授权的说明}{49}{appendix*.31}%
+\contentsline {chapter}{参考文献}{39}{appendix*.26}%
+\contentsline {chapter}{致~~谢}{43}{appendix*.27}%
+\contentsline {chapter}{攻读硕士学位期间发表的学术论文}{45}{appendix*.28}%
+\contentsline {chapter}{攻读硕士学位期间参加的科研项目}{47}{appendix*.29}%
+\contentsline {chapter}{独创性声明和关于论文使用授权的说明}{49}{appendix*.30}%
 \contentsfinish 
