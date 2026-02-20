@@ -36,20 +36,28 @@
 \contentsline {section}{\numberline {3.7}本章小结}{31}{section.3.7}%
 \contentsline {chapter}{\numberline {第四章\hspace {.3em}}非理想硬件条件下去蜂窝大规模MIMO系统的URLLC服务资源分配策略}{33}{chapter.4}%
 \contentsline {section}{\numberline {4.1}引言}{33}{section.4.1}%
-\contentsline {section}{\numberline {4.2}标题2}{34}{section.4.2}%
-\contentsline {section}{\numberline {4.3}标题3}{34}{section.4.3}%
-\contentsline {section}{\numberline {4.4}本章小结}{34}{section.4.4}%
-\contentsline {chapter}{\numberline {第五章\hspace {.3em}}标题标题标题标题标题标题}{35}{chapter.5}%
-\contentsline {section}{\numberline {5.1}标题1}{35}{section.5.1}%
-\contentsline {section}{\numberline {5.2}标题2}{35}{section.5.2}%
-\contentsline {section}{\numberline {5.3}标题3}{35}{section.5.3}%
-\contentsline {section}{\numberline {5.4}本章小结}{35}{section.5.4}%
-\contentsline {chapter}{\numberline {第六章\hspace {.3em}}总结与展望}{37}{chapter.6}%
-\contentsline {section}{\numberline {6.1}主要研究结论}{37}{section.6.1}%
-\contentsline {section}{\numberline {6.2}不足与展望}{37}{section.6.2}%
-\contentsline {chapter}{参考文献}{39}{appendix*.26}%
-\contentsline {chapter}{致~~谢}{43}{appendix*.27}%
-\contentsline {chapter}{攻读硕士学位期间发表的学术论文}{45}{appendix*.28}%
-\contentsline {chapter}{攻读硕士学位期间参加的科研项目}{47}{appendix*.29}%
-\contentsline {chapter}{独创性声明和关于论文使用授权的说明}{49}{appendix*.30}%
+\contentsline {section}{\numberline {4.2}可实现URLLC速率}{34}{section.4.2}%
+\contentsline {section}{\numberline {4.3}算法设计}{34}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}用户节点特征建模}{34}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}干扰边特征建模}{36}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}图神经网络消息传递机制}{37}{subsection.4.3.3}%
+\contentsline {subsection}{\numberline {4.3.4}基于Actor-Critic的功率控制决策}{38}{subsection.4.3.4}%
+\contentsline {subsection}{\numberline {4.3.5}奖励函数设计}{39}{subsection.4.3.5}%
+\contentsline {subsection}{\numberline {4.3.6}算法训练流程}{40}{subsection.4.3.6}%
+\contentsline {subsection}{\numberline {4.3.7}算法复杂度分析}{40}{subsection.4.3.7}%
+\contentsline {section}{\numberline {4.4}仿真结果}{42}{section.4.4}%
+\contentsline {section}{\numberline {4.5}本章小结}{42}{section.4.5}%
+\contentsline {chapter}{\numberline {第五章\hspace {.3em}}标题标题标题标题标题标题}{43}{chapter.5}%
+\contentsline {section}{\numberline {5.1}标题1}{43}{section.5.1}%
+\contentsline {section}{\numberline {5.2}标题2}{43}{section.5.2}%
+\contentsline {section}{\numberline {5.3}标题3}{43}{section.5.3}%
+\contentsline {section}{\numberline {5.4}本章小结}{43}{section.5.4}%
+\contentsline {chapter}{\numberline {第六章\hspace {.3em}}总结与展望}{45}{chapter.6}%
+\contentsline {section}{\numberline {6.1}主要研究结论}{45}{section.6.1}%
+\contentsline {section}{\numberline {6.2}不足与展望}{45}{section.6.2}%
+\contentsline {chapter}{参考文献}{47}{appendix*.27}%
+\contentsline {chapter}{致~~谢}{51}{appendix*.28}%
+\contentsline {chapter}{攻读硕士学位期间发表的学术论文}{53}{appendix*.29}%
+\contentsline {chapter}{攻读硕士学位期间参加的科研项目}{55}{appendix*.30}%
+\contentsline {chapter}{独创性声明和关于论文使用授权的说明}{57}{appendix*.31}%
 \contentsfinish 

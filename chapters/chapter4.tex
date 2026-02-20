@@ -9,10 +9,240 @@
 去蜂窝大规模多输入多输出（CF-mMIMO）系统作为新一代网络架构，为URLLC服务提供了创新性解决方案。该系统通过分布式部署大量接入点（AP），并与中央处理单元（CPU）协同工作，有效消除蜂窝边缘干扰，实现全域均匀服务覆盖。与传统集中式大规模MIMO相比，CF-mMIMO缩短了AP与UE的空间距离，显著降低信号传播衰落；其稀疏空间布局与多元宏观特征能够稳定信道状态，形成独特的信道硬化效应。这些技术特性为URLLC可靠性提升提供了坚实保障，展现出显著的技术优势。
 
 本章以CF-mMIMO系统的URLLC服务为研究对象，针对实际硬件损伤问题，深入分析功率分配策略对系统性能的影响。为实现系统能耗优化与硬件损伤量化分析，采用无记忆多项式模型刻画用户设备非线性功率放大器特性，并结合接入点低分辨率ADC量化技术，推导上行链路用户速率解析表达式，为后续研究奠定理论基础。
-\section{标题2}
-****************************
-\section{标题3}
-****************************
+
+\section{可实现URLLC速率}
+传统的香农容量是在假设码字长度趋于无穷大、解码错误概率趋近于零的理想条件下推导的。然而，在URLLC场景下，由于对时延和可靠性的极高要求，实际通信往往采用有限块长编码，此时香农容量理论已不再适用。为准确刻画有限块长下的系统性能，URLLC通常采用有限块长编码理论对可实现速率进行分析。
+
+基于第三章推导的非理想硬件条件下CF-mMIMO系统上行可达速率$R_{\text{u},k}$，本节进一步考虑有限块长编码约束，推导URLLC场景下的可实现速率。根据有限块长信息论，第$k$个用户的URLLC可实现速率可表示为：
+\begin{equation}
+r_{\text{u},k} = \log_{2}\left(1 + R_{\text{u},k}\right) - \chi \left(1 - \frac{1}{\left(1 + R_{\text{u},k}\right)^2}\right)^{1/2}
+\end{equation}
+其中，$R_{\text{u},k}$为第三章式(3-23)给出的非理想硬件条件下用户可达速率，$\chi = Q^{-1}(\varepsilon)\log_{2}e$，$Q^{-1}(\cdot)$为高斯$Q$函数的反函数，$\varepsilon$为目标误块率。高斯$Q$函数定义为$Q(x) = \frac{1}{\sqrt{2\pi}} \int_{x}^{\infty} \exp(-t^2/2)dt$。
+
+上述表达式综合考虑了有限块长下的误码概率约束与非理想硬件损伤影响，更加贴合URLLC实际应用场景，为后续资源分配与系统优化提供理论基础。
+
+\section{算法设计}
+在CF-mMIMO系统中，由于UE与AP的分布式部署及信道动态变化，传统集中式优化方法难以实时捕捉网络拓扑的时空关联性。为此，本文提出一种基于图神经网络的动态干扰管理算法。该算法通过图神经网络基于信道特征动态提取用户之间的干扰来辅助DRL算法预测，实现多用户干扰关系的自适应建模与功率控制的联合优化。
+\subsection{用户节点特征建模}
+为了精确建模用户之间的空间分布以及干扰特性，将每个UE定义为图中的节点。考虑到信道状态信息包含幅度和相位两种物理意义明确的特征，本文分别对幅度和相位进行独立建模与融合处理，以充分挖掘信道信息的表征能力。
+
+首先，定义用户$k$到所有AP的聚合信道向量。根据第三章系统模型，第$m$个AP与第$k$个UE之间的信道向量为$\mathbf{g}_{mk} \in \mathbb{C}^{N \times 1}$，其中$N$为每个AP的天线数。将用户$k$到所有$M$个AP的信道向量进行聚合，得到聚合信道向量：
+\begin{equation}
+\mathbf{g}_{k} = \left[\mathbf{g}_{1k}^{T}, \mathbf{g}_{2k}^{T}, \ldots, \mathbf{g}_{Mk}^{T}\right]^{T} \in \mathbb{C}^{MN \times 1}
+\end{equation}
+
+对聚合信道向量$\mathbf{g}_{k}$进行幅度-相位分解：
+\begin{equation}
+\mathbf{g}_{k} = \mathbf{A}_{k} \odot \exp(j\boldsymbol{\Phi}_{k})
+\end{equation}
+其中，$\mathbf{A}_{k} = |\mathbf{g}_{k}|$表示信道幅度向量，$\boldsymbol{\Phi}_{k} = \angle\mathbf{g}_{k}$表示信道相位向量，$\odot$表示逐元素乘法。
+
+基于此分解，节点特征采用双分支结构进行编码。幅度分支特征$\mathbf{f}_{k}^{\text{amp}}$捕获信号强度与硬件损伤信息：
+\begin{equation}
+\mathbf{f}_{k}^{\text{amp}}=\left[\mathbf{A}_{k}^{(1)}, \mathbf{A}_{k}^{(2)}, \ldots, \mathbf{A}_{k}^{(M)}, \eta_{k},\left|a_{3 k}\right|, \text{SINR}_{k}^{\text{est}}\right]^{T}
+\end{equation}
+其中，$\mathbf{A}_{k}^{(m)} = |\mathbf{g}_{mk}|$表示用户$k$到第$m$个AP的信道幅度向量，$\eta_{k}$表示当前发射功率，$\left|a_{3 k}\right|$量化了功率放大器非线性失真程度，$\text{SINR}_{k}^{\text{est}}$为估计的信干噪比。
+
+相位分支特征$\mathbf{f}_{k}^{\text{ph}}$编码信道方向性与空间相关性：
+\begin{equation}
+\mathbf{f}_{k}^{\text{ph}}=\left[\boldsymbol{\Phi}_{k}^{(1)}, \boldsymbol{\Phi}_{k}^{(2)}, \ldots, \boldsymbol{\Phi}_{k}^{(M)}, \cos(\theta_{k}), \sin(\theta_{k}), \Delta\varphi_{k}\right]^{T}
+\end{equation}
+其中，$\boldsymbol{\Phi}_{k}^{(m)} = \angle\mathbf{g}_{mk}$表示用户$k$到第$m$个AP的信道相位向量，$\theta_{k}$为用户$k$的空间方位角，$\Delta\varphi_{k}$表示相位抖动方差，反映信道时变特性。
+
+最终，节点特征通过特征融合层进行整合。首先，幅度分支和相位分支分别经多层感知机映射到统一维度的特征空间：
+\begin{equation}
+\mathbf{h}_{k}^{\text{amp}} = \mathbf{W}_{\text{amp}}^{(2)} \sigma\left(\mathbf{W}_{\text{amp}}^{(1)} \mathbf{f}_{k}^{\text{amp}} + \mathbf{b}_{\text{amp}}^{(1)}\right) + \mathbf{b}_{\text{amp}}^{(2)}
+\end{equation}
+\begin{equation}
+\mathbf{h}_{k}^{\text{ph}} = \mathbf{W}_{\text{ph}}^{(2)} \sigma\left(\mathbf{W}_{\text{ph}}^{(1)} \mathbf{f}_{k}^{\text{ph}} + \mathbf{b}_{\text{ph}}^{(1)}\right) + \mathbf{b}_{\text{ph}}^{(2)}
+\end{equation}
+其中，$\mathbf{W}_{\text{amp}}^{(1)}, \mathbf{W}_{\text{amp}}^{(2)}$和$\mathbf{W}_{\text{ph}}^{(1)}, \mathbf{W}_{\text{ph}}^{(2)}$分别为两个分支MLP的权重矩阵，$\mathbf{b}$为偏置向量，$\sigma(\cdot)$为ReLU激活函数。
+
+然后，通过拼接与投影操作实现双分支信息融合：
+\begin{equation}
+\mathbf{f}_{k} = \mathbf{W}_{\text{fuse}} \left[\mathbf{h}_{k}^{\text{amp}} \| \mathbf{h}_{k}^{\text{ph}}\right] + \mathbf{b}_{\text{fuse}}
+\end{equation}
+其中，$\|$表示向量拼接操作，$\mathbf{W}_{\text{fuse}} \in \mathbb{R}^{D \times 2D}$为融合投影矩阵，$D$为节点特征的最终维度。
+
+\subsection{干扰边特征建模}
+为准确刻画用户间的干扰耦合关系，在图结构中引入边特征建模。对于任意用户节点对$(i, k)$，其边特征$\mathbf{e}_{ik}$定义为：
+\begin{equation}
+\mathbf{e}_{ik} = \left[d_{ik}, I_{ik}\right]^{T}
+\end{equation}
+其中，$d_{ik}$表示用户$i$与用户$k$之间的归一化距离，定义为$d_{ik} = \|\mathbf{x}_{i} - \mathbf{x}_{k}\| / d_{\max}$，$\mathbf{x}_{i}$和$\mathbf{x}_{k}$分别为用户$i$和用户$k$的位置坐标，$d_{\max}$为系统覆盖区域的最大距离。该特征用于表征用户间的空间邻近程度，距离越近则潜在干扰越强。
+
+$I_{ik}$表示用户间的干扰强度，定义为：
+\begin{equation}
+I_{ik} = \frac{\|\mathbf{g}_{i}^{H}\mathbf{g}_{k}\|_{F}^{2}}{MN}
+\end{equation}
+其中，$\|\cdot\|_{F}$表示Frobenius范数。该指标量化了用户间的信道相关性，取值越大表示干扰越强。
+
+边的存在性由干扰阈值判定：
+\begin{equation}
+\mathcal{E}_{ik} = \begin{cases}
+1, & \text{if } I_{ik} > \epsilon_{\text{th}} \\
+0, & \text{otherwise}
+\end{cases}
+\end{equation}
+其中$\epsilon_{\text{th}}$为干扰强度阈值，典型设置为$\epsilon_{\text{th}}=0.1$。该稀疏化策略有效降低图结构复杂度，聚焦于关键干扰链路。
+
+
+
+\subsection{图神经网络消息传递机制}
+基于构建的节点特征和边特征，采用图注意力网络（GAT）实现消息传递与特征聚合。GAT的核心思想是通过注意力机制自适应地学习邻居节点的重要性权重，从而实现差异化信息聚合。
+
+在第$l$层消息传递中，节点$k$首先通过线性变换将其特征映射到新的特征空间：
+\begin{equation}
+\mathbf{h}_{k}^{\prime(l)} = \mathbf{W}^{(l)}\mathbf{h}_{k}^{(l)}
+\end{equation}
+其中，$\mathbf{h}_{k}^{(l)}$为节点$k$在第$l$层的隐藏状态（$\mathbf{h}_{k}^{(0)} = \mathbf{f}_{k}$），$\mathbf{W}^{(l)} \in \mathbb{R}^{D \times D}$为可学习的权重矩阵。
+
+然后，计算节点$k$与邻居节点$i$之间的注意力系数。为充分利用边特征信息，采用边增强的注意力机制：
+\begin{equation}
+e_{ik}^{(l)} = \text{LeakyReLU}\left(\mathbf{a}^{(l)T}\left[\mathbf{h}_{i}^{\prime(l)} \| \mathbf{h}_{k}^{\prime(l)} \| \mathbf{W}_{e}^{(l)}\mathbf{e}_{ik}\right]\right)
+\end{equation}
+其中，$\|$表示向量拼接操作，$\mathbf{a}^{(l)}$为注意力向量，$\mathbf{W}_{e}^{(l)}$为边特征变换矩阵。该设计将节点特征与边特征联合建模，使注意力系数能够感知用户间的干扰强度。
+
+注意力系数通过softmax函数归一化：
+\begin{equation}
+\alpha_{ik}^{(l)} = \frac{\exp(e_{ik}^{(l)})}{\sum_{j \in \mathcal{N}(k) \cup \{k\}}\exp(e_{jk}^{(l)})}
+\end{equation}
+其中，$\mathcal{N}(k)$为节点$k$的邻居节点集合，自环的引入使节点能够保留自身特征信息。
+
+为增强模型的表达能力，采用多头注意力机制。设$H$为注意力头数，各头独立计算注意力系数并进行特征聚合：
+\begin{equation}
+\mathbf{h}_{k}^{(l+1)} = \sigma\left(\frac{1}{H}\sum_{h=1}^{H}\sum_{i \in \mathcal{N}(k) \cup \{k\}} \alpha_{ik}^{(l,h)} \mathbf{W}^{(l,h)}\mathbf{h}_{i}^{(l)}\right)
+\end{equation}
+其中，$\alpha_{ik}^{(l,h)}$和$\mathbf{W}^{(l,h)}$分别为第$h$个注意力头的注意力系数和权重矩阵，$\sigma(\cdot)$为ReLU激活函数。多头机制使模型能够从不同子空间捕获节点间的关联特征。
+
+经过$L$层消息传递后，得到各节点的图嵌入表示$\mathbf{z}_{k} = \mathbf{h}_{k}^{(L)}$，该嵌入融合了局部拓扑结构、信道状态及干扰关系信息，为后续功率控制决策提供高维表征。
+
+\subsection{基于Actor-Critic的功率控制决策}
+基于GNN提取的图嵌入表示，将功率控制问题建模为马尔可夫决策过程（MDP），采用近端策略优化（PPO）算法进行求解。MDP由状态空间$\mathcal{S}$、动作空间$\mathcal{A}$、状态转移概率$\mathcal{P}$和奖励函数$\mathcal{R}$四元组定义。
+
+系统状态由各用户的图嵌入向量与全局上下文特征组成。对于时隙$t$，状态定义为：
+\begin{equation}
+\mathbf{s}_{t} = \left[\mathbf{z}_{1}^{(t)}, \mathbf{z}_{2}^{(t)}, \ldots, \mathbf{z}_{K}^{(t)}, \mathbf{c}^{(t)}\right]
+\end{equation}
+其中，$\mathbf{z}_{k}^{(t)} \in \mathbb{R}^{D}$为用户$k$在时隙$t$经GNN提取的图嵌入，融合了信道状态、干扰关系及拓扑结构信息；$\mathbf{c}^{(t)} = \left[\bar{r}^{(t)}, \bar{\eta}^{(t)}, \bar{I}^{(t)}\right]$为全局上下文特征，分别表示系统平均速率、平均发射功率和平均干扰强度。
+
+动作空间定义为各用户发射功率的调整系数：
+\begin{equation}
+\mathbf{a}_{t} = \left[\delta_{1}^{(t)}, \delta_{2}^{(t)}, \ldots, \delta_{K}^{(t)}\right], \quad \delta_{k}^{(t)} \in [0, 1]
+\end{equation}
+实际发射功率为$\eta_{k}^{(t)} = \delta_{k}^{(t)} \cdot \eta_{\max}$，其中$\eta_{\max}$为最大发射功率约束。
+
+Actor网络负责输出功率控制策略。对于用户$k$，其策略均值由图嵌入经全连接层变换得到：
+\begin{equation}
+\mu_{k}^{(t)} = \mathbf{W}_{\mu}^{(2)} \sigma\left(\mathbf{W}_{\mu}^{(1)} \mathbf{z}_{k}^{(t)} + \mathbf{b}_{\mu}^{(1)}\right) + \mathbf{b}_{\mu}^{(2)}
+\end{equation}
+其中，$\mathbf{W}_{\mu}^{(1)} \in \mathbb{R}^{D_{\mu} \times D}$和$\mathbf{W}_{\mu}^{(2)} \in \mathbb{R}^{1 \times D_{\mu}}$为可学习权重矩阵，$D_{\mu}$为隐藏层维度。策略分布采用高斯分布建模：
+\begin{equation}
+\pi_{\theta}(\mathbf{a}_{t}|\mathbf{s}_{t}) = \prod_{k=1}^{K} \mathcal{N}\left(\delta_{k}; \mu_{k}^{(t)}, \sigma^{2}\right)
+\end{equation}
+其中，标准差$\sigma$为可学习参数，控制探索程度。
+
+Critic网络评估当前状态的期望累积奖励。首先对所有用户的图嵌入进行全局平均池化：
+\begin{equation}
+\bar{\mathbf{z}}^{(t)} = \frac{1}{K}\sum_{k=1}^{K}\mathbf{z}_{k}^{(t)}
+\end{equation}
+然后，将池化后的嵌入与全局上下文特征拼接，经多层感知机输出状态值：
+\begin{equation}
+V_{\phi}(\mathbf{s}_{t}) = \mathbf{W}_{v}^{(2)} \sigma\left(\mathbf{W}_{v}^{(1)} \left[\bar{\mathbf{z}}^{(t)} \| \mathbf{c}^{(t)}\right] + \mathbf{b}_{v}^{(1)}\right) + \mathbf{b}_{v}^{(2)}
+\end{equation}
+其中，$\mathbf{W}_{v}^{(1)} \in \mathbb{R}^{D_{v} \times (D+3)}$和$\mathbf{W}_{v}^{(2)} \in \mathbb{R}^{1 \times D_{v}}$为可学习权重矩阵。该设计通过聚合全局信息，评估当前功率配置的系统级价值。
+
+\subsection{奖励函数设计}
+针对CF-mMIMO系统中URLLC功率控制问题，奖励函数综合考虑系统频谱效率及URLLC服务质量约束。本文设计的奖励函数由系统和速率及URLLC约束惩罚构成，各分量分别对应不同的优化目标。
+
+系统和速率作为无线通信系统的核心性能指标，直接表征系统容量与频谱利用效率。对于时隙$t$，系统和速率项定义为：
+\begin{equation}
+\mathcal{R}_{t}^{\text{sum}} = \sum_{k=1}^{K} r_{\text{u},k}^{(t)}
+\end{equation}
+其中，$r_{\text{u},k}^{(t)}$为用户$k$在时隙$t$的URLLC可实现速率。该奖励项引导智能体探索能够最大化系统和容量的功率分配策略。
+
+URLLC场景对可靠性与时延具有严格要求，违反约束将导致工业控制、远程医疗等关键应用的严重故障。本文采用惩罚函数机制确保服务质量约束：
+\begin{equation}
+\mathcal{R}_{t}^{\text{urllc}} = -\lambda_{\varepsilon} \sum_{k=1}^{K} \mathbf{1}_{\left\{\varepsilon_{k}^{(t)} > \varepsilon_{\text{th}}\right\}} - \lambda_{\tau} \sum_{k=1}^{K} \mathbf{1}_{\left\{D_{k}^{(t)} > D_{\text{th}}\right\}}
+\end{equation}
+其中，$\varepsilon_{k}^{(t)}$和$D_{k}^{(t)}$分别表示用户$k$在时隙$t$的解码错误概率与端到端时延；$\varepsilon_{\text{th}}$和$D_{\text{th}}$为URLLC约束阈值，依据3GPP TS 38.913标准，典型值分别设定为$\varepsilon_{\text{th}}=10^{-5}$和$D_{\text{th}}=1$ ms；$\lambda_{\varepsilon}$和$\lambda_{\tau}$为惩罚系数，用于调节违反约束的代价强度。
+
+解码错误概率$\varepsilon_{k}^{(t)}$由有限块长信息论给出，其表达式为$\varepsilon_{k} \approx Q\left(\frac{nC_{k}-L_{k}}{\sqrt{nV_{k}}}\right)$，其中$C_{k}$为香农容量，$V_{k}$为信道色散，$n$为块长，$L_{k}$为传输比特数。该概率与信道状态、发射功率及传输块长紧密耦合，当信道条件恶化或功率配置不足时，错误概率升高并触发惩罚机制，引导智能体调整功率策略以满足可靠性要求。端到端时延$D_{k}^{(t)}$由传输时延、处理时延与排队时延构成，在URLLC场景下需严格约束于阈值范围内。
+
+综合上述设计，总奖励函数表述为：
+\begin{equation}
+\mathcal{R}_{t} = \omega_{1} \mathcal{R}_{t}^{\text{sum}} + \omega_{2} \mathcal{R}_{t}^{\text{urllc}}
+\end{equation}
+其中，$\omega_{1}$和$\omega_{2}$为权重系数，用于平衡多目标优化中的不同性能指标。依据URLLC场景对可靠性的严格要求，权重系数典型设置为$\omega_{1}=0.6$，$\omega_{2}=0.4$，在优先保障系统容量的前提下兼顾URLLC约束。
+
+\subsection{算法训练流程}
+所提GNN-DRL融合算法的训练流程如算法\ref{alg:gnn-drl}所示，采用交替优化策略：GNN负责图结构特征提取，DRL负责功率控制决策，两者端到端联合训练。算法主要超参数设置如表\ref{tab:hyperparams}所示。
+
+\begin{table}[htbp]
+\centering
+\caption{算法超参数设置}
+\label{tab:hyperparams}
+\begin{tabular}{ll}
+\hline
+参数名称 & 参数值 \\
+\hline
+GNN消息传递层数 $L$ & 2 \\
+GNN隐藏层维度 $D$ & 64 \\
+注意力头数 $H$ & 4 \\
+Actor网络学习率 $\alpha_{\theta}$ & $10^{-4}$ \\
+Critic网络学习率 $\alpha_{\phi}$ & $10^{-3}$ \\
+折扣因子 $\gamma$ & 0.99 \\
+PPO裁剪参数 $\epsilon$ & 0.2 \\
+经验池容量 & $10^{4}$ \\
+批量大小 $B$ & 64 \\
+训练回合数 $N_{\text{ep}}$ & 1000 \\
+每回合时隙数 $T$ & 100 \\
+熵系数 $\beta$ & 0.01 \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{algorithm}[htbp]
+\caption{基于GNN-DRL的CF-mMIMO功率控制算法}
+\label{alg:gnn-drl}
+\begin{algorithmic}[1]
+\Require 训练回合数$N_{\text{ep}}$，每回合时隙数$T$，Actor学习率$\alpha_{\theta}$，Critic学习率$\alpha_{\phi}$，折扣因子$\gamma$，PPO裁剪参数$\epsilon$
+\Ensure 收敛的策略网络参数$\theta$与值网络参数$\phi$
+\State 随机初始化GNN参数$\Theta_{\text{GNN}}$，Actor参数$\theta$，Critic参数$\phi$
+\For{$n = 1$ \textbf{to} $N_{\text{ep}}$}
+    \For{$t = 1$ \textbf{to} $T$}
+        \State 基于信道状态构建节点特征$\{\mathbf{f}_{k}\}_{k=1}^{K}$与边特征$\{\mathbf{e}_{ik}\}$
+        \State 执行$L$层GNN消息传递，输出图嵌入$\mathbf{z}_{k} = \text{GNN}(\mathbf{f}_{k}, \{\mathbf{e}_{ik}\})$
+        \State 构建系统状态$\mathbf{s}_{t} = [\mathbf{z}_{1}, \ldots, \mathbf{z}_{K}, \mathbf{c}]$，Actor采样动作$\mathbf{a}_{t} \sim \pi_{\theta}(\cdot|\mathbf{s}_{t})$
+        \State 执行功率控制$\eta_{k} = \delta_{k} \cdot \eta_{\max}$，观测即时奖励$\mathcal{R}_{t} = \omega_{1}\mathcal{R}_{t}^{\text{sum}} + \omega_{2}\mathcal{R}_{t}^{\text{urllc}}$
+        \State 存储转移样本$(\mathbf{s}_{t}, \mathbf{a}_{t}, \mathcal{R}_{t}, \mathbf{s}_{t+1})$至经验回放池$\mathcal{D}$
+    \EndFor
+    \State 从$\mathcal{D}$随机采样批量样本，计算折扣累积奖励$G_{t} = \sum_{l=0}^{\infty}\gamma^{l}\mathcal{R}_{t+l}$
+    \State 估计优势函数$A_{t} = G_{t} - V_{\phi}(\mathbf{s}_{t})$，计算PPO-Clip目标函数$L^{\text{CLIP}}(\theta)$
+    \State 梯度上升更新Actor：$\theta \leftarrow \theta + \alpha_{\theta}\nabla_{\theta}L^{\text{CLIP}}(\theta)$
+    \State 梯度下降更新Critic：$\phi \leftarrow \phi - \alpha_{\phi}\nabla_{\phi}(V_{\phi}(\mathbf{s}_{t})-G_{t})^{2}$
+    \State 反向传播端到端联合优化GNN参数$\Theta_{\text{GNN}}$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{算法复杂度分析}
+所提算法的计算复杂度主要由图神经网络特征提取和深度强化学习决策两部分构成。
+
+在图神经网络特征提取阶段，设用户数为$K$，平均邻居数为$\bar{d}$，隐藏层维度为$D$，消息传递层数为$L$。每层图注意力网络包含三个计算步骤：首先是线性变换，将节点特征映射到新的特征空间，复杂度为$\mathcal{O}(KD^{2})$；其次是边增强注意力计算，利用边特征计算注意力系数，复杂度为$\mathcal{O}(K\bar{d}D)$；最后是特征聚合，根据注意力权重对邻居特征进行加权求和，复杂度为$\mathcal{O}(K\bar{d}D)$。因此，图神经网络单次前向传播的计算复杂度为：
+\begin{equation}
+\mathcal{O}_{\text{GNN}} = \mathcal{O}\left(L \cdot K \cdot \bar{d} \cdot D^{2}\right)
+\end{equation}
+由于采用稀疏图结构（$\bar{d} \ll K$），该复杂度远低于全连接网络的$\mathcal{O}(K^{2}D^{2})$，能够有效控制计算开销。
+
+在深度强化学习决策阶段，Actor网络和Critic网络均为多层感知机结构。设网络层数为$L_{\text{mlp}}$，各层维度为$\{D_{l}\}_{l=1}^{L_{\text{mlp}}}$，则深度强化学习部分的计算复杂度为：
+\begin{equation}
+\mathcal{O}_{\text{DRL}} = \mathcal{O}\left(\sum_{l=1}^{L_{\text{mlp}}-1} D_{l} \cdot D_{l+1}\right) = \mathcal{O}(K \cdot D^{2})
+\end{equation}
+该复杂度与用户数$K$呈线性关系，保证了大规模场景下的可扩展性。
+
+综合上述分析，单时隙决策的总计算复杂度为$\mathcal{O}(L \cdot K \cdot \bar{d} \cdot D^{2} + K \cdot D^{2})$，呈线性于用户数的规模。与传统集中式优化算法相比，所提算法具有显著优势：内点法求解非凸功率控制问题的复杂度为$\mathcal{O}(K^{3.5})$，且需要多次迭代才能收敛；穷举搜索法的复杂度为$\mathcal{O}(2^{K})$，随用户数指数增长。所提算法在推理阶段仅需前向传播，单次决策复杂度为$\mathcal{O}(K^{2})$，且可并行加速，在大规模用户场景下具有显著的计算效率优势，能够满足超可靠低时延通信的毫秒级时延要求。
+
+\section{仿真结果}
 
 \section{本章小结}
-****************************

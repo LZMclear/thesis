@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2026.1.18)  16 FEB 2026 19:11
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2026.1.18)  20 FEB 2026 14:22
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1124,10 +1124,10 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 )
 \Hy@SectionHShift=\skip92
 )
-Package hyperref Info: Option `bookmarksnumbered' set `true' on input line 430.
+Package hyperref Info: Option `bookmarksnumbered' set `true' on input line 442.
 
-Package hyperref Info: Option `colorlinks' set `true' on input line 430.
-Package hyperref Info: Option `plainpages' set `false' on input line 430.
+Package hyperref Info: Option `colorlinks' set `true' on input line 442.
+Package hyperref Info: Option `plainpages' set `false' on input line 442.
  (d:/texlive/texlive/2025/texmf-dist/tex/latex/enumitem/enumitem.sty
 Package: enumitem 2025/02/06 v3.11 Customized lists
 \labelindent=\skip93
@@ -1832,6 +1832,9 @@ Overfull \hbox (32.41971pt too wide) in paragraph at lines 283--286
  []
 
 
+Underfull \vbox (badness 1097) has occurred while \output is active []
+
+
 
 [20]
 Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
@@ -1839,19 +1842,22 @@ put line 303.
 
 
 [21]
-Underfull \vbox (badness 2600) has occurred while \output is active []
-
-
 
 [22]
 File: fig3.png Graphic file (type bmp)
 <fig3.png>
 
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
 
 [23]
+Underfull \vbox (badness 7558) has occurred while \output is active []
+
+
 
 [24]
-Underfull \vbox (badness 1107) has occurred while \output is active []
+Underfull \vbox (badness 2376) has occurred while \output is active []
 
 
 
@@ -1910,16 +1916,52 @@ File: fig9.pdf Graphic file (type pdf)
 第四章
 
 
-[33])
+[33]
+Overfull \hbox (44.37967pt too wide) in paragraph at lines 19--21
+\OML/cmm/m/it/12.045 Q[]\OT1/cmr/m/n/12.045 (\OMS/cmsy/m/n/12.045 ^^A\OT1/cmr/m
+/n/12.045 )$ \TU/SimSun(0)/m/n/12.045 为 高 斯 $\OML/cmm/m/it/12.045 Q$ \TU/SimSun
+(0)/m/n/12.045 函 数 的 反 函 数，| $\OML/cmm/m/it/12.045 "$ \TU/SimSun(0)/m/n/12.045 
+为 目 标 误 块 率。|  高 斯 $\OML/cmm/m/it/12.045 Q$ \TU/SimSun(0)/m/n/12.045 函 数 定 义 为 
+$\OML/cmm/m/it/12.045 Q\OT1/cmr/m/n/12.045 (\OML/cmm/m/it/12.045 x\OT1/cmr/m/n/
+12.045 ) = [] [][] [](\OMS/cmsy/m/n/12.045 ^^@\OML/cmm/m/it/12.045 t[]\OT1/cmr/
+m/n/12.045 /2)\OML/cmm/m/it/12.045 dt$\TU/SimSun(0)/m/n/12.045 。| 
+ []
+
+
 
 [34]
+Underfull \vbox (badness 1009) has occurred while \output is active []
+
+
+
+[35]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+
+[36]
+
+[37]
+
+[38]
+
+[39]
+
+[40])
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+
+[41]
+
+[42]
 \openout2 = `chapters/chapter5.aux'.
 
  (./chapters/chapter5.tex
 第五章
 )
 
-[35
+[43
 
 
 
@@ -1930,7 +1972,7 @@ File: fig9.pdf Graphic file (type pdf)
 
  (./chapters/chapter6.tex
 
-[36
+[44
 
 
 
@@ -1940,12 +1982,12 @@ File: fig9.pdf Graphic file (type pdf)
 第六章
 )
 
-[37]
+[45]
 \openout2 = `reference/reference.aux'.
 
  (./reference/reference.tex
 
-[38
+[46
 
 
 
@@ -1956,24 +1998,24 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 
-[39]
+[47]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 
-[40]
+[48]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 
-[41])
+[49])
 
-[42]
+[50]
 \openout2 = `chapters/thanks.aux'.
 
  (./chapters/thanks.tex)
 
-[43
+[51
 
 
 
@@ -1986,7 +2028,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
  (./chapters/pub.tex
 
-[44
+[52
 
 
 
@@ -1994,12 +2036,12 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 ])
 
-[45]
+[53]
 \openout2 = `chapters/app2.aux'.
 
  (./chapters/app2.tex
 
-[46
+[54
 
 
 
@@ -2007,12 +2049,12 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 ])
 
-[47]
+[55]
 \openout2 = `chapters/DeclareOriginal.aux'.
 
  (./chapters/DeclareOriginal.tex
 
-[48
+[56
 
 
 
@@ -2020,7 +2062,7 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 ])
 
-[49]
+[57]
 
 Package natbib Warning: There were undefined citations.
 
@@ -2044,16 +2086,22 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package rerunfilecheck Info: File `Thesis_d1.out' has not changed.
-(rerunfilecheck)             Checksum: 9AE0B25C58FAC4B681B4A16AC7609519;6358.
+
+Package rerunfilecheck Warning: File `Thesis_d1.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `Thesis_d1.out':
+(rerunfilecheck)             Before: 6C71204B63356FB9EE769DEDBA657D6B;7570
+(rerunfilecheck)             After:  441C20BBEF3AE2EEA943FD657B37EBFB;7680.
  ) 
 Here is how much of TeX's memory you used:
- 38573 strings out of 475795
- 870657 string characters out of 5773172
- 1201930 words of memory out of 5000000
- 60712 multiletter control sequences out of 15000+600000
- 580205 words of font info for 205 fonts, out of 8000000 for 9000
+ 38586 strings out of 475795
+ 870842 string characters out of 5773172
+ 1204542 words of memory out of 5000000
+ 60723 multiletter control sequences out of 15000+600000
+ 581039 words of font info for 208 fonts, out of 8000000 for 9000
  36 hyphenation exceptions out of 8191
  107i,18n,125p,1204b,1363s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on Thesis_d1.pdf (67 pages).
+Output written on Thesis_d1.pdf (75 pages).
