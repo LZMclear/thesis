@@ -158,6 +158,18 @@ footskip=1.75cm% 没用页脚,将正文底部到页脚底部的距离 0cm %
 %% =================================================================
 
 \parskip 0.5ex plus 0.25ex minus 0.25ex    %段落间距离,ex表示小写字母x的高度
+
+%% 设置公式与正文的间距
+\setlength{\abovedisplayskip}{6pt plus 2pt minus 2pt}
+\setlength{\belowdisplayskip}{6pt plus 2pt minus 2pt}
+\setlength{\abovedisplayshortskip}{3pt plus 1pt minus 1pt}
+\setlength{\belowdisplayshortskip}{3pt plus 1pt minus 1pt}
+
+%% 设置浮动体（图、表、算法）与正文的间距
+\setlength{\floatsep}{12pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{12pt plus 2pt minus 2pt}
+\setlength{\intextsep}{12pt plus 2pt minus 2pt}
+
 %% Command -- Clear Double Page
 \def\cleardoublepage{\clearpage\if@twoside \ifodd\c@page\else
   \thispagestyle{empty}%
@@ -431,9 +443,9 @@ footskip=1.75cm% 没用页脚,将正文底部到页脚底部的距离 0cm %
 
 %% enumerate 列表环境间距调节
 \usepackage{enumitem}
-% \setenumerate[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
-% \setitemize[1]{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=0pt}
-% \setdescription{itemsep=0pt,partopsep=0pt,parsep=\parskip,topsep=5pt}
+\setenumerate[1]{itemsep=2pt,partopsep=0pt,parsep=0pt,topsep=6pt}
+\setitemize[1]{itemsep=2pt,partopsep=0pt,parsep=0pt,topsep=6pt}
+\setdescription{itemsep=2pt,partopsep=0pt,parsep=0pt,topsep=6pt}
 
 %_  参考文献风格 
 \bibliographystyle{GBT7714-2005NLang}

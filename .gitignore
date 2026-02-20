@@ -1,0 +1,44 @@
+# LaTeX编译生成的辅助文件
+*.aux
+*.log
+*.out
+*.toc
+*.lot
+*.lof
+*.bbl
+*.blg
+*.synctex.gz
+
+Thesis_d1.pdf
+
+# 编辑器生成的文件
+.vscode/
+.idea/
+
+# 日志文件
+*.log
+
+# 其他不需要版本控制的文件
+chapters/*.log
+chapters/*.aux
+chapters/*.bbl
+chapters/*.blg
+chapters/*.synctex.gz
+reference/*.log
+reference/*.aux
+reference/*.synctex.gz
+reference/*.pdf
+paper/*.log
+paper/*.aux
+paper/*.out
+paper/*.synctex.gz
+paper/*.pdf
+
+# 个人文档和参考资料
+*.docx
+全文翻译.docx
+基于Lyapunov优化的感知数据协作卸载机制研究_李茗.pdf
+
+
+# README.md保留，但其他markdown文件可能需要忽略
+# 算法设计要求.md保留，因为它指导算法设计
