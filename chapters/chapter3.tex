@@ -1,13 +1,16 @@
 \chapter{图神经网络辅助深度强化学习的非理想硬件去蜂窝大规模 MIMO 系统}\label{chap:MIMOLP}
-在去蜂窝大规模多输入多输出（CF‑mMIMO）系统中，通过密集部署大量接入点（AP），可实现无缝通信覆盖，显著提升用户频谱效率（SE）与系统总容量。然而，该方案的实际部署面临高昂的成本压力，并不可避免地引入非理想硬件因素。针对上述挑战，本文系统研究了在用户设备（UE）端采用非线性功率放大器（PA）及接入点端配置低分辨率模数转换器（ADC）条件下，上行CF‑mMIMO系统的可达速率性能。
 
-具体而言，本文推导了上行用户可达速率的闭式表达式，系统分析了接入点数量、用户密度、接入点天线数及ADC分辨率等多重因素的影响。为有效抑制用户间干扰并提升系统和速率，提出了一种基于图神经网络（GNN）辅助的演员‑评论家（DMAGNN‑AC）功率分配算法。该框架突破了深度强化学习在高维非结构化状态空间下的表征瓶颈，并实现了具备物理可解释性的特征嵌入。与全功率发射方案相比，所提功率分配策略可使系统速率提升近1.5倍。进一步地，为缓解低分辨率ADC对速率的不利影响，设计了多智能体深度Q集成网络（MADQIN）以优化ADC分辨率分配策略。仿真结果充分验证了所提方案的有效性。
+去蜂窝大规模多输入多输出（Cell-Free Massive MIMO，CF‑mMIMO）系统通过密集部署大量接入点（Access Point，AP），可实现无缝通信覆盖，显著提升用户频谱效率与系统总容量。然而，该架构在实际部署中面临高昂的成本压力，且不可避免地引入非理想硬件因素。针对上述挑战，本章系统研究了用户设备（User Equipment，UE）端配置非线性功率放大器（Power Amplifier，PA）及接入点端采用低分辨率模数转换器（Analog-to-Digital Converter，ADC）条件下，上行CF‑mMIMO系统的可达速率性能。
+
+具体而言，本章首先推导了上行用户可达速率的闭式表达式，系统分析了接入点数量、用户密度、接入点天线数目及ADC分辨率等关键参数对系统性能的影响。为有效抑制用户间干扰并提升系统和速率，提出了一种基于图神经网络（Graph Neural Network，GNN）辅助的演员-评论家（Actor-Critic）功率分配算法，即DMAGNN-AC算法。该框架突破了深度强化学习在高维非结构化状态空间下的表征瓶颈，实现了具备物理可解释性的特征嵌入。与全功率发射方案相比，所提功率分配策略可使系统速率提升近1.5倍。进一步地，为缓解低分辨率ADC对系统速率的不利影响，设计了多智能体深度Q集成网络（Multi-Agent Deep Q-Integration Network，MADQIN）以优化ADC分辨率分配策略。仿真结果充分验证了所提方案的有效性。
 
 \section{引言}
-在CF‑mMIMO系统中，随着AP大规模部署，硬件成本与功耗随天线数量线性增长。一方面，采用低成本收发机替代高精度器件可有效降低系统成本，但实际应用中此类方案易使射频（RF）链路暴露于各类硬件损伤下。另一方面，低分辨率模数转换器（ADC）的应用为实现低成本、低功耗CF‑mMIMO系统提供了可行路径，但对信道建模与优化算法提出了更高要求。
-为缓解硬件损伤导致的性能退化，通过优化功率分配以降低用户间干扰成为有效手段。传统优化算法如分数规划（FP）与加权最小均方误差（WMMSE）虽在理论上具备优异性能，但其高昂的计算复杂度难以满足实际部署需求，且难以全面适应实际通信场景下的硬件损伤与信道衰落。相比之下，无模型机器学习方法，尤其是深度强化学习（DRL），凭借较低的在线计算复杂度及无需先验训练数据集等优势，成为当前研究热点。然而，传统DRL难以有效捕捉用户间复杂干扰关系与空间相关性，常导致优化效率受限。
 
-为突破上述瓶颈，近年来相关研究引入图表示方法来建模多用户系统中的干扰关系与空间相关性。图神经网络（GNN）能够将原始信道状态信息（CSI）映射为低维图嵌入，显式保留用户间空间相关特征，从而为DRL提供更具表征能力的状态空间。同时，GNN对动态图结构（如用户移动导致的拓扑时变）的处理能力与DRL的环境交互机制天然兼容，二者深度融合可显著提升系统的移动性管理与网络协同优化能力。基于此，本文提出一种高性价比、工程可实现的CF‑mMIMO通信方案，充分挖掘系统性能潜力，并构建自适应网络优化框架，通过解耦功率分配问题，有效克服传统DRL在高维非结构化状态空间下的表征瓶颈。
+在CF‑mMIMO系统中，随着AP大规模部署，硬件成本与功耗随天线数目线性增长。一方面，采用低成本收发机替代高精度器件可有效降低系统成本，但实际应用中此类方案易使射频（Radio Frequency，RF）链路暴露于各类硬件损伤之下。另一方面，低分辨率ADC的应用为实现低成本、低功耗CF‑mMIMO系统提供了可行路径，但对信道建模与优化算法提出了更高要求。
+
+为缓解硬件损伤导致的性能退化，通过优化功率分配以降低用户间干扰成为有效手段。传统优化算法如分数规划（Fractional Programming，FP）与加权最小均方误差（Weighted Minimum Mean Square Error，WMMSE）虽在理论上具备优异性能，但其高昂的计算复杂度难以满足实际部署需求，且难以全面适应实际通信场景下的硬件损伤与信道衰落特性。相比之下，无模型机器学习方法，尤其是深度强化学习（Deep Reinforcement Learning，DRL），凭借较低的在线计算复杂度及无需先验训练数据集等优势，成为当前研究热点。然而，传统DRL难以有效捕捉用户间复杂干扰关系与空间相关性，常导致优化效率受限。
+
+为突破上述瓶颈，近年来相关研究引入图表示方法来建模多用户系统中的干扰关系与空间相关性。图神经网络能够将原始信道状态信息（Channel State Information，CSI）映射为低维图嵌入，显式保留用户间空间相关特征，从而为DRL提供更具表征能力的状态空间。同时，GNN对动态图结构（如用户移动导致的拓扑时变）的处理能力与DRL的环境交互机制天然兼容，二者深度融合可显著提升系统的移动性管理与网络协同优化能力。基于此，本章提出一种高性价比、工程可实现的CF‑mMIMO通信方案，充分挖掘系统性能潜力，并构建自适应网络优化框架，通过解耦功率分配问题，有效克服传统DRL在高维非结构化状态空间下的表征瓶颈。
 
 \begin{figure}
 \centering
@@ -16,27 +19,30 @@
 \label{fig1}
 \end{figure}
 
-\section{模型设计}
-在本文中，我们考虑了一个如图 3-1 所示的上行链路 CF-mMIMO 系统，该系统由 M $N$-天线AP和 K 个单天线UE组成。所有AP均通过回程链路与中央处理单元（CPU）相连。该系统采用时分双工（TDD）协议进行数据传输。由于本文仅关注上行数据传输阶段，因此相干时间间隔被分为两个阶段：1）上行链路训练；2）上行数据传输。
+\section{系统模型}
+
+本章考虑如图\ref{fig1}所示的上行CF-mMIMO系统，该系统由$M$个配备$N$根天线的AP和$K$个单天线UE组成。所有AP均通过回程链路与中央处理单元（Central Processing Unit，CPU）相连。系统采用时分双工（Time Division Duplexing，TDD）协议进行数据传输。由于本章仅关注上行数据传输阶段，相干时间间隔被划分为两个阶段：1）上行链路训练；2）上行数据传输。
 
 \subsection{信道估计}
-本节采用无相关瑞利衰落信道模型[25]，第$m$个AP与第$k$个UE之间的信道增益表示为：
+
+本节采用无相关瑞利衰落信道模型\cite{paper25}，第$m$个AP与第$k$个UE之间的信道增益表示为
 \begin{equation}
 \mathbf{g}_{mk} = \beta_{mk}^{1/2} \mathbf{h}_{mk},
 \end{equation}
-它同时考虑了大规模衰落效应$\beta_{mk}$与小规模衰落效应$\mathbf{h}_{mk}$。其中，$\beta_{mk}$综合考虑了几何衰减与阴影衰落，并且假定其在相干时间内保持不变。$\mathbf{h}_{mk}$的元素是具有瑞利分布包络的复高斯随机变量。设$\tau_\text{c}$为相干间隔长度，$\tau_\text{p}$表示每个相干间隔的上行训练时间。受训练时长限制，本文采用$\tau_\text{p}<K$的非正交导频，并将使用相同导频序列的UE集合定义为Pk。上行训练阶段，$K$个用户同时向所有AP发送非正交导频序列，第$k$个UE的导频信号可以表示为$\sqrt{\tau_\text{p}}\boldsymbol{\varphi}_k\in\mathbb{C}^{\tau_\text{p}\times1}$，其中$\left\|\boldsymbol{\varphi}_k\right\|^2=1$。
+该模型同时考虑了大尺度衰落系数$\beta_{mk}$与小尺度衰落向量$\mathbf{h}_{mk}$。其中，$\beta_{mk}$综合考虑了几何衰减与阴影衰落，并假定其在相干时间内保持不变；$\mathbf{h}_{mk}$的元素服从独立同分布的复高斯随机分布，即具有瑞利分布包络。设$\tau_\text{c}$为相干时间长度，$\tau_\text{p}$为每个相干时间的上行训练长度。受训练时长限制，本章采用$\tau_\text{p}<K$的非正交导频，并将使用相同导频序列的UE集合定义为$\mathcal{P}_k$。上行训练阶段，$K$个UE同时向所有AP发送非正交导频序列，第$k$个UE的导频信号可表示为$\sqrt{\tau_\text{p}}\boldsymbol{\varphi}_k\in\mathbb{C}^{\tau_\text{p}\times1}$，其中$\left\|\boldsymbol{\varphi}_k\right\|^2=1$。
 
-本文采用更为精细的硬件非线性确定性行为模型\cite{paper1}，旨在更准确地建模导致硬件损伤的主要因素。该模型能够以少量参数表征各类硬件损伤所产生的物理影响。它将硬件输入输出关系描述为\cite{paper2}：
+为准确建模硬件损伤，本章采用硬件非线性确定性行为模型\cite{paper1}，该模型能够以少量参数表征各类硬件损伤所产生的物理影响。硬件输入输出关系可描述为\cite{paper2}
 \begin{equation}
-x_\text{out}=\sum_{i=0}^{N_p}a_{2i+1}x_\text{in}\left | x_\text{in} \right |^{2i}
+x_\text{out}=\sum_{i=0}^{N_p}a_{2i+1}x_\text{in}\left | x_\text{in} \right |^{2i},
 \end{equation}
-其中$a_{2i+1}$为模型复系数，$2N_p+1$为非线性阶数。该模型综合考虑了功率放大器、本地振荡器、混频器以及其他硬件组件的非线性特性。需要特别注意的是，由于带外存在于偶次项，准无记忆多项式中仅包含奇次项以表示带内失真。此外，三次项即可捕捉射频放大器主要非线性来源\cite{paper3,paper4}，因此本文采用Np=1的三次多项式模型。已有研究表明三次多项式模型可有效逼近实际非线性特性\cite{paper5,paper6}。
-经功率放大器非线性作用后，第$k$个UE输出信号可表示为：
+其中$a_{2i+1}$为模型复系数，$2N_p+1$为非线性阶数。该模型综合考虑了功率放大器、本地振荡器、混频器以及其他硬件组件的非线性特性。需要特别注意的是，由于带外分量存在于偶次项，准无记忆多项式中仅包含奇次项以表示带内失真。此外，三次项即可捕捉射频放大器主要非线性来源\cite{paper3,paper4}，因此本章采用$N_p=1$的三次多项式模型。已有研究表明，三次多项式模型可有效逼近实际非线性特性\cite{paper5,paper6}。
+
+经功率放大器非线性作用后，第$k$个UE输出信号可表示为
 \begin{equation}
 \label{eqn-1}
 \boldsymbol{\phi}_k = \underset{\tilde{a}_1}{\underbrace{a_1\sqrt{\tau_\text{p}}}}\boldsymbol{\varphi}_k + \underset{\tilde{a}_3}{\underbrace{a_3\tau_\text{p}\sqrt{\tau_\text{p}}}}\boldsymbol{\varphi}_k\left\|\boldsymbol{\varphi}_k\right\|^2,
 \end{equation}
-其中$\tilde{a}_1\triangleq a_1\sqrt{\tau_\text{p}}$，$\tilde{a}_3\triangleq a_3\tau_\text{p}\sqrt{\tau_\text{p}}$。第$m$个AP接收到的导频矩阵为：
+其中$\tilde{a}_1\triangleq a_1\sqrt{\tau_\text{p}}$，$\tilde{a}_3\triangleq a_3\tau_\text{p}\sqrt{\tau_\text{p}}$。第$m$个AP接收到的导频矩阵为
 \begin{equation}
 \label{eqn-2}
 \begin{aligned}
@@ -44,29 +50,30 @@ x_\text{out}=\sum_{i=0}^{N_p}a_{2i+1}x_\text{in}\left | x_\text{in} \right |^{2i
 = \sqrt{\rho_\text{p}}\sum_{k=1}^{K}(\tilde{a}_1\mathbf{g}_{mk}\boldsymbol{\varphi}_k^H + \tilde{a}_3\mathbf{g}_{mk}\boldsymbol{\varphi}_k^H\left\|\boldsymbol{\varphi}_k\right\|^2) + \mathbf{W}_{\text{p},m},
 \end{aligned}
 \end{equation}
-其中$\rho_\text{p}$为导频信号归一化信噪比（SNR），$\mathbf{W}_{\text{p},m}\in\mathbb{C}^{N\times\tau_\text{p}}$为第$m$个AP处加性高斯白噪声（AWGN）矩阵，其第$\varsigma$列满足$[\mathbf{W}_{\text{p},m}]_\varsigma\sim\mathcal{CN}(\mathbf{0},\mathbf{I}_N)$。
-为分析低分辨率ADC对系统性能的影响，本文采用非均匀量化器并引入加性量化噪声模型（AQNM），将量化过程引入的失真描述为一个高斯随机变量。已有研究验证该模型在中低信噪比下具有足够的建模精度\cite{paper7,paper8}。结合式\eqref{eqn-2}，第$m$个AP处ADC的输出可表示为：
+其中$\rho_\text{p}$为导频信号归一化信噪比（Signal-to-Noise Ratio，SNR），$\mathbf{W}_{\text{p},m}\in\mathbb{C}^{N\times\tau_\text{p}}$为第$m$个AP处加性高斯白噪声（Additive White Gaussian Noise，AWGN）矩阵，其第$\varsigma$列满足$[\mathbf{W}_{\text{p},m}]_\varsigma\sim\mathcal{CN}(\mathbf{0},\mathbf{I}_N)$。
+
+为分析低分辨率ADC对系统性能的影响，本章采用加性量化噪声模型（Additive Quantization Noise Model，AQNM），将量化过程引入的失真建模为与信号独立的高斯随机变量。已有研究验证该模型在中低信噪比下具有足够的建模精度\cite{paper7,paper8}。结合式\eqref{eqn-2}，第$m$个AP处ADC的输出可表示为
 \begin{align}
 \label{eqn-3}
 \tilde{\mathbf{Y}}_{\text{p},m}\triangleq\alpha_m\mathbf{Y}_{\text{p},m}+\tilde{\mathbf{W}}_{\text{p},m}
 &=\alpha_m\sqrt{\rho_\text{p}}\sum_{k=1}^{K}(\tilde{a}_1\mathbf{g}_{mk}\boldsymbol{\varphi}_k^H+\tilde{a}_3\mathbf{g}_{mk}\boldsymbol{\varphi}_k^H\left\|\boldsymbol{\varphi}_k\right\|^2)+\alpha_m\mathbf{W}_{\text{p},m}+\tilde{\mathbf{W}}_{\text{p},m},
 \end{align}
-其中$\alpha_m$由量化比特数$b_m$决定，表示第$m$个AP的ADC量化精度\cite{paper9}。$\tilde{\mathbf{W}}_{\text{p},m}$为加性高斯量化噪声，与$\mathbf{Y}_{\text{p},m}$互不相关，其协方差矩阵为：
+其中$\alpha_m$由量化比特数$b_m$决定，表示第$m$个AP的ADC量化精度\cite{paper9}；$\tilde{\mathbf{W}}_{\text{p},m}$为加性高斯量化噪声，与$\mathbf{Y}_{\text{p},m}$互不相关，其协方差矩阵为
 \begin{align}
 \label{eqn-4}
 \mathbf{R}_{\tilde{\mathbf{W}}_{\text{p},m}}=\mathbb{E}\{\tilde{\mathbf{W}}_{\text{p},m}\tilde{\mathbf{W}}_{\text{p},m}^H\}
 ={\alpha_m}(1-\alpha_m)\text{diag}(\mathbb{E}\{\mathbf{Y}_{\text{p},m}\mathbf{Y}_{\text{p},m}^H\}).
 \end{align}
-信号$\tilde{\mathbf{Y}}_{\text{p},m}$量化后投影至$\boldsymbol{\varphi}_k$得：
+信号$\tilde{\mathbf{Y}}_{\text{p},m}$量化后投影至$\boldsymbol{\varphi}_k$得
 \begin{align}
 \label{eqn-5}
 \check{\mathbf{y}}_{\text{p},mk}\triangleq\tilde{\mathbf{Y}}_{\text{p},m}\boldsymbol{\varphi}_k
-&=\alpha_m\sqrt{\rho_\text{p}}\sum_{k'\in\mathcal{P}_k}^{K}(\tilde{a}_1+\tilde{a}_3\tau_\text{p})\mathbf{g}_{mk}
-\quad+\alpha_m\mathbf{W}_{\text{p},m}\boldsymbol{\varphi}_k+\tilde{\mathbf{W}}_{\text{p},m}\boldsymbol{\varphi}_k.
+&=\alpha_m\sqrt{\rho_\text{p}}\sum_{k'\in\mathcal{P}_k}^{K}(\tilde{a}_1+\tilde{a}_3\tau_\text{p})\mathbf{g}_{mk'}+\alpha_m\mathbf{W}_{\text{p},m}\boldsymbol{\varphi}_k+\tilde{\mathbf{W}}_{\text{p},m}\boldsymbol{\varphi}_k.
 \end{align}
 
-据此可得如下引理：
-采用最小均方误差（MMSE）方法，信道向量$\mathbf{g}_{mk}$的估计值为：
+据此可得如下引理。
+
+采用最小均方误差（Minimum Mean Square Error，MMSE）方法，信道向量$\mathbf{g}_{mk}$的估计值为
 \begin{equation}
 \label{eqn-6}
 \hat{\mathbf{g}}_{mk}=c_{mk}\check{\mathbf{y}}_{\text{p},mk},
@@ -74,105 +81,106 @@ x_\text{out}=\sum_{i=0}^{N_p}a_{2i+1}x_\text{in}\left | x_\text{in} \right |^{2i
 其中
 \begin{align}\label{eqn-7}
 {c_{mk}}=\mathbb{E}\{\mathbf{g}_{mk}^H\check{\mathbf{y}}_{\text{p},mk}\}\left(\mathbb{E}\{\check{\mathbf{y}}_{\text{p},mk}^H\check{\mathbf{y}}_{\text{p},mk}\}\right)^{-1}
-&=\frac{\sqrt{\tau_\text{p}\rho_\text{p}}\beta_{mk}(a_1+a_3\tau_\text{p})}{\tau_\text{p}\rho_\text{p}\sum_{k'\in\mathcal{P}_k}^{K}(a_1+a_3\tau_\text{p})^2\beta_{mk}+1}.
+&=\frac{\sqrt{\tau_\text{p}\rho_\text{p}}\beta_{mk}(a_1+a_3\tau_\text{p})}{\tau_\text{p}\rho_\text{p}\sum_{k'\in\mathcal{P}_k}^{K}(a_1+a_3\tau_\text{p})^2\beta_{mk'}+1}.
 \end{align}
-信道估计第$n$个分量的均方值可以表示为：
+信道估计第$n$个分量的均方值可表示为
 \begin{align}
 \label{eqn-8}
 \gamma_{mk}=\mathbb{E}\{|[\hat{\mathbf{g}}_{mk}]_n|^2\}
-&=\frac{\tau_\text{p}\rho_\text{p}\alpha_m\beta_{mk}^2(a_1+a_3\tau_\text{p})^2}{\tau_\text{p}\rho_\text{p}\sum_{k'\in\mathcal{P}_k}^{K}(a_1+a_3\tau_\text{p})^2\beta_{mk}+1}.
+&=\frac{\tau_\text{p}\rho_\text{p}\alpha_m\beta_{mk}^2(a_1+a_3\tau_\text{p})^2}{\tau_\text{p}\rho_\text{p}\sum_{k'\in\mathcal{P}_k}^{K}(a_1+a_3\tau_\text{p})^2\beta_{mk'}+1}.
 \end{align}
-令$\tilde{\mathbf{g}}_{mk}=\mathbf{g}_{mk}-\hat{\mathbf{g}}_{mk}$表示信道估计误差。根据MMSE估计性质，$\tilde{\mathbf{g}}_{mk}$与$\hat{\mathbf{g}}_{mk}$相互独立且服从复高斯分布。因此，信道估计误差$\tilde{\mathbf{g}}_{mk}$各元素均方误差满足$[\tilde{\mathbf{g}}_{mk}]_n\sim\mathcal{CN}(0,\beta_{mk}-\gamma_{mk})$。
+
+令$\tilde{\mathbf{g}}_{mk}=\mathbf{g}_{mk}-\hat{\mathbf{g}}_{mk}$表示信道估计误差。根据MMSE估计性质，$\tilde{\mathbf{g}}_{mk}$与$\hat{\mathbf{g}}_{mk}$相互独立且服从复高斯分布。因此，信道估计误差$\tilde{\mathbf{g}}_{mk}$各元素满足$[\tilde{\mathbf{g}}_{mk}]_n\sim\mathcal{CN}(0,\beta_{mk}-\gamma_{mk})$。
 
 \subsection{上行数据传输}
 
-在上行数据传输阶段，所有UEs同时向APs发送数据 $q_k$，其满足 $\mathbb{E}\{|q_k|^2\}=1,\forall k$。在UE侧PA的非线性作用后，第 $k$ 个UE的输出信号为
+在上行数据传输阶段，所有UE同时向AP发送数据$q_k$，其满足$\mathbb{E}\{|q_k|^2\}=1,\forall k$。经UE侧PA非线性作用后，第$k$个UE的输出信号为
 \begin{align}
 \label{eqn-9}{y_k} = \sqrt {{\rho _\text{u}}} \left( {{a_1}\sqrt {{\eta _k}} {q_k} + {a_3}\sqrt {{\eta _k}} {q_k}{{\left| {\sqrt {{\eta _k}} {q_k}} \right|}^2}} \right)= \sqrt {{\rho _\text{u}}} \left( {{\tilde{a}_{1k}}{q_k} + {\tilde{a}_{3k}}{q_k}{{\left| {{q_k}} \right|}^2}} \right),
 \end{align}
-其中，$\rho_\text{u}$ 表示每个UE的最大归一化发射功率，$\tilde{a}_{1k} \triangleq a_1\sqrt{\eta_k}$，$\tilde{a}_{3k} \triangleq a_3\eta_k\sqrt{\eta_k}$。此外，功率控制系数 $\eta_k$（$\forall k$）满足 $\mathbb{E}\left\{|y_k|^2\right\} \le \rho_\text{u}$。因此，该约束可简化为
+其中，$\rho_\text{u}$表示每个UE的最大归一化发射功率，$\tilde{a}_{1k} \triangleq a_1\sqrt{\eta_k}$，$\tilde{a}_{3k} \triangleq a_3\eta_k\sqrt{\eta_k}$。此外，功率控制系数$\eta_k$（$\forall k$）满足$\mathbb{E}\left\{|y_k|^2\right\} \le \rho_\text{u}$。因此，该约束可简化为
 \begin{equation}\label{eqn-10}
 {\left| {{a_1}} \right|^2}{\eta _k} + 2(a_1^ * {a_3} + {a_1}a_3^ * )\eta _k^2 + 6{\left| {{a_3}} \right|^2}\eta _k^3 \le 1,  \forall k.
 \end{equation}
-第 \(m\) 个AP接收到的复基带信号可表示为
+第$m$个AP接收到的复基带信号可表示为
 \begin{equation}\label{eqn-11}
-{{\bf{y}}_{\text{u},m}} = \sqrt {{\rho _\text{u}}} \sum_{k = 1}^K ({\tilde{a}_{1k}}{{\bf{g}}_{mk}}{q_k} + {\tilde{a}_{3k}}{{\bf{g}}_{mk}}{q_k}{\left| {{q_k}} \right|^2}) + {\bf{w}}_{\text{u},m},
+{{\mathbf{y}}_{\text{u},m}} = \sqrt {{\rho _\text{u}}} \sum_{k = 1}^K ({\tilde{a}_{1k}}{{\mathbf{g}}_{mk}}{q_k} + {\tilde{a}_{3k}}{{\mathbf{g}}_{mk}}{q_k}{\left| {{q_k}} \right|^2}) + {\mathbf{w}}_{\text{u},m},
 \end{equation}
-其中，$\mathbf{w}_{\text{u},m}\sim \mathcal{CN}(\mathbf{0},\mathbf{I}_N)$ 表示加性噪声。随后，第 \(m\) 个AP的接收信号经ADC量化，其量化输出可表示为：
-\begin{align}\label{eqn-12}{{\bf{\tilde y}}_{\text{u},m}} &= {\alpha _m}{{\bf{y}}_{\text{u},m}} + {{\bf{\tilde w}}_{\text{u},m}} \nonumber\\
-&= {\alpha _m}\sqrt {{\rho _\text{u}}} \sum_{k = 1}^K ({\tilde{a}_{1k}}{{\bf{g}}_{mk}}{q_k} + {\tilde{a}_{3k}}{{\bf{g}}_{mk}}{q_k}{\left| {{q_k}} \right|^2}) + {\alpha _m}{{\bf{w}}_{\text{u},m}} + {{\bf{\tilde w}}_{\text{u},m}},
+其中，$\mathbf{w}_{\text{u},m}\sim \mathcal{CN}(\mathbf{0},\mathbf{I}_N)$表示加性噪声。随后，第$m$个AP的接收信号经ADC量化，其量化输出可表示为
+\begin{align}\label{eqn-12}{\mathbf{\tilde y}_{\text{u},m}} = {\alpha _m}{{\mathbf{y}}_{\text{u},m}} + {{\mathbf{\tilde w}}_{\text{u},m}} = {\alpha _m}\sqrt {{\rho _\text{u}}} \sum_{k = 1}^K ({\tilde{a}_{1k}}{{\mathbf{g}}_{mk}}{q_k} + {\tilde{a}_{3k}}{{\mathbf{g}}_{mk}}{q_k}{\left| {{q_k}} \right|^2}) + {\alpha _m}{{\mathbf{w}}_{\text{u},m}} + {{\mathbf{\tilde w}}_{\text{u},m}},
 \end{align}
-其中，$\boldsymbol{\tilde w}_{\text{u},m}$ 表示量化噪声，其协方差矩阵可表示为：
-\begin{align}{\mathbf{R}_{{{{\bf{\tilde w}}}_{\text{u},m}}}} \approx {\alpha _m}(1 - {\alpha _m})\text{diag}(\mathbb{E}\left\{ {{{\bf{y}}_{\text{u},m}}{\bf{y}}_{\text{u},m}^H} \right\}).\end{align}
+其中，$\boldsymbol{\tilde w}_{\text{u},m}$表示量化噪声，其协方差矩阵可表示为
+\begin{align}{\mathbf{R}_{{\mathbf{\tilde w}_{\text{u},m}}}} \approx {\alpha _m}(1 - {\alpha _m})\text{diag}(\mathbb{E}\left\{ {{{\mathbf{y}}_{\text{u},m}}{\mathbf{y}}_{\text{u},m}^H} \right\}).\end{align}
 
-为检测 $q_k$，每个AP采用分布式方式，通过低复杂度的匹配滤波器合并计算本地数据估计值，随后经前传链路将信号汇总至中央处理单元（CPU）进行聚合与译码。因此，中央处理单元处的接收信号可表示为：
+为检测$q_k$，每个AP采用分布式处理方式，通过低复杂度的匹配滤波器合并计算本地数据估计值，随后经前传链路将信号汇总至CPU进行聚合与译码。因此，CPU处的接收信号可表示为
 \begin{align}\label{eqn-14}
-{r_{\text{u},k}} &= \sum_{m = 1}^M {\bf{\hat{g}}}_{mk}^H{{{\bf{\tilde y}}}_{\text{u},m}}\nonumber\\
-& = \sqrt {{\rho _\text{u}}}  \sum_{m = 1}^M {\alpha _m}\sum_{k' = 1}^K {\bf{\hat g}}_{mk}^H{\tilde{a}_{1k'}}{{\bf{g}}_{mk'}}q_{k'}  
-\nonumber\\& \quad+ \sqrt {{\rho _\text{u}}} \sum_{m = 1}^M {\alpha _m}\sum_{k' = 1}^K {\bf{\hat g}}_{mk}^H{\tilde{a}_{3k'}}{{\bf{g}}_{mk'}}q_{k'} {\left| {q_{k'} } \right|^2}
-+ \sum_{m = 1}^M {\bf{\hat g}}_{mk}^H{\alpha _m}{{\bf{w}}_{\text{u},m}} + \sum_{m = 1}^M {{{\bf{\hat g}}}^H_{mk}}{{{\bf{\tilde w}}}_{\text{u},m}}.
+{r_{\text{u},k}} &= \sum_{m = 1}^M {\mathbf{\hat{g}}}_{mk}^H{{\mathbf{\tilde y}}_{\text{u},m}}\nonumber\\
+& = \sqrt {{\rho _\text{u}}}  \sum_{m = 1}^M {\alpha _m}\sum_{k' = 1}^K {\mathbf{\hat g}}_{mk}^H{\tilde{a}_{1k'}}{{\mathbf{g}}_{mk'}}q_{k'}  
+\nonumber\\& \quad+ \sqrt {{\rho _\text{u}}} \sum_{m = 1}^M {\alpha _m}\sum_{k' = 1}^K {\mathbf{\hat g}}_{mk}^H{\tilde{a}_{3k'}}{{\mathbf{g}}_{mk'}}q_{k'} {\left| {q_{k'} } \right|^2}
++ \sum_{m = 1}^M {\mathbf{\hat g}}_{mk}^H{\alpha _m}{{\mathbf{w}}_{\text{u},m}} + \sum_{m = 1}^M {{\mathbf{\hat g}}^H_{mk}}{{\mathbf{\tilde w}}_{\text{u},m}}.
 \end{align}	
-随后，基于 $r_{\text{u},k}$ 检测 $q_k$ 的值。在下一节中，我们将推导用户可达速率的封闭表达式。
 
-\subsection{可实现速率分析}
+随后，基于$r_{\text{u},k}$检测$q_k$的值。下一节将推导用户可达速率的闭式表达式。
 
-本节在综合考虑非线性PA与低分辨率ADC影响的前提下，推导了CF-mMIMO系统中上行UE的可实现速率。由于每个AP仅能获得信道估计信息，CPU无法获取实际的瞬时信道状态。假定CPU已知信道状态的统计均值，据此计算可实现速率\cite{paper6}。结合式\eqref{eqn-14}，可将CPU端的接收信号重新表示为
+\subsection{可达速率分析}
+本节在综合考虑非线性PA与低分辨率ADC影响的前提下，推导CF-mMIMO系统中上行UE的可达速率。由于每个AP仅能获得信道估计信息，CPU无法获取实际的瞬时信道状态。假定CPU已知信道状态的统计特性，据此计算可达速率\cite{paper6}。结合式\eqref{eqn-14}，可将CPU端的接收信号重新表示为
 \begin{align}\label{eqn-15}
-{r_{\text{u},k}}& = {\text{ES}_k} \cdot {q_k} + {\text{BU}_k} \cdot {q_k} + \sum_{k' \ne k}^K {\text{I}_{kk'}} \cdot q_{k^\prime} \nonumber \\
-&\quad+\sum_{k' \ne k}^K {\text{NB}_{kk'}} \cdot q_{k^\prime}  + {\text{N}_k} + {\text{Q}_k},
+{r_{\text{u},k}} = {\text{ES}_k} \cdot {q_k} + {\text{BU}_k} \cdot {q_k} + \sum_{k' \ne k}^K {\text{I}_{kk'}} \cdot q_{k^\prime} +\sum_{k' \ne k}^K {\text{NB}_{kk'}} \cdot q_{k^\prime}  + {\text{N}_k} + {\text{Q}_k},
 \end{align}
-式中，$\text{ES}_k$、$\text{BU}_k$、$\text{I}_{kk'}$、$\text{NB}_{kk'}$、$\text{N}_k$ 和 $\text{Q}_k$ 分别表示第 \(k\) 个UE的期望信号确定性分量、波束成形不确定性、第 \(k'\) 个用户设备产生的干扰、第 \(k\) 个用户设备功率放大器非线性引入的干扰、加性噪声以及量化噪声。
-我们首先计算预期信号$\text{ES}_k$，由于 $\mathbf{\tilde{g} } _{mk}$ 和 $\mathbf{\hat{g}  } _{mk}$相互独立，我们有
+式中，$\text{ES}_k$、$\text{BU}_k$、$\text{I}_{kk'}$、$\text{NB}_{kk'}$、$\text{N}_k$和$\text{Q}_k$分别表示第$k$个UE的期望信号确定性分量、波束成形增益不确定性、第$k'$个UE产生的干扰、第$k$个UE功率放大器非线性引入的干扰、加性噪声以及量化噪声。
+
+首先计算期望信号$\text{ES}_k$。由于$\mathbf{\tilde{g}}_{mk}$和$\mathbf{\hat{g}}_{mk}$相互独立，有
 
 \begin{align}
-{\text{ES}_k} &= { {\sqrt {{\rho _\text{u}}} \mathbb{E} \left\{ {\sum_{m = 1}^M {\alpha _m}({\tilde{a}_{1k}}{\bf{\hat g}}_{mk}^H{{\bf{g}}_{mk}} + {\tilde{a}_{3k}}{\bf{\hat g}}_{mk}^H{{\bf{g}}_{mk}}{{\left| {{q_k}} \right|}^2})} \right\}} }\nonumber\\
- &= \sqrt{\rho _\text{u}}\mathbb{E} \left \{ \sum_{m = 1}^M \alpha _m{\tilde{a}_{1k}}{\bf{\hat g}}_{mk}^H({{{\bf{\hat g}}}_{mk}} + {{\bf{\tilde g}}_{mk}}) \right \} + \sqrt{\rho _\text{u}}\mathbb{E}\left \{  {\sum_{m=1}^{M}}\alpha _m{\tilde{a}_{3k}}{\bf{\hat g}}_{mk}^H({{{\bf{\hat g}}}_{mk}} + {\bf{\tilde g}}_{mk}{{\left| {{q_k}} \right|}^2})   \right \} \nonumber \\
+{\text{ES}_k} &= { {\sqrt {{\rho _\text{u}}} \mathbb{E} \left\{ {\sum_{m = 1}^M {\alpha _m}({\tilde{a}_{1k}}{\mathbf{\hat g}}_{mk}^H{{\mathbf{g}}_{mk}} + {\tilde{a}_{3k}}{\mathbf{\hat g}}_{mk}^H{{\mathbf{g}}_{mk}}{{\left| {{q_k}} \right|}^2})} \right\} }}\nonumber\\
+ &= \sqrt{\rho _\text{u}}\mathbb{E} \left \{ \sum_{m = 1}^M \alpha _m{\tilde{a}_{1k}}{\mathbf{\hat g}}_{mk}^H({{{\mathbf{\hat g}}}_{mk}} + {{\mathbf{\tilde g}}_{mk}}) \right \} + \sqrt{\rho _\text{u}}\mathbb{E}\left \{  {\sum_{m=1}^{M}}\alpha _m{\tilde{a}_{3k}}{\mathbf{\hat g}}_{mk}^H({{{\mathbf{\hat g}}}_{mk}} + {\mathbf{\tilde g}}_{mk}{{\left| {{q_k}} \right|}^2})   \right \} \nonumber \\
  &= \sqrt {{\rho _\text{u}}} {{\mathbb{E} \left\{ {\sum_{m = 1}^M {\alpha _m}(N{\tilde{a}_{1k}}{\gamma _{mk}} + N{\tilde{a}_{3k}}{\gamma _{mk}}{{\left| {{q_k}} \right|}^2})} \right\}}}\nonumber\\
  &= {N}\sqrt{\rho _\text{u}}{\left| {{\tilde{a}_{1k}} + {\tilde{a}_{3k}}} \right|}{\sum_{m = 1}^M {\alpha _m}{\gamma _{mk}}}.
 \end{align}
 
-此外，加性噪声 $\text{N}_k$ 的方差为
+此外，加性噪声$\text{N}_k$的方差为
 \begin{align}\label{eqn-46}
 \mathbb{E}\left\{\left|\text{N}_{k}\right|^{2}\right\}&=\sum_{m=1}^{M} \mathbb{E}\left\{\alpha_{m}^{2}\left\|\hat{\mathbf{g}}_{m k}\right\|^{2}\right\} \mathbb{E}\left\{\left\|\mathbf{w}_{\text{u}, m}\right\|^{2}\right\}=N^{2} \sum_{m=1}^{M} \alpha_{m}^{2} \gamma_{m k}.
 \end{align}
 
-量化噪声的方差为：
+量化噪声的方差为
 \begin{equation}\begin{aligned}
-\mathbb{E}\left\{ {{{\left| {{\text{Q}_k}} \right|}^2}} \right\} &= \mathbb{E}\left\{ {\left| {\mathop \sum \limits_{m = 1}^M {\bf{\hat g}}_{mk}^H{\bf{\tilde w}}_{\text{u},m}} \right|^2} \right\}\\
- %&= \mathop \sum \limits_{m = 1}^M \mathbb{E}\left\{ {{{\bf{\hat g}}_{mk}^H\bf{\tilde w}}_{\text{u},m}{\bf{\tilde w}}_{\text{u},m}^H\mathbf{\hat{g} }_{mk}}  \right\}\\
+\mathbb{E}\left\{ {{{\left| {{\text{Q}_k}} \right|}^2}} \right\} &= \mathbb{E}\left\{ {\left| {\mathop \sum \limits_{m = 1}^M {\mathbf{\hat g}}_{mk}^H{\mathbf{\tilde w}}_{\text{u},m}} \right|^2} \right\}\\
  &= N\sum_{m=1}^{M}\alpha_m (1-\alpha_m )\mathbb{E} \left \{ \mathbf{y}_{\text{u},m} \mathbf{y}_{\text{u},m}^H \right \} \gamma _{mk} \\
- &= {N}{\rho _\text{u}}\mathop \sum \limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( {\mathop \sum \limits_{k = 1}^K {\beta _{mk}}\Omega _k + 1} \right){\gamma _{mk}}.
+ &= {N}{\rho _\text{u}}\mathop \sum \limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( {\mathop \sum \limits_{k = 1}^K {\beta _{mk}}\Omega _k + 1} \right){\gamma _{mk}},
 \end{aligned}\end{equation}
+其中$\Omega_k$的定义见式\eqref{eqn-omega}。
 
-为了便于公式的展开，我们将第k个UE的总干扰定义为$\Theta_k$，将其他用户造成的干扰定义为$\text{UI}_{kk'} \triangleq \text{I}_{kk'} + \text{NB}_{kk'}$。因此，总干扰的方差可以表示为：
+为便于分析，将第$k$个UE的总干扰定义为$\Theta_k$，其他用户造成的干扰定义为$\text{UI}_{kk'} \triangleq \text{I}_{kk'} + \text{NB}_{kk'}$。因此，总干扰的方差可表示为
 \begin{align}\label{eqn-47}\mathbb{E } \left\{ {{{\left| \Theta_k  \right|}^2}} \right\} = \mathbb{E } \left\{ {{{\left| {\text{BU}_k} \right|}^2}{{\left| {{q_k}} \right|}^2} + \text{BU}_k^ * q_k^ * \sum _{l' \ne k}^K \text{UI}_{kl'}{q_{l'}}} \right\} \nonumber\\
 + \mathbb{E } \left\{ {\text{BU}_k{q_k}\sum_{k' \ne k}^K \text{UI}_{kk'}^ * q_{k'}^ *  + \sum_{k'l' \ne k}^K \text{UI}_{kk'}^ * \text{UI}_{kl'}q_{k'}^ * {q_{l'}}} \right\}.\end{align}
-接下来，我们分别计算\eqref{eqn-47}中各项的值。第一项的值被分解为：
+
+接下来，分别计算式\eqref{eqn-47}中各项的值。第一项可分解为
 \begin{align}\label{eqn-48}\mathbb{E}\left\{ {{{\left| {\text{BU}_k} \right|}^2}{{\left| {{q_k}} \right|}^2}} \right\} &\triangleq \mathbb{E}\left\{ {{{\text{B}_1}{\left| {{q_k}} \right|}^2}} \right\} - \mathbb{E}\left\{ {{{\text{B}_2}{\left| {{q_k}} \right|}^2}} \right\} - \mathbb{E}\left\{ {{{\text{B}_3}{\left| {{q_k}} \right|}^2}} \right\} + \mathbb{E}\left\{ {{{\text{B}_4}{\left| {{q_k}} \right|}^2}} \right\},\end{align}
 其中
-\begin{align}{\text{B}_1} &= {\rho _\text{u}} { \mathop\sum\nolimits_{m = 1}^M {\alpha _m}\left(\tilde{a}_{1k}{{{\bf{\hat g}}}_{mk}}{\bf{g}}_{mk}^H + \tilde{a}_{3k}{{{\bf{\hat g}}}_{mk}}{\bf{g}}_{mk}^H{{\left| {{q_k}} \right|}^2}\right)} \times{\mathop\sum\nolimits_{n = 1}^M {\alpha _n}\left({\tilde{a}_{1k}}{\bf{\hat g}}_{nk}^H{{\bf{g}}_{nk}} + {\tilde{a}_{3k}}{\bf{\hat g}}_{nk}^H{{\bf{g}}_{nk}}\left | q_k \right |^2 \right)}\nonumber\\
+\begin{align}{\text{B}_1} &= {\rho _\text{u}} { \mathop\sum\nolimits_{m = 1}^M {\alpha _m}\left(\tilde{a}_{1k}{{{\mathbf{\hat g}}}_{mk}}{\mathbf{g}}_{mk}^H + \tilde{a}_{3k}{{{\mathbf{\hat g}}}_{mk}}{\mathbf{g}}_{mk}^H{{\left| {{q_k}} \right|}^2}\right)} \times{\mathop\sum\nolimits_{n = 1}^M {\alpha _n}\left({\tilde{a}_{1k}}{\mathbf{\hat g}}_{nk}^H{{\mathbf{g}}_{nk}} + {\tilde{a}_{3k}}{\mathbf{\hat g}}_{nk}^H{{\mathbf{g}}_{nk}}\left | q_k \right |^2 \right)}\nonumber\\
 &={N^2}{\rho _\text{u}} {\textstyle \sum_{m=1}^{M}}  {\Omega _{k'} \alpha _m^2{\gamma _{mk}}{\beta _{mk'}}},\end{align}
-\begin{align}{\text{B}_2} &= {\rho _\text{u}} {\mathop \sum \nolimits_{m = 1}^M {\alpha _m}\left(\tilde{a}_{1k}{{{\bf{\hat g}}}_{mk}}{\bf{g}}_{mk}^H + \tilde{a}_{3k}{{{\bf{\hat g}}}_{mk}}{\bf{g}}_{mk}^H{{\left| {{q_k}} \right|}^2}\right)} \times {\mathop \sum \nolimits_{{\rm{m}} = 1}^M {\alpha _m}\left({\tilde{a}_{1k}}{\bf{\hat g}}_{mk}^H{{\bf{g}}_{mk}} + {\tilde{a}_{3k}}{\bf{\hat g}}_{mk}^H{{\bf{g}}_{mk}}\left | q_k \right |^2 \right)}\nonumber\\
+\begin{align}{\text{B}_2} &= {\rho _\text{u}} {\mathop \sum \nolimits_{m = 1}^M {\alpha _m}\left(\tilde{a}_{1k}{{{\mathbf{\hat g}}}_{mk}}{\mathbf{g}}_{mk}^H + \tilde{a}_{3k}{{{\mathbf{\hat g}}}_{mk}}{\mathbf{g}}_{mk}^H{{\left| {{q_k}} \right|}^2}\right)} \times {\mathop \sum \nolimits_{{\rm{m}} = 1}^M {\alpha _m}\left({\tilde{a}_{1k}}{\mathbf{\hat g}}_{mk}^H{{\mathbf{g}}_{mk}} + {\tilde{a}_{3k}}{\mathbf{\hat g}}_{mk}^H{{\mathbf{g}}_{mk}}\left | q_k \right |^2 \right)}\nonumber\\
 &=N^2\rho _u {\textstyle \sum_{m=1}^{M}} \alpha _m^2\left ( \tilde{a}_{1k}^2\gamma _{mk}^2+3\tilde{a}_{1k}\tilde{a}_{3k}\gamma _{mk}^2 +2\tilde{a}_{3k}\gamma _{mk}^2   \right ) , \end{align}
 \begin{equation}\begin{aligned}{\text{B}_3} = \text{B}_2^*,\end{aligned}\end{equation}
-\begin{align}{\text{B}_4} &= {\rho _\text{u}}{\left| {\mathbb{E}\left\{ {\mathop \sum \nolimits_{m = 1}^M {\alpha _m}\left({\tilde{a}_{1k}}{\bf{\hat g}}_{mk}^H{{\bf{g}}_{mk}} + {\tilde{a}_{3k}}{\bf{\hat g}}_{mk}^H{{\bf{g}}_{mk}}{{\left| {{q_k}} \right|}^2}\right)} \right\}} \right|^2} =N^2\rho _u\left | {\tilde{a}_{1k}} + {\tilde{a}_{3k}} \right |^2 { {\textstyle \sum_{m=1}^{M}}  {\alpha _m}^2{\gamma _{mk}^2}}.\end{align}
+\begin{align}{\text{B}_4} &= {\rho _\text{u}}{\left| {\mathbb{E}\left\{ {\mathop \sum \nolimits_{m = 1}^M {\alpha _m}\left({\tilde{a}_{1k}}{\mathbf{\hat g}}_{mk}^H{{\mathbf{g}}_{mk}} + {\tilde{a}_{3k}}{\mathbf{\hat g}}_{mk}^H{{\mathbf{g}}_{mk}}{{\left| {{q_k}} \right|}^2}\right)} \right\}} \right|^2} =N^2\rho _u\left | {\tilde{a}_{1k}} + {\tilde{a}_{3k}} \right |^2 { {\textstyle \sum_{m=1}^{M}}  {\alpha _m}^2{\gamma _{mk}^2}}.\end{align}
 
-原始数据$q_k$是一个具有圆对称特性的复高斯随机变量，其满足$\mathbb{E} \{ \left | q_k \right |^2 \} =1, \mathbb{E}  \{ \left | q_k \right |^4  \} =2,\mathbb{E} \{ \left | q_k \right |^6 \} =6$。当式\eqref{eqn-47}中第二项和第三项的$k' \ne k$时，${q_{k'}}$ 和 ${q_k}$的积将导致
+原始数据符号$q_k$服从圆对称复高斯分布，满足$\mathbb{E} \{ \left | q_k \right |^2 \} =1$，$\mathbb{E}  \{ \left | q_k \right |^4  \} =2$，$\mathbb{E} \{ \left | q_k \right |^6 \} =6$。当式\eqref{eqn-47}中第二项和第三项的$k' \ne k$时，${q_{k'}}$和${q_k}$的积将导致
 \begin{equation}\begin{aligned}\mathbb{E}\left\{ {\text{BU}_k^ * q_k^ * \sum _{l' \ne k}^K\text{UI}_{kl'}{q_{l'}}} \right\} = \mathbb{E}\left\{ {\text{BU}_k{q_k}\sum _{k' \ne k}^K\text{UI}_{kk'}^ * q_{k'}^ * } \right\} = \mathbf{0} .\end{aligned}\end{equation}
 
-式\eqref{eqn-47}中的最后一项中，令$\text{UI}_{kk'}^H\text{UI}_{kl'} = {\text{U}_1} + {\text{U}_2} + {\text{U}_3} + {\text{U}_4}$，计算后结果如下所示：
+式\eqref{eqn-47}中最后一项，令$\text{UI}_{kk'}^H\text{UI}_{kl'} = {\text{U}_1} + {\text{U}_2} + {\text{U}_3} + {\text{U}_4}$，计算结果如下
 \begin{equation}\begin{aligned}\label{eqn-54}\mathbb{E}\left\{ {\mathop \sum \limits_{k',l' \ne k}^K {\text{U}_1}q_{k'}^ * {q_{l'}}} \right\} = {N^2}{\rho _\text{u}}\mathop \sum \limits_{k' \ne k}^K \mathop \sum \limits_{m = 1}^M \alpha _m^2{\left| {{\tilde{a}_{1k'}}} \right|^2}{\gamma _{mk}}{\beta _{mk'}},\end{aligned}\end{equation}
 \begin{equation}\begin{aligned}\mathbb{E}\left\{ {\mathop \sum \limits_{k',l' \ne k}^K {\text{U}_2}q_{k'}^ * {q_{l'}}} \right\} = 2{N^2}{\rho _\text{u}}\mathop \sum \limits_{k' \ne k}^K \mathop \sum \limits_{m = 1}^M \alpha _m^2\tilde{a}_{1k'}^ * {\tilde{a}_{3k'}}{\gamma _{mk}}{\beta _{mk'}},\end{aligned}\end{equation}
 \begin{equation}\begin{aligned}\mathbb{E}\left\{ {\mathop \sum \limits_{k',l' \ne k}^K {\text{U}_3}q_{k'}^ * {q_{l'}}} \right\} = 2{N^2}{\rho _\text{u}}\mathop \sum \limits_{m = 1}^M \mathop \sum \limits_{k' \ne k}^K \alpha _m^2{\tilde{a}_{1k'}}\tilde{a}_{3k'}^ * {\gamma _{mk}}{\beta _{mk'}},\end{aligned}\end{equation}
 \begin{equation}\begin{aligned}\label{eqn-57}\mathbb{E}\left\{ {\mathop \sum \limits_{k',l' \ne k}^K {\text{U}_4}q_{k'}^ * {q_{l'}}} \right\} = 6{N^2}{\rho _\text{u}}\mathop \sum \limits_{m = 1}^M \mathop \sum \limits_{k' \ne k}^K {\left| {{\tilde{a}_{3k'}}} \right|^2}\alpha _m^2{\gamma _{mk}}{\beta _{mk'}}.\end{aligned}\end{equation}
 
-结合式\eqref{eqn-54}-\eqref{eqn-57}，我们可以得到
+结合式\eqref{eqn-54}--\eqref{eqn-57}，可得
 \begin{equation}\begin{aligned}\mathbb{E}\left\{ {\mathop \sum \limits_{k',l' \ne k}^k \text{UI}_{kk'}^ * \text{UI}_{kl'}q_{k'}^ * {q_{l'}}} \right\} = {N^2}{\rho _\text{u}}\mathop \sum \limits_{m = 1}^M {\mathop \sum \limits_{k' \ne k}^K\Omega _{k'} \alpha _m^2{\gamma _{mk}}{\beta _{mk'}}}. \end{aligned}\end{equation}
 
-将式\eqref{eqn-15}中干扰与噪声之和等效为有效噪声。在最坏情况下，将干扰项视为不相关高斯噪声随机变量，由此可得第 \(k\) 个UE的上行可达速率如式\eqref{eqn-22}所示。
+将式\eqref{eqn-15}中干扰与噪声之和等效为有效噪声。在最坏情况下，将干扰项视为不相关高斯噪声，由此可得第$k$个UE的上行可达速率如式\eqref{eqn-22}所示。
 
-定理1：
-在具有协整波束成形（CB）的CF‑mMIMO系统中，对于任意有限的 \(M\) 和 \(K\)，第 \(k\) 个用户设备的可达速率由式\eqref{eqn-23}给出（见下页顶部）。
+在采用相干合并（Coherent Combining）的CF‑mMIMO系统中，对于任意有限的$M$和$K$，第$k$个UE的可达速率由式\eqref{eqn-23}给出（见下页顶部）。
+
 \begin{figure*}[ht]
 	\centering
 	\begin{equation}\label{eqn-22}
@@ -182,47 +190,47 @@ x_\text{out}=\sum_{i=0}^{N_p}a_{2i+1}x_\text{in}\left | x_\text{in} \right |^{2i
 \begin{equation}\label{eqn-23}
 		R_{\text{u}, k}=\log _{2}\left(1+\frac{N^{2} \rho_\text{u}\left|\tilde{a}_{1 k}+\tilde{a}_{3 k}\right|^{2}\left(\sum\limits_{m=1}^{M} \alpha_{m} \gamma_{m k}\right)^{2}}{N^{2} \rho_\text{u} \sum\limits_{k'=1}^{K}\left(\Omega_{k^{\prime}} \sum\limits_{m=1}^{M} \alpha_{m}^{2} \gamma_{m k} \beta_{m k'}\right)+3 N^{2} \rho_\text{u}\left|a_{3}\right|^{2} \eta_{k}^{3}\left(\sum\limits_{m=1}^{M} \alpha_{m}^{2} \gamma_{m k}\right)^{2}+N^{2} \sum\limits_{m=1}^{M} \alpha_{m}^{2} \gamma_{m k}+\Psi _k }\right),
 	\end{equation}
-	\flushleft{where}
-	\begin{equation}\begin{aligned}\Omega _k = \left( {{{\left| {{a_1}} \right|}^2}{\eta _{k}} + 2a_1^*{a_3}{\eta _{k}^2}+ 2{a_1}a_3^ * \eta _{k}^2 + 6{{\left| {{a_3}} \right|}^2}\eta _{k}^3} \right), \end{aligned}\end{equation}
+	\flushleft{其中}
+	\begin{equation}\label{eqn-omega}\begin{aligned}\Omega _k = \left( {{{\left| {{a_1}} \right|}^2}{\eta _{k}} + 2a_1^*{a_3}{\eta _{k}^2}+ 2{a_1}a_3^ * \eta _{k}^2 + 6{{\left| {{a_3}} \right|}^2}\eta _{k}^3} \right), \end{aligned}\end{equation}
 	\begin{equation}\Psi _k={N}{\rho _\text{u}}\mathop \sum \limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( {\mathop \sum \limits_{k = 1}^K {\beta _{mk}}\Omega _k + 1} \right){\gamma _{mk}}.\end{equation}
 	\hrulefill
 \end{figure*}
 
-基于式\eqref{eqn-23}，对配备非线性PA与低分辨率ADC的CF-mMIMO系统性能进行如下关键分析：
+基于式\eqref{eqn-23}，对配置非线性PA与低分辨率ADC的CF-mMIMO系统性能进行如下关键分析。
 
-定理1给出了可实现速率的精确闭式表达式，清晰揭示了系统关键参数与性能之间的内在联系。具体而言，式（23）中的系数 $a_3$ 刻画了功率放大器的非线性特性。随着PA非线性程度的增强，$a_3$ 的绝对值增大，导致信噪加干扰比（SINR）分子减小、分母增大，从而使用户可实现速率显著下降，表明PA非线性对系统速率具有明显的负面影响。
-进一步分析可知，除量化噪声项外，表达式分子与分母其余各项均包含天线数 $N$ 的平方因子。对分子与分母同除以 $N^2$ 后，仅有
-${\rho _\text{u}}\mathop \sum \limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( {\mathop \sum \limits_{k = 1}^K {\beta _{mk}}\Omega _k + 1} \right){\gamma _{mk}}/N$ 与 $N$ 相关。随着天线数 $N$ 增大，用户速率在初始阶段将获得提升；当 $N$ 相对于
+定理\ref{thm:rate}给出了可达速率的精确闭式表达式，清晰揭示了系统关键参数与性能之间的内在联系。具体而言，式\eqref{eqn-23}中的系数$a_3$刻画了功率放大器的非线性特性。随着PA非线性程度的增强，$a_3$的绝对值增大，导致信干噪比（Signal-to-Interference-plus-Noise Ratio，SINR）分子减小、分母增大，从而使用户可达速率显著下降，表明PA非线性对系统速率具有明显的负面影响。
+
+进一步分析可知，除量化噪声项外，表达式分子与分母其余各项均包含天线数$N$的平方因子。对分子与分母同除以$N^2$后，仅有
+${\rho _\text{u}}\mathop \sum \limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( {\mathop \sum \limits_{k = 1}^K {\beta _{mk}}\Omega _k + 1} \right){\gamma _{mk}}/N$与$N$相关。随着天线数$N$增大，用户速率在初始阶段将获得提升；当$N$相对于
 ${\rho _\text{u}}\mathop \sum \limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( {\mathop \sum \limits_{k = 1}^K {\beta _{mk}}\Omega _k + 1} \right){\gamma _{mk}}$
-足够大时，其对可实现速率的影响趋于饱和。
+足够大时，其对可达速率的影响趋于饱和。
 
 \section{上行和速率最大化}
-在CF-mMIMO系统中，由于各接入点（AP）会接收所有用户设备（UE）发送的信号，用户间的相互干扰将显著影响目标用户的上行速率。因此，合理调控各用户的发射功率，平衡目标信号与干扰信号之间的关系，对于提升系统整体性能具有重要意义。
 
-基于上述背景及闭式解中的可调参数，本文建立了上行功率控制优化模型。该模型以非负功率集合为约束，目标在于最大化系统总速率，并要求每个功率变量不超过预设的最大限值。依据式\eqref{eqn-23}，上行总速率最大化问题可表述为：
+在CF-mMIMO系统中，由于各AP会接收所有UE发送的信号，用户间的相互干扰将显著影响目标用户的上行速率。因此，合理调控各用户的发射功率，平衡目标信号与干扰信号之间的关系，对于提升系统整体性能具有重要意义。
+
+基于上述背景及闭式解中的可调参数，本章建立了上行功率控制优化模型。该模型以非负功率集合为约束，目标在于最大化系统总速率，并要求每个功率变量不超过预设的最大限值。依据式\eqref{eqn-23}，上行总速率最大化问题可表述为
 \begin{align} \label{P1}
 \mathcal{P}_1:& \quad \underset{\left \{ \eta _k \right \} }{\text{max}} \quad  {\sum_{k=1}^{K}} R_{\text{u},k}\\
 \text{s.t.}&\quad {\left| {{a_1}} \right|^2}{\eta _k} + 2(a_1^ * {a_3} + {a_1}a_3^ * )\eta _k^2 + 6{\left| {{a_3}} \right|^2}\eta _k^3 \le 1, \forall k.
 \end{align}
-通常情况下，优化问题 $\mathcal{P}_1$ 属于非凸NP难问题。这一特性导致传统基于模型的方法难以精确量化其与最优解之间的性能差距，且计算复杂度较高。此外，基于模型的优化方法自适应能力有限，难以灵活应对未来异构业务需求的多样性及无线环境的动态变化。值得注意的是，信道状态信息 $\mathbf{g}_{mk}$ 是求解该问题的关键统计量，蕴含了确定最优功率控制策略的重要信息。因此，$\mathbf{g}_{mk}$ 与功率控制系数 $\eta_k$ 之间存在潜在的映射关系。针对上述挑战，本文引入数据驱动的深度强化学习（Deep Reinforcement Learning, DRL）方法，挖掘并实现该映射关系，从而提升系统的自适应与优化能力。
+通常情况下，优化问题$\mathcal{P}_1$属于非凸NP难问题。这一特性导致传统基于模型的方法难以精确量化其与最优解之间的性能差距，且计算复杂度较高。此外，基于模型的优化方法自适应能力有限，难以灵活应对未来异构业务需求的多样性及无线环境的动态变化。值得注意的是，信道状态信息$\mathbf{g}_{mk}$是求解该问题的关键统计量，蕴含了确定最优功率控制策略的重要信息。因此，$\mathbf{g}_{mk}$与功率控制系数$\eta_k$之间存在潜在的映射关系。针对上述挑战，本章引入数据驱动的深度强化学习方法，挖掘并实现该映射关系，从而提升系统的自适应与优化能力。
 
-进一步地，基于式\eqref{eqn-23}的推导结果可知，用户速率随ADC量化系数 $\alpha_m$ 的增大呈单调递增趋势。结合量化噪声项的影响，可通过动态调整ADC量化比特数以实现系统总速率最大化。为此，本文采用改进型深度Q学习算法作为优化工具，以用户总速率最大化为目标，将ADC量化精度分配问题形式化为：
+进一步地，基于式\eqref{eqn-23}的推导结果可知，用户速率随ADC量化系数$\alpha_m$的增大呈单调递增趋势。结合量化噪声项的影响，可通过动态调整ADC量化比特数以实现系统总速率最大化。为此，本章采用改进型深度Q学习算法作为优化工具，以用户总速率最大化为目标，将ADC量化精度分配问题形式化为
 \begin{align}\label{P2}
 \mathcal{P}_2 :&\quad\underset{\left \{ b_m \right \} }{\text{max}} \quad  {\sum_{k=1}^{K}} R_{\text{u},k}\\
 \text{s.t.}&\quad   b_m=0,1,2,...,  \forall m, \\
-\quad & \quad N\sum_{m=1}^{M} b_m=B_\text{\text{max}},
+\quad & \quad N\sum_{m=1}^{M} b_m=B_{\text{max}},
 \end{align}
+其中，$B_{\text{max}}$表示所有AP上ADC的总量化比特数约束。
 
-其中，$B_\text{max}$ 表示所有AP上ADC的总量化比特数约束。
-
-综上，针对上述两类优化问题，本文将在后续章节分别设计相应的算法，对CF-mMIMO系统的性能进行深入分析与探讨。
+综上，针对上述两类优化问题，本章将在后续章节分别设计相应的算法，对CF-mMIMO系统的性能进行深入分析与探讨。
 
 \section{DMAGNN-AC算法设计}
 
+在深度强化学习领域，马尔可夫决策过程（Markov Decision Process，MDP）是序贯决策问题建模的基础框架。MDP中，智能体与环境交互，依据策略函数$\pi$和当前状态$s$选择并执行动作$a$，环境以奖励$r$反馈动作优劣，并转移至下一状态$s'$。完整回合中，智能体多次决策，动作与状态转移共同构成元组$(\mathcal{S},\mathcal{A},\mathcal{P},\mathcal{R})$，其中$\mathcal{S}$为状态空间，$\mathcal{A}$为动作空间，$\mathcal{P}$为状态转移概率函数，$\mathcal{R}$为奖励函数。
 
-在深度强化学习（DRL）领域，马尔可夫决策过程（Markov Decision Process, MDP）是序贯决策问题建模的基础框架。MDP中，智能体与环境交互，智能体依据策略函数 $\pi$ 和当前状态 $s$ 选择并执行动作 $a$，环境以奖励 $r$ 反馈动作优劣，并转移至下一状态 $s'$。完整回合中，智能体多次决策，动作与状态转移共同构成元组 $(\mathcal{S},\mathcal{A},\mathcal{P},\mathcal{R})$，其中 $\mathcal{S}$ 为状态空间，$\mathcal{A}$ 为动作空间，$\mathcal{P}$ 为状态转移概率函数，$\mathcal{R}$ 为奖励函数。
-
-为实现基于深度强化学习的功率分配，本文将优化问题 $\mathcal{P}_1$ 建模为MDP。然而，受限于用户间复杂干扰关系与空间相关性，传统DRL方法难以高效学习最优策略。针对该难题，本文提出动态多智能体图神经网络（DMAGNN）框架，专用于提取用户间干扰特征，提供结构化状态信息，显著提升DRL性能。在该框架中，CPU作为智能体，环境由UE和AP等组成。DMAGNN将用户与接入点间信道状态信息建模为节点特征，将用户间干扰建模为边。该神经网络的详细结构与流程如图 \ref{fig2} 所示。
+为实现基于深度强化学习的功率分配，本章将优化问题$\mathcal{P}_1$建模为MDP。然而，受限于用户间复杂干扰关系与空间相关性，传统DRL方法难以高效学习最优策略。针对该难题，本章提出动态多智能体图神经网络（Dynamic Multi-Agent Graph Neural Network，DMAGNN）框架，专用于提取用户间干扰特征，提供结构化状态信息，显著提升DRL性能。在该框架中，CPU作为智能体，环境由UE和AP等组成。DMAGNN将用户与接入点间信道状态信息建模为节点特征，将用户间干扰建模为边。该神经网络的详细结构与流程如图\ref{fig2}所示。
 
 \begin{figure}[H]
 \centering
@@ -231,71 +239,56 @@ ${\rho _\text{u}}\mathop \sum \limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\lef
 \label{fig2}
 \end{figure}
 
-\subsection{DMAGNN-AC 组件}
+\subsection{DMAGNN-AC组件}
 
-\textbf{1) 状态设计}：第三节已指出，第 $k$ 个UE与第 $m$ 个AP之间的信道状态信息 $\mathbf{g}_{mk}$ 与功率控制系数 $\eta_k$ 存在映射关系。由于CPU无法获取信道的实时观测值，本文最终采用理论信道状态信息 $\mathbf{g}_{mk}$ 作为神经网络输入，具体表示为：
-\begin{equation} \mathbf{\Gamma}^t := \left \{ \mathbf{g}_{mk}^t \mid \forall m,k \right \}. \end{equation}
+\textbf{1) 状态设计}：第三节已指出，第$k$个UE与第$m$个AP之间的信道状态信息$\mathbf{g}_{mk}$与功率控制系数$\eta_k$存在映射关系。由于CPU无法获取信道的实时观测值，本章采用信道状态信息$\mathbf{g}_{mk}$作为神经网络输入，具体表示为
+\begin{equation} \boldsymbol{\Gamma}^t := \left \{ \mathbf{g}_{mk}^t \mid \forall m,k \right \}. \end{equation}
 
-考虑到训练过程与时间序列紧密相关，直接将 $\mathbf{\Gamma}^t$ 作为输入并不合理。用户移动行为引发的环境状态变化可视为时间序列演化过程，时空移动特征是预测下一时刻行为的关键依据。为此，本文引入时刻 $(t-1)$ 下的 $\mathbf{g}_{mk}$ 与 $R_{\text{u},k}$ 作为辅助信息，与 $\mathbf{\Gamma}^t$ 共同参与下一时刻动作预测。辅助信息定义为：
-\begin{equation} \mathbf{\Xi}^{t-1} := \left \{ \mathbf{g}_{mk}^{t-1}, R_{\text{u},k}^{t-1} \mid \forall m,k \right \}. \end{equation}
-神经网络最终输入为：
-\begin{equation} s^t := \left \{ \mathbf{\Xi}^{t-1}, \mathbf{\Gamma}^t \right \}. \end{equation}
-此时，状态空间基数为 $2(MK)+K$。
+考虑到训练过程与时间序列紧密相关，直接将$\boldsymbol{\Gamma}^t$作为输入并不合理。用户移动行为引发的环境状态变化可视为时间序列演化过程，时空移动特征是预测下一时刻行为的关键依据。为此，本章引入时刻$(t-1)$下的$\mathbf{g}_{mk}$与$R_{\text{u},k}$作为辅助信息，与$\boldsymbol{\Gamma}^t$共同参与下一时刻动作预测。辅助信息定义为
+\begin{equation} \boldsymbol{\Xi}^{t-1} := \left \{ \mathbf{g}_{mk}^{t-1}, R_{\text{u},k}^{t-1} \mid \forall m,k \right \}. \end{equation}
+神经网络最终输入为
+\begin{equation} s^t := \left \{ \boldsymbol{\Xi}^{t-1}, \boldsymbol{\Gamma}^t \right \}. \end{equation}
+此时，状态空间维度为$2(MK)+K$。
 
-\textbf{2) 动作设计}：演员网络根据当前状态 $s$ 决策，输出 $K$ 个UE的上行发射功率系数，可表示为：
+\textbf{2) 动作设计}：Actor网络根据当前状态$s$决策，输出$K$个UE的上行发射功率系数，可表示为
 \begin{equation} a^t = [\eta_1^t, ..., \eta_K^t]. \end{equation}
-其中，$\eta_k^t$ 满足约束 $0 \leq \eta_k^t \leq \eta_{\text{max}}, \forall k$。
+其中，$\eta_k^t$满足约束$0 \leq \eta_k^t \leq \eta_{\text{max}}, \forall k$。
 
-\textbf{3) 奖励函数}：本文以实际获得的用户速率作为环境反馈奖励，其定义为：
+\textbf{3) 奖励函数}：本章以实际获得的用户速率作为环境反馈奖励，其定义为
 \begin{equation} r^{t+1} = \sum_{k=1}^{K} R_{\text{u},k}^t. \end{equation}
 
 \subsection{算法设计}
+
 所提算法的具体设计体现在以下四个方面。
 
-\subsubsection{Actor 网络分层设计}
-本文将 Actor 网络设计为分层结构，以实现功能模块的合理划分与信息的高效融合。具体而言，上层网络主要负责对辅助信息 $\mathbf{\Xi }^{t-1}$ 进行特征提取与融合；随后，将上层网络输出与主信息 $\mathbf{\Gamma} ^t$ 的特征结合，作为下层网络的输入。下层网络则基于上述融合特征完成最终动作的预测。
+\subsubsection{Actor网络分层设计}
 
-在将 $\mathbf{\Gamma} ^t$ 输入下层网络前，本文采用自主设计的 DMAGNN 对 $\mathbf{\Gamma} ^t$ 进行特征提取。DMAGNN 的运行流程包括以下几个方面：
-\begin{itemize}
+本章将Actor网络设计为分层结构，以实现功能模块的合理划分与信息的高效融合。具体而言，上层网络主要负责对辅助信息$\boldsymbol{\Xi}^{t-1}$进行特征提取与融合；随后，将上层网络输出与主信息$\boldsymbol{\Gamma}^t$的特征结合，作为下层网络的输入。下层网络则基于上述融合特征完成最终动作的预测。
 
-\item \textbf{节点特征初始化：}
-第 $k$ 个用户设备在 $t$ 时刻的节点特征初始化为：
+在将$\boldsymbol{\Gamma}^t$输入下层网络前，本章采用自主设计的DMAGNN对$\boldsymbol{\Gamma}^t$进行特征提取。DMAGNN的运行流程主要包括节点特征初始化、动态图结构学习、多尺度特征聚合以及门控特征更新四个环节。
+
+首先，第$k$个UE在$t$时刻的节点特征初始化为
 \begin{equation}\label{eq-38}x_k=\text{vec}(H_{\text{in},k}^HH_{\text{in},k})\in \mathbb{R}^d, \end{equation}
-其中，$H_{\text{in},k}\in \mathbb{C}^{M\times N}$ 表示第 $k$ 个用户设备到 $M$ 个接入点（AP）的信道矩阵。
+其中，$H_{\text{in},k}\in \mathbb{C}^{M\times N}$表示第$k$个UE到$M$个AP的信道矩阵。
 
-
-\item \textbf{动态图结构学习：}
-在图结构构建过程中，传统方法通常依赖固定地理距离（如路径损耗）定义节点间连接关系。然而在CF-mMIMO系统中，用户分布密集且干扰特性复杂，固定图结构难以反映瞬时信道状态的影响。为此，本文借鉴图注意力网络（GAT）的思想，引入可学习的参数化距离度量，并采用双线性注意力机制计算节点 $i$ 与节点 $j$ 之间的关联强度：
+其次，在图结构构建过程中，传统方法通常依赖固定地理距离（如路径损耗）定义节点间连接关系。然而在CF-mMIMO系统中，用户分布密集且干扰特性复杂，固定图结构难以反映瞬时信道状态的影响。为此，本章借鉴图注意力网络（Graph Attention Network，GAT）的思想，引入可学习的参数化距离度量，并采用双线性注意力机制计算节点$i$与节点$j$之间的关联强度
 \begin{equation}\label{eq-39}a_{ij}=\sigma \left ( \frac{\left ( W_qx_i \right ) \cdot \left ( W_kx_j \right )  ^T}{\sqrt{b} } \right  ), \end{equation}
-其中，$b$ 为缩放因子，$W_q$ 和 $W_k$ 为可训练投影矩阵，分别将节点特征 $x_i$、$x_j$ 映射到查询空间和键空间。查询空间用于表征当前节点（如用户 $i$）的查询特征，键空间用于表征其他节点（如用户 $j$）的被查询特征。通过二者内积衡量节点间的相关性与相似度，使模型能够动态学习节点间的关联关系，而非依赖静态图结构。
-
-
-\emph{定理 2:} 为降低全连接图 $O(K^2)$ 的计算复杂度，本文设计了稀疏邻接矩阵：
+其中，$b$为缩放因子，$W_q$和$W_k$为可训练投影矩阵，分别将节点特征$x_i$、$x_j$映射到查询空间和键空间。查询空间用于表征当前节点（如用户$i$）的查询特征，键空间用于表征其他节点（如用户$j$）的被查询特征。通过二者内积衡量节点间的相关性与相似度，使模型能够动态学习节点间的关联关系，而非依赖静态图结构。为降低全连接图$O(K^2)$的计算复杂度，本章设计了稀疏邻接矩阵
 \begin{equation}\label{eq-40}A_{ij}=\left\{\begin{matrix}
 	1,& \text{if}\ a_{ij}> \vartheta\ \text{且}\ i\ne j\\ 
 	0,& \text{otherwise},
 \end{matrix}\right.\end{equation}
-其中，动态阈值 $\vartheta$ 通过自适应二分搜索确定，以保证非零边数量满足 $|E|=O(K\log K)$。邻接矩阵稀疏化后，模型仅保留相关性较强的连接，有助于提升泛化能力。
+其中，动态阈值$\vartheta$通过自适应二分搜索确定，以保证非零边数量满足$|E|=O(K\log K)$。邻接矩阵稀疏化后，模型仅保留相关性较强的连接，有助于提升泛化能力。
 
-
-\item \textbf{多尺度特征聚合：}
-多尺度卷积通过聚合不同范围的邻域信息，增强模型对复杂空间相关性的建模能力，从而克服传统单层图卷积网络（GCN）感受野有限的不足。多跳信息聚合公式为：
+然后，多尺度卷积通过聚合不同范围的邻域信息，增强模型对复杂空间相关性的建模能力，从而克服传统单层图卷积网络（Graph Convolutional Network，GCN）感受野有限的不足。多跳信息聚合公式为
 \begin{equation}\label{eq-41}\text{GCN}(A,H_{\text{in}}) = \sum_{l=0}^{L} \tilde{A}^l H_{\text{in}} W_l,\end{equation}
-其中，$\tilde{A} = D^{-1/2} A D^{-1/2}$ 为邻接矩阵 $A$ 的对称归一化形式，$D=\text{diag}(\sum_j A_{1j},\dots,\sum_j A_{Kj})$ 为度矩阵，$W_l\in\mathbb{R}^{d\times d}$ 为第 $l$ 跳的可训练权重矩阵。该设计具有如下特点：
-\begin{itemize}
-	\item 局部性保持：$l=0$ 时保留节点自身特征；
-	\item 邻域扩展：$l=1$ 时聚合一阶邻域信息，$l=2$ 时捕获二阶邻域信息。
-\end{itemize}
-同时，为不同跳数设置独立的 $W_l$，以避免特征混淆。
+其中，$\tilde{A} = D^{-1/2} A D^{-1/2}$为邻接矩阵$A$的对称归一化形式，$D=\text{diag}(\sum_j A_{1j},\dots,\sum_j A_{Kj})$为度矩阵，$W_l\in\mathbb{R}^{d\times d}$为第$l$跳的可训练权重矩阵。该设计具有以下特点：$l=0$时保留节点自身特征，实现局部性保持；$l=1$时聚合一阶邻域信息，$l=2$时捕获二阶邻域信息，实现邻域扩展。同时，为不同跳数设置独立的$W_l$，以避免特征混淆。
 
-
-\item \textbf{门控特征更新机制：}
-最后，本文采用门控机制实现节点特征的选择性更新，具体过程如下：
+最后，本章采用门控机制实现节点特征的选择性更新，具体过程如下
 \begin{equation}\label{eq-42}Z=\text{GCN}(A,H_{\text{in}}), \end{equation}
 \begin{equation}\label{eq-43}G=\sigma ( W_g [ H_{\text{in}}  \oplus Z ] ),\end{equation}
 \begin{equation}\label{eq-44}H_{\text{out}}=\text{LayerNorm}( G\odot H_{\text{in}} + (1-G) \odot Z ), \end{equation}
-其中，$Z$ 为卷积后生成的新特征，$W_g\in\mathbb{R}^{2d\times d}$ 为门控权重矩阵。门控机制可动态调整原始特征 $H_{\text{in}}$ 与新特征 $Z$ 的保留比例，有效缓解梯度消失问题。
-\end{itemize}
+其中，$Z$为卷积后生成的新特征，$W_g\in\mathbb{R}^{2d\times d}$为门控权重矩阵。门控机制可动态调整原始特征$H_{\text{in}}$与新特征$Z$的保留比例，有效缓解梯度消失问题。
 
 \begin{algorithm}[t]
     \renewcommand{\algorithmicrequire}{\textbf{输入:}}
@@ -334,45 +327,49 @@ ${\rho _\text{u}}\mathop \sum \limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\lef
 		\end{algorithmic}
 \end{algorithm}
 
-\footnotetext[1]{He 初始化是深度学习中一种神经网络权重初始化方法，该方法基于 ReLU 激活函数的特性，用于提升训练过程中的收敛速度与网络性能。}
+\footnotetext[1]{He初始化是深度学习中一种神经网络权重初始化方法，该方法基于ReLU激活函数的特性，用于提升训练过程中的收敛速度与网络性能。}
 
-这种分层设计的优势在于，上层网络能够充分挖掘前一时刻信息中的关键特征，为下层网络提供更具价值的先验信息。因此，下层网络在预测动作时，可以更精确地基于时刻 $t$ 的信息进行决策。该设计提升了整体网络的学习效果与决策精度。
+这种分层设计的优势在于，上层网络能够充分挖掘前一时刻信息中的关键特征，为下层网络提供更具价值的先验信息。因此，下层网络在预测动作时，可以更精确地基于时刻$t$的信息进行决策。该设计提升了整体网络的学习效果与决策精度。
 
 \subsubsection{网络更新频率的优化策略}
-为进一步提升网络的学习效率，本文提出了一种目标网络更新频率（UF）的动态自适应调整策略。在每轮完整训练开始时，首先将目标网络更新频率初始化为 $300$，并将初始最大奖励（MR）设为 $0$。随着训练过程的推进，持续累积并计算奖励值。当训练步数达到当前设定的更新频率时，计算当前阶段的平均奖励（AR），并与历史最大奖励（MR）进行比较。若平均奖励超过最大奖励，则将最大奖励更新为当前平均奖励，并依据两者差值 $D_\text{value}$ 动态调整网络更新频率，具体调整公式如下：
-\begin{equation}\text{UF}=\text{UF}\times \log_{2}{\left ( 1+\frac{1}{1+e^{D_\text{value}} }  \right ) }. \end{equation}
 
-该公式反映：当 $D_{\text{value}}$ 变化幅度较大时，表明网络学习效果显著提升，此时应加快目标网络的更新频率，以便更及时地跟踪最优策略；反之，若 $D_{\text{value}}$ 变化较小，则适当降低更新频率，防止因频繁更新导致网络不稳定或陷入局部最优。
+为进一步提升网络的学习效率，本章提出了一种目标网络更新频率（Update Frequency，UF）的动态自适应调整策略。在每轮完整训练开始时，首先将目标网络更新频率初始化为300，并将初始最大奖励（Maximum Reward，MR）设为0。随着训练过程的推进，持续累积并计算奖励值。当训练步数达到当前设定的更新频率时，计算当前阶段的平均奖励（Average Reward，AR），并与历史最大奖励进行比较。若平均奖励超过最大奖励，则将最大奖励更新为当前平均奖励，并依据两者差值$D_{\text{value}}$动态调整网络更新频率，具体调整公式如下
+\begin{equation}\text{UF}=\text{UF}\times \log_{2}{\left ( 1+\frac{1}{1+e^{D_{\text{value}}} }  \right ) }. \end{equation}
+
+该公式反映：当$D_{\text{value}}$变化幅度较大时，表明网络学习效果显著提升，此时应加快目标网络的更新频率，以便更及时地跟踪最优策略；反之，若$D_{\text{value}}$变化较小，则适当降低更新频率，防止因频繁更新导致网络不稳定或陷入局部最优。
 
 \subsubsection{训练回滚策略}
-此外，当平均奖励（AR）低于最大奖励（MR）时，将网络状态回滚至本轮训练开始时的状态并重新训练。该策略有助于网络跳出可能存在的局部最优解，重新探索更优的策略空间，从而提升整体学习的成功率与效率。
+
+此外，当平均奖励低于最大奖励时，将网络状态回滚至本轮训练开始时的状态并重新训练。该策略有助于网络跳出可能存在的局部最优解，重新探索更优的策略空间，从而提升整体学习的成功率与效率。
 
 \subsubsection{训练过程}
-如图 \ref{fig2} 所示，DMAGNN-AC 框架主要由行动者网络（Actor）与评论家网络（Critic）两部分组成。智能体通过行动者网络 $A(s;\omega_a)$，依据当前状态 $s$ 生成确定性动作 $a$，其中 $\omega_a$ 为行动者网络参数。评论家网络 $C(s_c,a;\omega_c)$ 则对当前状态 $s_c$ 下所选动作 $a$ 进行价值评估。确定性策略可表示为：
-\begin{equation}a^* = A(s;\omega_a).\end{equation}
-为提升模型泛化能力，本文在动作选择中引入高斯噪声，具体表达式如下：
-\begin{equation}\label{eqn-34}
-a := \left [ A(s;\omega_a) + \mathbf{n} \right ]^{P_\text{max}}_0,
-\end{equation}
-其中 $\mathbf{n} \sim \mathcal{CN}(0,1)$，动作 $a$ 的取值区间为 $[0, P_\text{max}]$。
 
-为获得最优策略，行动者网络与评论家网络协同优化，行动者网络参数通过最大化评论家网络输出进行更新：
+如图\ref{fig2}所示，DMAGNN-AC框架主要由Actor网络与Critic网络两部分组成。智能体通过Actor网络$A(s;\omega_a)$，依据当前状态$s$生成确定性动作$a$，其中$\omega_a$为Actor网络参数。Critic网络$C(s_c,a;\omega_c)$则对当前状态$s_c$下所选动作$a$进行价值评估。确定性策略可表示为
+\begin{equation}a^* = A(s;\omega_a).\end{equation}
+为提升模型泛化能力，本章在动作选择中引入高斯噪声，具体表达式如下
+\begin{equation}\label{eqn-34}
+a := \left [ A(s;\omega_a) + \mathbf{n} \right ]^{P_{\text{max}}}_0,
+\end{equation}
+其中$\mathbf{n} \sim \mathcal{CN}(0,1)$，动作$a$的取值区间为$[0, P_{\text{max}}]$。
+
+为获得最优策略，Actor网络与Critic网络协同优化，Actor网络参数通过最大化Critic网络输出进行更新
 \begin{equation}\omega_a^* = \underset{\omega_a}{\text{argmax}}\ C(s_c, a; \omega_a).
 \end{equation}
-评论家网络则通过最小化预测值与实际奖励的误差来优化参数，具体为：
+Critic网络则通过最小化预测值与实际奖励的误差来优化参数，具体为
 \begin{equation}\omega_c^* = \underset{\omega_c}{\text{argmin}}\ \frac{1}{2}\left(C(s_c, a; \omega_c)|_{a=A(s;\omega_a)} - r_s^a\right)^2.
 \end{equation}
 
-行动者网络参数的更新采用梯度上升法，表达式为：
+Actor网络参数的更新采用梯度上升法，表达式为
 \begin{equation}\label{eqn-37}
 abla_{\omega_a} J(\omega_a) \approx \frac{1}{T} \sum_{t=1}^{T} \nabla_a C(s^t, a^t; \omega_c) \nabla_{\omega_a} A(s^t; \omega_a).
 \end{equation}
-评论家网络参数的更新则通过最小化以下损失函数实现：
+Critic网络参数的更新则通过最小化以下损失函数实现
 \begin{equation}\label{eqn-38}
 \nabla_{\omega_c} L(\omega_c) \approx \frac{1}{T} \sum_{t=1}^{T} (y^t - C(s^t, a^t; \omega_c))^2,
 \end{equation}
-其中 $y^t = r^t + \gamma C(s^{t+1}, a^{t+1}; \omega_c')$，$\gamma$ 为折扣因子。
-该算法的详细实现过程见前述算法 \ref{DDPG}。
+其中$y^t = r^t + \gamma C(s^{t+1}, a^{t+1}; \omega_c')$，$\gamma$为折扣因子。
+
+该算法的详细实现过程见算法\ref{DDPG}。
 \begin{figure}
 \centering
 \includegraphics[width=3.5in] {fig3}
@@ -382,90 +379,90 @@ abla_{\omega_a} J(\omega_a) \approx \frac{1}{T} \sum_{t=1}^{T} \nabla_a C(s^t, a
 
 \renewcommand{\thefootnote}{\ding{\numexpr192+\value{footnote}}}
 \begin{algorithm}[t]
-    \renewcommand{\algorithmicrequire}{\textbf{Input:}}
-    \renewcommand{\algorithmicensure}{\textbf{Output:}}
-    \caption{MADQIN Algorithm}
+    \renewcommand{\algorithmicrequire}{\textbf{输入：}}
+    \renewcommand{\algorithmicensure}{\textbf{输出：}}
+    \caption{MADQIN算法}
     \label{DQN}
     \begin{algorithmic}[1]
-        \State $\emph{Input:}$ Episode times $N_e$, exploration times $T$, target network update frequency $T_u$, discount factor $\gamma$, learning rate $\alpha$, and random data quantity $R_q$. % input
-      	  \State $\emph{Initialization:}$ Initialize MADQIN $Q(s,a;\omega _q)$ parameter $\omega _q$ with He initialization method.
-    			% for loop
+        \State 训练轮数$N_e$，每轮探索次数$T$，目标网络更新频率$T_u$，折扣因子$\gamma$，学习率$\alpha$，随机探索次数$R_q$
+      \ \State 采用He初始化方法初始化MADQIN网络$Q(s,a;\omega_q)$的参数$\omega_q$
+   			% for loop
         \For {$k=1$ to $N_e$}
-        		\State Creating environment object $  \mathcal{O} _e$ and neural network object $  \mathcal{O} _d$.
-        		\State Initialize status $s^1$.
-        		% for loop
-	        \For {$ \jmath  =1$ to $T$}
-	            % if ... else
-		        \If {$ \jmath  < R_q$}
-		            \State Randomly select action set $a^t\in \mathcal{A}$ with uniform probablity. 
-		        \Else
-		            \State Select action $a^t$ by \eqref{eqn-39}.
-		        \EndIf
-		        \State Execute action $a^t$, obtain reward $r^t$, and next state $s^{t+1}$.
-		        \State Store the transaction$(s^{t},a^{t},r^{t},s^{t+1})$.
-		        \State Minimizing the loss to update the MADQIN network.
-		        \State \begin{align} L^t(\omega _q^t)&= (r_{s,a}^t+\gamma \underset{a^{t+1}}{\text{max}}Q(s^{t+1},a^{t+1};\omega_{target})
-		        					\nonumber\\&\quad-Q(s^t,a^t;\omega_q ^t) )^2. \nonumber\end{align}
-	        \EndFor
+       	\State 创建环境对象$\mathcal{O}_e$和神经网络对象$\mathcal{O}_d$
+       	\State 初始化状态$s^1$
+       	% for loop
+        \For {$\jmath=1$ to $T$}
+           % if ... else
+	       \If {$\jmath < R_q$}
+	           \State 以均匀概率随机选择动作$a^t\in\mathcal{A}$
+	       \Else
+	           \State 根据式\eqref{eqn-39}选择动作$a^t$
+	       \EndIf
+	       \State 执行动作$a^t$，获得奖励$r^t$和下一状态$s^{t+1}$
+	       \State 存储转移样本$(s^t,a^t,r^t,s^{t+1})$
+	       \State 最小化损失函数以更新MADQIN网络
+	       \State \begin{align} L^t(\omega_q^t)&=(r_{s,a}^t+\gamma\underset{a^{t+1}}{\max}Q(s^{t+1},a^{t+1};\omega_{\text{target}})
+	       				\nonumber\\&\quad-Q(s^t,a^t;\omega_q^t))^2.\nonumber\end{align}
+       \EndFor
         \EndFor
-        \State $\emph{Output:}$ Learned DQN $Q(s,a;\omega _q)$. % output
-        
+        \State 训练完成的DQN网络$Q(s,a;\omega_q)$
+       
 		\end{algorithmic}
 \end{algorithm}
 
 \section{MADQIN算法设计}
 
-鉴于ADC分辨率具有离散特性，本文采用离散动作空间的深度Q网络（DQN）作为优化基础，设计了多智能体深度Q集成网络（MADQIN）以实现ADC分辨率的自适应分配。如图 \ref{fig3} 所示，MADQIN主要由主Q网络（Q-Network）和目标Q网络（Q-target）两部分组成。主Q网络用于预测系统中各智能体动作的最大Q值，并将其作为预测奖励 $r_p$，智能体据此选择Q值最大的动作以获得实际奖励 $r$。目标Q网络则用于预测下一状态下的Q值 $r_t$，并将 $r$ 与 $r_t$ 之和作为真实奖励 $r'$。通过不断迭代，最小化 $r_p$ 与 $r'$ 之间的误差，实现Q网络参数 $\omega_q$ 的优化。其优化目标可表述为：
+鉴于ADC分辨率具有离散特性，本章采用离散动作空间的深度Q网络（Deep Q-Network，DQN）作为优化基础，设计了多智能体深度Q集成网络（MADQIN）以实现ADC分辨率的自适应分配。如图\ref{fig3}所示，MADQIN主要由主Q网络（Q-Network）和目标Q网络（Q-target）两部分组成。主Q网络用于预测系统中各智能体动作的最大Q值，并将其作为预测奖励$r_p$，智能体据此选择Q值最大的动作以获得实际奖励$r$。目标Q网络则用于预测下一状态下的Q值$r_t$，并将$r$与$r_t$之和作为真实奖励$r'$。通过不断迭代，最小化$r_p$与$r'$之间的误差，实现Q网络参数$\omega_q$的优化。其优化目标可表述为
 \begin{equation}
 \omega_q^* = \underset{\omega_q}{\text{argmin}} \frac{1}{2} (Q(s, a; \omega_q) - r_s^a)^2.
 \end{equation}
-$\omega_q$ 的梯度计算方式为：
+$\omega_q$的梯度计算方式为
 \begin{equation}
 \nabla \omega_q = (Q(s, a; \omega_q) - r_s^a) \nabla_{\omega_q} Q(s, a; \omega_q).
 \end{equation}
 
-在DRL环境下，MADQIN输出层维度设为 $[M, AD]$，其中 $AD$ 表示每个接入点（AP）可选的ADC分辨率数量。网络输出即为 $M$ 个AP在给定状态下各自可能可选动作的Q值。为获得最优动作策略，需求解使Q值最大的动作 $a^*$，即：
+在DRL环境下，MADQIN输出层维度设为$[M, AD]$，其中$AD$表示每个AP可选的ADC分辨率数量。网络输出即为$M$个AP在给定状态下各自可能可选动作的Q值。为获得最优动作策略，需求解使Q值最大的动作$a^*$，即
 \begin{equation}\label{eqn-39}
 a^* = \underset{a}{\text{argmax}} Q(s, a; \omega_q).
 \end{equation}
 
-MADQIN的输入输出设计与DMAGNN-AC保持一致。不同于传统贪心策略最大化样本多样性的方法，本文在初始阶段采用随机动作策略，并将产生的数据纳入经验回放缓冲区，以提升模型的鲁棒性和适应性。实验结果表明，该策略在特定场景下具有更优表现。此外，为进一步提升算法性能，动作执行时引入高斯随机噪声，其表达式为：
+MADQIN的输入输出设计与DMAGNN-AC保持一致。不同于传统贪心策略最大化样本多样性的方法，本章在初始阶段采用随机动作策略，并将产生的数据纳入经验回放缓冲区，以提升模型的鲁棒性和适应性。实验结果表明，该策略在特定场景下具有更优表现。此外，为进一步提升算法性能，动作执行时引入高斯随机噪声，其表达式为
 \begin{equation}
 a := \left [ a^* + \mathbf{n} \right ]^{b_m^{\text{max}}}_{b_m^{\text{min}}}.
 \end{equation}
 
-MADQIN的详细执行流程总结于本页顶部的算法 \ref{DQN} 中。
+MADQIN的详细执行流程总结于算法\ref{DQN}中。
 
 \section{数值结果与分析}
 
 \begin{table}[t]
   \begin{center}\label{table1}
-    \caption{System basic parameter settings.}
+    \caption{系统基本参数设置}
     \begin{tabular}{@{}lll@{}}
 			\toprule
-                          & \textbf{Parameters}                        & \textbf{Values} \\ \midrule
- 							    				 & Carrier frequency                   	& 1.9 GHz             \\
-                          & Bandwidth                    				 	& 20 MHz          \\
-                          & Noise figure           & 9 dB   \\
-                          & AP antenna height & 15 m     \\
-                          & User antenna height   & 1.65 m           \\
-                          & Coherence interval length $\tau$        & 200\\
-                          & Pilot length $\tau_\text{p}$   & 20  \\
-                          & Pilot transmission power $\rho_\text{p}$              & 200 mW             \\
-                          & ADC resolution $b_m$            &10   \\
+                          & \textbf{参数}                        & \textbf{数值} \\ \midrule
+ 											 & 载波频率                   	& 1.9 GHz             \\
+                          & 带宽                   				 	& 20 MHz          \\
+                          & 噪声系数           & 9 dB   \\
+                          & AP天线高度 & 15 m     \\
+                          & 用户天线高度   & 1.65 m           \\
+                          & 相干时间长度 $\tau$        & 200\\
+                          & 导频长度 $\tau_\text{p}$   & 20  \\
+                          & 导频发射功率 $\rho_\text{p}$              & 200 mW             \\
+                          & ADC分辨率 $b_m$           &10   \\
                           & $M$, $K$, $N$    & 100, 20, 4\\
-                          &$\delta _\text{sh}$, $L$, $d_1$, $d_0$   & 8 dB, 140.7 dB, 50 m, 10 m     \\\midrule
+                          &$\delta _\text{sh}$, $L$, $d_1$, $d_0$   & 8 dB, 140.7 dB, 50 m, 10 m     \\midrule
 			\end{tabular}
   \end{center}
 \end{table}
 
-本节通过大量仿真实验，对配置非线性PA与低分辨率ADC的CF-mMIMO系统性能进行系统性分析。如无特殊说明，实验参数均采用表Ⅰ所示的标准配置。
+本节通过大量仿真实验，对配置非线性PA与低分辨率ADC的CF-mMIMO系统性能进行系统性分析。如无特殊说明，实验参数均采用表\ref{table1}所示的标准配置。
 
-本文采用文献\cite{paper15}中非线性PA模型的参数设置，其中 $a_1=13.85$，$a_3=-4.074$。大尺度衰落系数 $\beta_{mk}$ 采用如下建模方式，以更准确反映实际通信环境中的信号衰减特性：
+本章采用文献\cite{paper15}中非线性PA模型的参数设置，其中$a_1=13.85$，$a_3=-4.074$。大尺度衰落系数$\beta_{mk}$采用如下建模方式，以更准确反映实际通信环境中的信号衰减特性
 \begin{equation}
 \beta_{mk} = \text{PL}_{mk} \cdot 10^{\frac{\delta_{\text{sh}}^{z_{mk}}}{10}},
 \end{equation}
-其中 $10^{\frac{\delta_{\text{sh}}^{z_{mk}}}{10}}$ 用于模拟阴影衰落，$z_{mk} \sim \mathcal{CN}(0,1)$。路径损耗 $\text{PL}_{mk}$ 采用文献\cite{paperI4}提出的三斜率模型，具体为：
+其中$10^{\frac{\delta_{\text{sh}}^{z_{mk}}}{10}}$用于模拟阴影衰落，$z_{mk} \sim \mathcal{CN}(0,1)$。路径损耗$\text{PL}_{mk}$采用文献\cite{paperI4}提出的三斜率模型，具体为
 \begin{equation}
 \text{PL}_{mk} = \left\{\begin{array}{ll}
 -L-35 \log_{10}(d_{mk}), & d_{mk} > d_1 \\
@@ -473,30 +470,30 @@ MADQIN的详细执行流程总结于本页顶部的算法 \ref{DQN} 中。
 -L-15 \log_{10}(d_1) - 20 \log_{10}(d_0), & d_{mk} \leq d_0
 \end{array}\right.
 \end{equation}
-其中 $d_{mk}$ 表示第 $m$ 个AP与第 $k$ 个UE之间的距离。需注意，当 $d_{mk} < d_1$ 时不考虑阴影效应。
+其中$d_{mk}$表示第$m$个AP与第$k$个UE之间的距离。需注意，当$d_{mk} < d_1$时不考虑阴影效应。
 
 \begin{table}[t]
   \begin{center}\label{table2}
-    \caption{Neural Network Parameter Settings.}
+    \caption{神经网络参数设置}
     \begin{tabular}{@{}lll@{}}
 			\toprule
-			                          & \textbf{Parameters}                        & \textbf{Values} \\ \midrule
-			\multirow{6}{*}{DMAGNN-AC} & Discount factor $\gamma$                   & 0.1             \\
-			                          & Learning rate $\alpha $                    & 0.001           \\
-			                          & Size of experience replay buffer $\mathcal{B}$           & 10000   \\
-			                          & Frequency of updating initial trial status $\mathcal{H}$ & 500     \\
-			                          & Update neural network parameter weights $\tau$   & 0.005           \\
-			                          & Warm up times   $\mathcal{W}$              & 256             \\ \midrule
-			\multirow{5}{*}{MADQIN}   & Learning rate   $\alpha $                  & 0.001           \\
-			                          & Discount factor $\gamma$                   & 0.1             \\
-			                          & Size of experience replay buffer  $\mathcal{B}$         & 1000     \\
-			                          & Batch size      $\varsigma$                & 200             \\
-			                          & Warm up times  $\mathcal{W}$               & 200             \\ \midrule
+															& \textbf{参数}                        & \textbf{数值} \\ \midrule
+			\multirow{6}{*}{DMAGNN-AC} & 折扣因子$\gamma$                   & 0.1             \\
+															& 学习率$\alpha$                    & 0.001           \\
+															& 经验回放缓冲区大小$\mathcal{B}$           & 10000   \\
+															& 初始试验状态更新频率$\mathcal{H}$ & 500     \\
+															& 神经网络参数更新权重$\tau$   & 0.005           \\
+															& 预热次数$\mathcal{W}$              & 256             \\ \midrule
+			\multirow{5}{*}{MADQIN}   & 学习率$\alpha$                  & 0.001           \\
+															& 折扣因子$\gamma$                   & 0.1             \\
+															& 经验回放缓冲区大小$\mathcal{B}$         & 1000     \\
+															& 批次大小$\varsigma$                & 200             \\
+															& 预热次数$\mathcal{W}$               & 200             \\ \midrule
 			\end{tabular}
   \end{center}
 \end{table}
 
-为验证所提算法性能，本文将其与传统全功率发射方案进行对比。实验结果表明，在各类环境下，所提算法均能在约2000步内收敛至理想性能。两种算法的主要参数配置见表Ⅱ。
+为验证所提算法性能，本章将其与传统全功率发射方案进行对比。实验结果表明，在各类环境下，所提算法均能在约2000步内收敛至理想性能。两种算法的主要参数配置见表\ref{table2}。
 
 \begin{figure}[H]
 \centering
@@ -505,7 +502,7 @@ MADQIN的详细执行流程总结于本页顶部的算法 \ref{DQN} 中。
 \label{MonteCarlo}
 \end{figure}
 
-首先，图\ref{MonteCarlo} 展示了上行可达和速率随接入点（AP）数量变化的关系。本文还对式\eqref{eqn-23}的“解析结果”与式\eqref{eqn-22}的“仿真结果”进行了对比分析。仿真结果基于蒙特卡洛方法，在 $10^4$ 次独立同分布（i.i.d.）信道实现下获得。结果显示，仿真与解析结果高度一致，充分验证了理论推导的准确性，为后续相关研究奠定了基础。
+首先，图\ref{MonteCarlo}展示了上行可达和速率随AP数量变化的关系。本章还对式\eqref{eqn-23}的"解析结果"与式\eqref{eqn-22}的"仿真结果"进行了对比分析。仿真结果基于蒙特卡洛方法，在$10^4$次独立同分布（independent and identically distributed，i.i.d.）信道实现下获得。结果显示，仿真与解析结果高度一致，充分验证了理论推导的准确性，为后续相关研究奠定了基础。
 
 \begin{figure}[H]
 \centering
@@ -514,7 +511,7 @@ MADQIN的详细执行流程总结于本页顶部的算法 \ref{DQN} 中。
 \label{fig4}
 \end{figure}
 
-图\ref{fig4} 展示了全功率传输场景下，不同AP和UE数量对应的单用户速率累积分布函数（CDF）。可以观察到，当 $M=15$ 时，随着UE数量增加，平均单用户速率呈下降趋势。这是由于UE密度升高导致导频污染和多用户干扰加剧。值得注意的是，尽管平均速率下降，用户速率下界却有所提升。其原因在于，当AP数量远大于UE数量时，系统尚未达到最大服务容量；而当UE数量超过AP数量时，用户速率受干扰影响显著，此时可通过增加AP数量加以缓解。随着AP和UE数量的增加，CDF曲线逐步右移并最终收敛于 $1.5$ bits/s/Hz 的共同上限。结果表明，在本研究场景下，单纯增加AP和UE数量无法无限提升用户速率，但可有效提升速率下界，增强系统数据传输的稳定性，体现了CF-mMIMO系统为所有用户提供均匀服务质量的优势。
+图\ref{fig4}展示了全功率传输场景下，不同AP和UE数量对应的单用户速率累积分布函数（Cumulative Distribution Function，CDF）。可以观察到，当$M=15$时，随着UE数量增加，平均单用户速率呈下降趋势。这是由于UE密度升高导致导频污染和多用户干扰加剧。值得注意的是，尽管平均速率下降，用户速率下界却有所提升。其原因在于，当AP数量远大于UE数量时，系统尚未达到最大服务容量；而当UE数量超过AP数量时，用户速率受干扰影响显著，此时可通过增加AP数量加以缓解。随着AP和UE数量的增加，CDF曲线逐步右移并最终收敛于$1.5$ bits/s/Hz的共同上限。结果表明，在本研究场景下，单纯增加AP和UE数量无法无限提升用户速率，但可有效提升速率下界，增强系统数据传输的稳定性，体现了CF-mMIMO系统为所有用户提供均匀服务质量的优势。
 
 \begin{figure}[H]
 \centering
@@ -529,9 +526,9 @@ MADQIN的详细执行流程总结于本页顶部的算法 \ref{DQN} 中。
 \label{fig6}
 \end{figure}
 
-图 \ref{fig5} 和图 \ref{fig6} 分别展示了在多种影响因素下，低分辨率ADC比特数对上行用户速率的影响。每组实验均假设所有AP配备相同分辨率的ADC。从结果可以看出，在达到峰值速率前，提升ADC分辨率能够显著提高用户速率；但在更大规模下，AP数量成为决定用户速率的主导因素，说明增加AP数量可有效补偿低分辨率ADC带来的速率损失。此外，天线数量不足会限制系统的最大速率性能。如图 \ref{fig5} 所示，仅当 $N \ge 50$ 时，用户速率才接近极限，表明实际部署中需根据AP数量合理配置天线数以充分发挥系统性能。随着天线数增加，单用户速率逐渐趋于上限 $1.5$ bits/s/Hz，这与前述结论一致。当 $N$ 相对于
+图\ref{fig5}和图\ref{fig6}分别展示了在多种影响因素下，低分辨率ADC比特数对上行用户速率的影响。每组实验均假设所有AP配备相同分辨率的ADC。从结果可以看出，在达到峰值速率前，提升ADC分辨率能够显著提高用户速率；但在更大规模下，AP数量成为决定用户速率的主导因素，说明增加AP数量可有效补偿低分辨率ADC带来的速率损失。此外，天线数量不足会限制系统的最大速率性能。如图\ref{fig5}所示，仅当$N \ge 50$时，用户速率才接近极限，表明实际部署中需根据AP数量合理配置天线数以充分发挥系统性能。随着天线数增加，单用户速率逐渐趋于上限$1.5$ bits/s/Hz，这与前述结论一致。当$N$相对于
 ${\rho _\text{u}}\sum\limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( \sum\limits_{k = 1}^K {\beta _{mk}}\Omega _k + 1 \right){\gamma _{mk}}$
-足够大时，其对用户速率的影响趋于减弱。此外，图 \ref{fig5} 与图 \ref{fig6} 的峰值速率基本一致，说明单纯提升ADC分辨率或AP天线数均无法突破系统固有的速率上限。
+足够大时，其对用户速率的影响趋于减弱。此外，图\ref{fig5}与图\ref{fig6}的峰值速率基本一致，说明单纯提升ADC分辨率或AP天线数均无法突破系统固有的速率上限。
 
 \begin{figure}[H]
 \centering
@@ -540,7 +537,7 @@ ${\rho _\text{u}}\sum\limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( \sum\l
 \label{fig7}
 \end{figure}
 
-图 \ref{fig7} 对比了理想与非理想硬件条件下，CF-mMIMO系统在不同AP数量和天线数量下的可达用户速率。结果显示，在理想硬件条件下，随着AP和天线数量增加，用户和速率最高可超过90 bits/s/Hz；而在非线性PA和低分辨率ADC影响下，峰值速率被限制在30 bits/s/Hz左右。可见，硬件损伤导致系统速率下降近70\%，凸显了针对硬件损伤系统开展深入研究的必要性。
+图\ref{fig7}对比了理想与非理想硬件条件下，CF-mMIMO系统在不同AP数量和天线数量下的可达用户速率。结果显示，在理想硬件条件下，随着AP和天线数量增加，用户和速率最高可超过90 bits/s/Hz；而在非线性PA和低分辨率ADC影响下，峰值速率被限制在30 bits/s/Hz左右。可见，硬件损伤导致系统速率下降近70\%，凸显了针对硬件损伤系统开展深入研究的必要性。
 
 \begin{figure}[H]
 \centering
@@ -549,7 +546,7 @@ ${\rho _\text{u}}\sum\limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( \sum\l
 \label{compare}
 \end{figure}
 
-随后，为深入分析导致用户速率显著下降的主要因素，图 \ref{compare} 通过控制硬件损伤变量设计了对比实验。结果表明，在ADC分辨率趋于理想的情况下，PA的非线性成为限制用户速率上限的关键瓶颈，这进一步验证了式 \eqref{eqn-23} 的理论分析。
+随后，为深入分析导致用户速率显著下降的主要因素，图\ref{compare}通过控制硬件损伤变量设计了对比实验。结果表明，在ADC分辨率趋于理想的情况下，PA的非线性成为限制用户速率上限的关键瓶颈，这进一步验证了式\eqref{eqn-23}的理论分析。
 
 \begin{figure}[htbp]
 	\centering
@@ -567,9 +564,9 @@ ${\rho _\text{u}}\sum\limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( \sum\l
 	\end{minipage}
 \end{figure}
 
-接下来，本文利用所提算法对整个系统中各AP与UE的实验参数进行精细调控，从不同角度验证算法带来的性能提升。图 \ref{fig10} 对比了DMAGNN‑AC算法与全功率传输策略、DDPG算法的优化性能。DDPG算法通过与环境交互探索逐步逼近最优解，在达到全功率策略性能上限后，可将单用户速率进一步提升 $2.8$ bit/s/Hz。此外，在引入DMAGNN作为特征提取模块后，速率的累积分布曲线相对DDPG进一步右移，验证了DMAGNN通过干扰建模与多尺度特征融合，能够提升算法收敛性能并改善最小用户速率。不同AP‑UE配置下的对比结果表明，系统最高用户速率稳定在 $3.8$ bit/s/Hz 左右，即为用户速率的最终性能边界。
+接下来，本章利用所提算法对整个系统中各AP与UE的实验参数进行精细调控，从不同角度验证算法带来的性能提升。图\ref{fig10}对比了DMAGNN‑AC算法与全功率传输策略、DDPG算法的优化性能。DDPG算法通过与环境交互探索逐步逼近最优解，在达到全功率策略性能上限后，可将单用户速率进一步提升$2.8$ bit/s/Hz。此外，在引入DMAGNN作为特征提取模块后，速率的累积分布曲线相对DDPG进一步右移，验证了DMAGNN通过干扰建模与多尺度特征融合，能够提升算法收敛性能并改善最小用户速率。不同AP‑UE配置下的对比结果表明，系统最高用户速率稳定在$3.8$ bit/s/Hz左右，即为用户速率的最终性能边界。
 
-如图 \ref{fig11} 所示，在总比特数保持恒定的前提下，本文所提的MADQIN算法相比平均分配策略在性能上有显著提升。随着天线数量增加，用户速率呈逐步上升趋势。值得注意的是，调整AP的ADC分辨率仅能带来较小的性能增益。这一现象可由式 \eqref{eqn-23} 解释：速率主要由ADC总分辨率决定，无论信号是期望信号还是用户间干扰，仅有ADC量化噪声项与分辨率的具体分配有关。因此，该影响处于可接受范围内。
+如图\ref{fig11}所示，在总比特数保持恒定的前提下，本章所提的MADQIN算法相比平均分配策略在性能上有显著提升。随着天线数量增加，用户速率呈逐步上升趋势。值得注意的是，调整AP的ADC分辨率仅能带来较小的性能增益。这一现象可由式\eqref{eqn-23}解释：速率主要由ADC总分辨率决定，无论信号是期望信号还是用户间干扰，仅有ADC量化噪声项与分辨率的具体分配有关。因此，该影响处于可接受范围内。
 
 \begin{figure}[htbp]
 	\centering
@@ -587,7 +584,8 @@ ${\rho _\text{u}}\sum\limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( \sum\l
 	\end{minipage}
 \end{figure}
 
-图 \ref{fig8} 和图 \ref{fig9} 分别给出了两种算法在迭代过程中的损失函数值。为使结果更具普适性，本文对三组损失结果进行了对比。可以看出，两种算法在迭代1200轮后均呈现出明显的收敛趋势，充分证明了两种算法均具备优异的性能稳定性。
+图\ref{fig8}和图\ref{fig9}分别给出了两种算法在迭代过程中的损失函数值。为使结果更具普适性，本章对三组损失结果进行了对比。可以看出，两种算法在迭代1200轮后均呈现出明显的收敛趋势，充分证明了两种算法均具备优异的性能稳定性。
 
 \section{本章小结}
-本章系统研究了在存在非线性PA与低分辨率ADC条件下，CF-mMIMO系统的上行数据传输性能，推导了可达用户速率的闭式表达式，并深入分析了硬件损伤对系统性能的影响。研究表明，非理想硬件会显著限制系统的速率上限。针对上述问题，本文提出了基于深度强化学习的DMAGNN-AC功率控制算法，有效抑制了多用户干扰，并显著提升了系统整体性能及最小用户速率下界。进一步地，结合MADQIN算法实现了ADC分辨率的自适应优化，进一步提升了系统的速率表现。仿真结果验证了所提算法在低质量硬件条件下的有效性与实用性，为实际CF-mMIMO系统的工程实现提供了理论支撑。
+
+本章系统研究了在存在非线性PA与低分辨率ADC条件下，CF-mMIMO系统的上行数据传输性能，推导了可达用户速率的闭式表达式，并深入分析了硬件损伤对系统性能的影响。研究表明，非理想硬件会显著限制系统的速率上限。针对上述问题，本章提出了基于深度强化学习的DMAGNN-AC功率控制算法，有效抑制了多用户干扰，并显著提升了系统整体性能及最小用户速率下界。进一步地，结合MADQIN算法实现了ADC分辨率的自适应优化，进一步提升了系统的速率表现。仿真结果验证了所提算法在低质量硬件条件下的有效性与实用性，为实际CF-mMIMO系统的工程实现提供了理论支撑。
