@@ -10,6 +10,115 @@
 
 本章以CF-mMIMO系统的URLLC服务为研究对象，针对实际硬件损伤问题，深入分析功率分配策略对系统性能的影响。为实现系统能耗优化与硬件损伤量化分析，采用无记忆多项式模型刻画用户设备非线性功率放大器特性，并结合接入点低分辨率ADC量化技术，推导上行链路用户速率解析表达式，为后续研究奠定理论基础。
 
+\section{模型设计}
+
+本章在第三章系统模型的基础上进行简化，重点研究仅存在功率放大器（PA）非线性硬件损伤的场景。相较于第三章同时考虑PA非线性和低分辨率ADC的复杂模型，本章假设接入点（AP）端配备理想的高精度ADC（即$b_m \to \infty$，$\alpha_m = 1$），从而能够更加聚焦地分析PA非线性对超可靠低延迟通信（URLLC）服务性能的影响。该简化模型不仅有助于理论推导的清晰性，更能深入揭示硬件损伤与URLLC性能之间的内在关联机制。
+
+\subsection{信道估计}
+
+考虑一个上行链路去蜂窝大规模多输入多输出（CF-mMIMO）系统，该系统由$M$个配备$N$根天线的接入点（AP）和$K$个单天线用户设备（UE）构成。第$m$个AP与第$k$个UE之间的信道向量可建模为
+\begin{equation}
+\mathbf{g}_{mk} = \beta_{mk}^{1/2} \mathbf{h}_{mk},
+\end{equation}
+其中$\beta_{mk}$表征大尺度衰落效应，$\mathbf{h}_{mk}$为小尺度衰落向量，其各元素服从独立同分布的复高斯分布$\mathcal{CN}(0,1)$。
+
+为刻画用户设备端功率放大器（PA）的非线性特性，采用无记忆多项式模型进行建模。经非线性PA处理后，第$k$个UE发送的导频信号可表示为
+\begin{equation}
+\boldsymbol{\phi}_k = \tilde{a}_1\boldsymbol{\varphi}_k + \tilde{a}_3\boldsymbol{\varphi}_k\|\boldsymbol{\varphi}_k\|^2,
+\end{equation}
+其中$\tilde{a}_1 = a_1\sqrt{\tau_\text{p}}$，$\tilde{a}_3 = a_3\tau_\text{p}\sqrt{\tau_\text{p}}$，$a_1$和$a_3$分别为无记忆多项式模型的一阶和三阶复系数。
+
+第$m$个AP接收到的导频信号为
+\begin{equation}
+\mathbf{Y}_{\text{p},m} = \sqrt{\rho_\text{p}}\sum_{k=1}^{K}\mathbf{g}_{mk}\boldsymbol{\phi}_k^H + \mathbf{W}_{\text{p},m},
+\end{equation}
+其中$\rho_\text{p}$为导频信号功率，$\mathbf{W}_{\text{p},m}$为加性高斯白噪声矩阵。
+
+鉴于本章假设接入点配备理想高精度模数转换器（ADC），即$\alpha_m = 1$且量化噪声可忽略不计，AP可直接对接收信号进行投影处理。将接收信号$\mathbf{Y}_{\text{p},m}$投影至导频序列$\boldsymbol{\varphi}_k$，得到
+\begin{equation}
+\check{\mathbf{y}}_{\text{p},mk} = \sqrt{\rho_\text{p}}\sum_{k'\in\mathcal{P}_k}(\tilde{a}_1+\tilde{a}_3\tau_\text{p})\mathbf{g}_{mk'} + \mathbf{W}_{\text{p},m}\boldsymbol{\varphi}_k,
+\end{equation}
+其中$\mathcal{P}_k$表示与第$k$个UE共享相同导频序列的用户集合。
+
+采用最小均方误差（MMSE）估计算法，信道向量$\mathbf{g}_{mk}$的估计值可表示为
+\begin{equation}
+\hat{\mathbf{g}}_{mk} = c_{mk}\check{\mathbf{y}}_{\text{p},mk},
+\end{equation}
+其中MMSE估计系数$c_{mk}$由下式给出：
+\begin{equation}
+c_{mk} = \frac{\sqrt{\tau_\text{p}\rho_\text{p}}\beta_{mk}(a_1+a_3\tau_\text{p})}{\tau_\text{p}\rho_\text{p}\sum_{k'\in\mathcal{P}_k}(a_1+a_3\tau_\text{p})^2\beta_{mk'}+1}.
+\end{equation}
+
+信道估计向量第$n$个分量的均方值可推导为
+\begin{equation}
+\gamma_{mk} = \frac{\tau_\text{p}\rho_\text{p}\beta_{mk}^2(a_1+a_3\tau_\text{p})^2}{\tau_\text{p}\rho_\text{p}\sum_{k'\in\mathcal{P}_k}(a_1+a_3\tau_\text{p})^2\beta_{mk'}+1}.
+\end{equation}
+
+定义信道估计误差向量为$\tilde{\mathbf{g}}_{mk} = \mathbf{g}_{mk} - \hat{\mathbf{g}}_{mk}$，其各元素服从复高斯分布$\mathcal{CN}(0, \beta_{mk}-\gamma_{mk})$，反映了信道估计的不确定性。
+
+\subsection{上行数据传输}
+
+在上行数据传输阶段，考虑用户设备（UE）端功率放大器（PA）的非线性特性。第$k$个UE经非线性PA处理后的输出信号可表示为
+\begin{equation}
+y_k = \sqrt{\rho_\text{u}}\left(\tilde{a}_{1k}q_k + \tilde{a}_{3k}q_k|q_k|^2\right),
+\end{equation}
+其中$\tilde{a}_{1k} = a_1\sqrt{\eta_k}$，$\tilde{a}_{3k} = a_3\eta_k\sqrt{\eta_k}$，$\eta_k$为功率控制系数，需满足功率约束条件$|a_1|^2\eta_k + 2(a_1^*a_3+a_1a_3^*)\eta_k^2 + 6|a_3|^2\eta_k^3 \leq 1$。
+
+第$m$个接入点（AP）接收到的上行信号为
+\begin{equation}
+\mathbf{y}_{\text{u},m} = \sqrt{\rho_\text{u}}\sum_{k=1}^{K}\left(\tilde{a}_{1k}\mathbf{g}_{mk}q_k + \tilde{a}_{3k}\mathbf{g}_{mk}q_k|q_k|^2\right) + \mathbf{w}_{\text{u},m},
+\end{equation}
+其中$\rho_\text{u}$为上行数据传输功率，$\mathbf{w}_{\text{u},m} \sim \mathcal{CN}(\mathbf{0},\mathbf{I}_N)$为加性高斯白噪声。
+
+在中央处理单元（CPU）处，采用匹配滤波（MF）合并技术对接收信号进行处理，第$k$个用户的合并信号为
+\begin{equation}
+r_{\text{u},k} = \sum_{m=1}^{M}\hat{\mathbf{g}}_{mk}^H\mathbf{y}_{\text{u},m}.
+\end{equation}
+
+\subsection{可达速率分析}
+
+为分析系统性能，将接收信号$r_{\text{u},k}$分解为多个分量：
+\begin{equation}
+r_{\text{u},k} = \text{ES}_k \cdot q_k + \text{BU}_k \cdot q_k + \sum_{k'\neq k}^{K}\text{I}_{kk'} \cdot q_{k'} + \sum_{k'\neq k}^{K}\text{NB}_{kk'} \cdot q_{k'} + \text{N}_k,
+\end{equation}
+其中各分量分别表示期望信号（ES）、波束成形增益不确定性（BU）、用户间干扰（I）、非线性干扰（NB）以及加性噪声（N）。
+
+\textbf{期望信号分析}：基于信道估计误差模型$\mathbf{g}_{mk} = \hat{\mathbf{g}}_{mk} + \tilde{\mathbf{g}}_{mk}$及最小均方误差（MMSE）估计的统计特性，期望信号分量可推导为
+\begin{equation}
+\text{ES}_k = N\sqrt{\rho_\text{u}}(\tilde{a}_{1k}+\tilde{a}_{3k})\sum_{m=1}^{M}\gamma_{mk}.
+\end{equation}
+
+\textbf{加性噪声方差}：加性噪声分量的方差为
+\begin{equation}
+\mathbb{E}\{|\text{N}_k|^2\} = N\sum_{m=1}^{M}\gamma_{mk}.
+\end{equation}
+
+\textbf{干扰分析}：总干扰$\Theta_k$包含波束成形增益不确定性、用户间干扰和非线性干扰三个主要部分。经过详细的理论推导（详见附录），总干扰方差可简化为如下表达式：
+\begin{equation}
+\mathbb{E}\{|\Theta_k|^2\} = N\rho_\text{u}\sum_{k'=1}^{K}\Omega_{k'}\sum_{m=1}^{M}\gamma_{mk}\beta_{mk'} + 3N\rho_\text{u}|a_3|^2\eta_k^3\left(\sum_{m=1}^{M}\gamma_{mk}\right)^2,
+\end{equation}
+其中$\Omega_k = |a_1|^2\eta_k + 2(a_1^*a_3+a_1a_3^*)\eta_k^2 + 6|a_3|^2\eta_k^3$表征第$k$个用户设备的有效发射功率。
+
+\subsection{上行可达速率闭合表达式}
+
+基于前述分析结果，第$k$个用户设备（UE）的上行可达速率可表示为
+\begin{equation}
+R_{\text{u},k} = \log_2\left(1 + \text{SINR}_k\right),
+\end{equation}
+其中信干噪比（SINR）$\text{SINR}_k$的闭合表达式为
+\begin{equation}
+\text{SINR}_k = \frac{N\rho_\text{u}|\tilde{a}_{1k}+\tilde{a}_{3k}|^2\left(\sum_{m=1}^{M}\gamma_{mk}\right)^2}{\rho_\text{u}\sum_{k'=1}^{K}\Omega_{k'}\sum_{m=1}^{M}\gamma_{mk}\beta_{mk'} + 3\rho_\text{u}|a_3|^2\eta_k^3\left(\sum_{m=1}^{M}\gamma_{mk}\right)^2 + \sum_{m=1}^{M}\gamma_{mk}}.
+\end{equation}
+
+该闭合表达式从理论上揭示了功率放大器（PA）非线性对系统性能的影响机制：
+\begin{itemize}
+    \item 分子项$|\tilde{a}_{1k}+\tilde{a}_{3k}|^2$反映了PA非线性对期望信号功率的衰减效应；
+    \item 分母项$3\rho_\text{u}|a_3|^2\eta_k^3(\sum_{m}\gamma_{mk})^2$表征了PA非线性引入的自干扰分量；
+    \item 当$a_3 = 0$时，即理想线性PA条件下，该表达式退化为经典的大规模MIMO系统性能分析结果。
+\end{itemize}
+
+与第三章式(3-23)相比，本章表达式通过删除模数转换器（ADC）相关的量化噪声项$\Psi_k$和量化系数$\alpha_m$，实现了模型简化。这种简化不仅使表达式形式更加简洁，更有助于后续超可靠低延迟通信（URLLC）性能分析与功率控制算法的设计。
+
 \section{可实现URLLC速率}
 传统的香农容量是在假设码字长度趋于无穷大、解码错误概率趋近于零的理想条件下推导的。然而，在URLLC场景下，由于对时延和可靠性的极高要求，实际通信往往采用有限块长编码，此时香农容量理论已不再适用。为准确刻画有限块长下的系统性能，URLLC通常采用有限块长编码理论对可实现速率进行分析。
 
