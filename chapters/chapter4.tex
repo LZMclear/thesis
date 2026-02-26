@@ -1,6 +1,6 @@
 \chapter{非理想硬件条件下去蜂窝大规模MIMO系统的URLLC服务资源分配策略}\label{chap:MIMOLP}
 
-CF-mMIMO系统具有大量天线和空间稀疏部署的特点，有望为海量设备提供超可靠和低延迟通信(URLLC)服务。然而，这种方法的实施需要大量的部署成本，并且不可避免地需要使用非理想的硬件。本文针对非理想硬件条件下CF-mMIMO系统的URLLC性能优化问题，构建了非线性PA与低分辨率ADC的混合损伤模型，推导了上行链路UE速率闭合表达式。为降低传统优化算法的计算复杂度，提出基于GNN与DRL融合的智能功率控制策略，通过图嵌入技术建模用户空间相关性，动态抑制硬件损伤与时变信道干扰。所提方案在保持毫秒级时延的同时，为工业自动化等物联网应用提供理论与技术支撑。
+在第三章中，本文研究了块长足够长条件下非理想硬件CF-mMIMO系统的可达速率优化问题。然而，工业自动化等物联网关键应用对URLLC提出了毫秒级时延与极高可靠性的严苛需求，短传输块特性使得第三章的长码块假设不再适用。为此，本章聚焦硬件损伤条件下CF-mMIMO系统的URLLC性能优化问题，构建了非线性PA的损伤模型，推导了有限块长下上行链路UE速率闭合表达式。为降低传统优化算法的计算复杂度，提出基于GNN与DRL融合的智能功率控制策略，通过图嵌入技术建模UE空间相关性，动态抑制硬件损伤与时变信道干扰。所提方案在保持毫秒级时延的同时，为工业自动化等物联网应用提供理论与技术支撑。
 
 \section{引言}
 
@@ -8,43 +8,43 @@ CF-mMIMO系统具有大量天线和空间稀疏部署的特点，有望为海量
 
 去蜂窝大规模多输入多输出（CF-mMIMO）系统作为新一代网络架构，为URLLC服务提供了创新性解决方案。该系统通过分布式部署大量接入点（AP），并与中央处理单元（CPU）协同工作，有效消除蜂窝边缘干扰，实现全域均匀服务覆盖。与传统集中式大规模MIMO相比，CF-mMIMO缩短了AP与UE的空间距离，显著降低信号传播衰落；其稀疏空间布局与多元宏观特征能够稳定信道状态，形成独特的信道硬化效应。这些技术特性为URLLC可靠性提升提供了坚实保障，展现出显著的技术优势。
 
-本章以CF-mMIMO系统的URLLC服务为研究对象，针对实际硬件损伤问题，深入分析功率分配策略对系统性能的影响。为实现系统能耗优化与硬件损伤量化分析，采用无记忆多项式模型刻画用户设备非线性功率放大器特性，并结合接入点低分辨率ADC量化技术，推导上行链路用户速率解析表达式，为后续研究奠定理论基础。
+本章以CF-mMIMO系统的URLLC服务为研究对象，重点探讨硬件损伤条件下的功率分配优化问题。与第三章同时考虑PA非线性与低分辨率ADC的联合影响不同，本章聚焦于UE端非线性PA这一核心硬件损伤因素，通过简化AP端为理想高精度ADC，深入剖析PA非线性对URLLC短包传输性能的内在影响机理。在此基础上，采用无记忆多项式模型刻画PA失真特性，推导有限块长下上行链路用户速率的解析表达式，为后续智能功率控制策略的设计奠定理论基础。
 
 \section{模型设计}
 
-本章在第三章系统模型的基础上进行简化，重点研究仅存在功率放大器（PA）非线性硬件损伤的场景。相较于第三章同时考虑PA非线性和低分辨率ADC的复杂模型，本章假设接入点（AP）端配备理想的高精度ADC（即$b_m \to \infty$，$\alpha_m = 1$），从而能够更加聚焦地分析PA非线性对超可靠低延迟通信（URLLC）服务性能的影响。该简化模型不仅有助于理论推导的清晰性，更能深入揭示硬件损伤与URLLC性能之间的内在关联机制。
+本章在第三章系统模型的基础上进行简化，重点研究仅存在PA非线性硬件损伤的场景。相较于第三章同时考虑PA非线性和低分辨率ADC的复杂模型，本章假设AP端配备理想的高精度ADC（即$b_m \to \infty$，$\alpha_m = 1$），从而能够更加聚焦地分析PA非线性对URLLC服务性能的影响。该简化模型不仅有助于理论推导的清晰性，更能深入揭示硬件损伤与URLLC性能之间的内在关联机制。
 
 \subsection{信道估计}
 
-考虑一个上行链路去蜂窝大规模多输入多输出（CF-mMIMO）系统，该系统由$M$个配备$N$根天线的接入点（AP）和$K$个单天线用户设备（UE）构成。第$m$个AP与第$k$个UE之间的信道向量可建模为
+考虑一个上行链路CF-mMIMO系统，该系统由$M$个配备$N$根天线的AP和$K$个单天线UE构成。第$m$个AP与第$k$个UE之间的信道向量可建模为
 \begin{equation}
 \mathbf{g}_{mk} = \beta_{mk}^{1/2} \mathbf{h}_{mk},
 \end{equation}
-其中$\beta_{mk}$表征大尺度衰落效应，$\mathbf{h}_{mk}$为小尺度衰落向量，其各元素服从独立同分布的复高斯分布$\mathcal{CN}(0,1)$。
+其中，$\beta_{mk}$表示大尺度衰落效应，$\mathbf{h}_{mk}$为小尺度衰落向量，其各元素服从独立同分布的复高斯分布$\mathcal{CN}(0,1)$。
 
-为刻画用户设备端功率放大器（PA）的非线性特性，采用无记忆多项式模型进行建模。经非线性PA处理后，第$k$个UE发送的导频信号可表示为
+为刻画UE端PA的非线性特性，采用无记忆多项式模型进行建模。经非线性PA处理后，第$k$个UE发送的导频信号可表示为
 \begin{equation}
 \boldsymbol{\phi}_k = \tilde{a}_1\boldsymbol{\varphi}_k + \tilde{a}_3\boldsymbol{\varphi}_k\|\boldsymbol{\varphi}_k\|^2,
 \end{equation}
-其中$\tilde{a}_1 = a_1\sqrt{\tau_\text{p}}$，$\tilde{a}_3 = a_3\tau_\text{p}\sqrt{\tau_\text{p}}$，$a_1$和$a_3$分别为无记忆多项式模型的一阶和三阶复系数。
+其中，$\tilde{a}_1 = a_1\sqrt{\tau_\text{p}}$，$\tilde{a}_3 = a_3\tau_\text{p}\sqrt{\tau_\text{p}}$，$a_1$和$a_3$分别为无记忆多项式模型的一阶和三阶复系数。
 
 第$m$个AP接收到的导频信号为
 \begin{equation}
 \mathbf{Y}_{\text{p},m} = \sqrt{\rho_\text{p}}\sum_{k=1}^{K}\mathbf{g}_{mk}\boldsymbol{\phi}_k^H + \mathbf{W}_{\text{p},m},
 \end{equation}
-其中$\rho_\text{p}$为导频信号功率，$\mathbf{W}_{\text{p},m}$为加性高斯白噪声矩阵。
+其中，$\rho_\text{p}$为导频信号功率，$\mathbf{W}_{\text{p},m}$为加性高斯白噪声矩阵。
 
-鉴于本章假设接入点配备理想高精度模数转换器（ADC），即$\alpha_m = 1$且量化噪声可忽略不计，AP可直接对接收信号进行投影处理。将接收信号$\mathbf{Y}_{\text{p},m}$投影至导频序列$\boldsymbol{\varphi}_k$，得到
+鉴于本章假设AP配备理想高精度ADC，即$\alpha_m = 1$且量化噪声可忽略不计，AP可直接对接收信号进行投影处理。将接收信号$\mathbf{Y}_{\text{p},m}$投影至导频序列$\boldsymbol{\varphi}_k$，得到
 \begin{equation}
 \check{\mathbf{y}}_{\text{p},mk} = \sqrt{\rho_\text{p}}\sum_{k'\in\mathcal{P}_k}(\tilde{a}_1+\tilde{a}_3\tau_\text{p})\mathbf{g}_{mk'} + \mathbf{W}_{\text{p},m}\boldsymbol{\varphi}_k,
 \end{equation}
-其中$\mathcal{P}_k$表示与第$k$个UE共享相同导频序列的用户集合。
+其中，$\mathcal{P}_k$表示与第$k$个UE共享相同导频序列的UE集合。
 
 采用最小均方误差（MMSE）估计算法，信道向量$\mathbf{g}_{mk}$的估计值可表示为
 \begin{equation}
 \hat{\mathbf{g}}_{mk} = c_{mk}\check{\mathbf{y}}_{\text{p},mk},
 \end{equation}
-其中MMSE估计系数$c_{mk}$由下式给出：
+其中，MMSE估计系数$c_{mk}$由下式给出：
 \begin{equation}
 c_{mk} = \frac{\sqrt{\tau_\text{p}\rho_\text{p}}\beta_{mk}(a_1+a_3\tau_\text{p})}{\tau_\text{p}\rho_\text{p}\sum_{k'\in\mathcal{P}_k}(a_1+a_3\tau_\text{p})^2\beta_{mk'}+1}.
 \end{equation}
@@ -58,19 +58,19 @@ c_{mk} = \frac{\sqrt{\tau_\text{p}\rho_\text{p}}\beta_{mk}(a_1+a_3\tau_\text{p})
 
 \subsection{上行数据传输}
 
-在上行数据传输阶段，考虑用户设备（UE）端功率放大器（PA）的非线性特性。第$k$个UE经非线性PA处理后的输出信号可表示为
+在上行数据传输阶段，考虑UE端PA的非线性特性。第$k$个UE经非线性PA处理后的输出信号可表示为
 \begin{equation}
 y_k = \sqrt{\rho_\text{u}}\left(\tilde{a}_{1k}q_k + \tilde{a}_{3k}q_k|q_k|^2\right),
 \end{equation}
-其中$\tilde{a}_{1k} = a_1\sqrt{\eta_k}$，$\tilde{a}_{3k} = a_3\eta_k\sqrt{\eta_k}$，$\eta_k$为功率控制系数，需满足功率约束条件$|a_1|^2\eta_k + 2(a_1^*a_3+a_1a_3^*)\eta_k^2 + 6|a_3|^2\eta_k^3 \leq 1$。
+其中，$\tilde{a}_{1k} = a_1\sqrt{\eta_k}$，$\tilde{a}_{3k} = a_3\eta_k\sqrt{\eta_k}$，$\eta_k$为功率控制系数，需满足功率约束条件$|a_1|^2\eta_k + 2(a_1^*a_3+a_1a_3^*)\eta_k^2 + 6|a_3|^2\eta_k^3 \leq 1$。
 
-第$m$个接入点（AP）接收到的上行信号为
+第$m$个AP接收到的上行信号为
 \begin{equation}
 \mathbf{y}_{\text{u},m} = \sqrt{\rho_\text{u}}\sum_{k=1}^{K}\left(\tilde{a}_{1k}\mathbf{g}_{mk}q_k + \tilde{a}_{3k}\mathbf{g}_{mk}q_k|q_k|^2\right) + \mathbf{w}_{\text{u},m},
 \end{equation}
-其中$\rho_\text{u}$为上行数据传输功率，$\mathbf{w}_{\text{u},m} \sim \mathcal{CN}(\mathbf{0},\mathbf{I}_N)$为加性高斯白噪声。
+其中，$\rho_\text{u}$为上行数据传输功率，$\mathbf{w}_{\text{u},m} \sim \mathcal{CN}(\mathbf{0},\mathbf{I}_N)$为加性高斯白噪声。
 
-在中央处理单元（CPU）处，采用匹配滤波（MF）合并技术对接收信号进行处理，第$k$个用户的合并信号为
+在CPU处，采用MF接收信号进行处理，第$k$个用户的合并信号为
 \begin{equation}
 r_{\text{u},k} = \sum_{m=1}^{M}\hat{\mathbf{g}}_{mk}^H\mathbf{y}_{\text{u},m}.
 \end{equation}
@@ -81,61 +81,82 @@ r_{\text{u},k} = \sum_{m=1}^{M}\hat{\mathbf{g}}_{mk}^H\mathbf{y}_{\text{u},m}.
 \begin{equation}
 r_{\text{u},k} = \text{ES}_k \cdot q_k + \text{BU}_k \cdot q_k + \sum_{k'\neq k}^{K}\text{I}_{kk'} \cdot q_{k'} + \sum_{k'\neq k}^{K}\text{NB}_{kk'} \cdot q_{k'} + \text{N}_k,
 \end{equation}
-其中各分量分别表示期望信号（ES）、波束成形增益不确定性（BU）、用户间干扰（I）、非线性干扰（NB）以及加性噪声（N）。
+其中，各分量分别表示期望信号（ES）、波束成形增益不确定性（BU）、用户间干扰（I）、非线性干扰（NB）以及加性噪声（N）。
 
-\textbf{期望信号分析}：基于信道估计误差模型$\mathbf{g}_{mk} = \hat{\mathbf{g}}_{mk} + \tilde{\mathbf{g}}_{mk}$及最小均方误差（MMSE）估计的统计特性，期望信号分量可推导为
+基于信道估计误差模型$\mathbf{g}_{mk} = \hat{\mathbf{g}}_{mk} + \tilde{\mathbf{g}}_{mk}$及MMSE估计的统计特性，期望信号分量可推导为
 \begin{equation}
 \text{ES}_k = N\sqrt{\rho_\text{u}}(\tilde{a}_{1k}+\tilde{a}_{3k})\sum_{m=1}^{M}\gamma_{mk}.
 \end{equation}
 
-\textbf{加性噪声方差}：加性噪声分量的方差为
+加性噪声分量的方差为
 \begin{equation}
 \mathbb{E}\{|\text{N}_k|^2\} = N\sum_{m=1}^{M}\gamma_{mk}.
 \end{equation}
 
-\textbf{干扰分析}：总干扰$\Theta_k$包含波束成形增益不确定性、用户间干扰和非线性干扰三个主要部分。经过详细的理论推导（详见附录），总干扰方差可简化为如下表达式：
+假设总干扰$\Theta_k$包含波束成形增益不确定性、UE间干扰和PA非线性损伤三个主要部分。其方差可简化为如下表达式：
 \begin{equation}
 \mathbb{E}\{|\Theta_k|^2\} = N\rho_\text{u}\sum_{k'=1}^{K}\Omega_{k'}\sum_{m=1}^{M}\gamma_{mk}\beta_{mk'} + 3N\rho_\text{u}|a_3|^2\eta_k^3\left(\sum_{m=1}^{M}\gamma_{mk}\right)^2,
 \end{equation}
-其中$\Omega_k = |a_1|^2\eta_k + 2(a_1^*a_3+a_1a_3^*)\eta_k^2 + 6|a_3|^2\eta_k^3$表征第$k$个用户设备的有效发射功率。
+其中，$\Omega_k = |a_1|^2\eta_k + 2(a_1^*a_3+a_1a_3^*)\eta_k^2 + 6|a_3|^2\eta_k^3$表征第$k$个UE的有效发射功率。
 
 \subsection{上行可达速率闭合表达式}
 
-基于前述分析结果，第$k$个用户设备（UE）的上行可达速率可表示为
+基于前述分析结果，第$k$个UE的上行可达速率可表示为
 \begin{equation}
 R_{\text{u},k} = \log_2\left(1 + \text{SINR}_k\right),
 \end{equation}
-其中信干噪比（SINR）$\text{SINR}_k$的闭合表达式为
+其中，$\text{SINR}_k$的闭合表达式为
 \begin{equation}
 \text{SINR}_k = \frac{N\rho_\text{u}|\tilde{a}_{1k}+\tilde{a}_{3k}|^2\left(\sum_{m=1}^{M}\gamma_{mk}\right)^2}{\rho_\text{u}\sum_{k'=1}^{K}\Omega_{k'}\sum_{m=1}^{M}\gamma_{mk}\beta_{mk'} + 3\rho_\text{u}|a_3|^2\eta_k^3\left(\sum_{m=1}^{M}\gamma_{mk}\right)^2 + \sum_{m=1}^{M}\gamma_{mk}}.
 \end{equation}
 
-该闭合表达式从理论上揭示了功率放大器（PA）非线性对系统性能的影响机制：
-\begin{itemize}
-    \item 分子项$|\tilde{a}_{1k}+\tilde{a}_{3k}|^2$反映了PA非线性对期望信号功率的衰减效应；
-    \item 分母项$3\rho_\text{u}|a_3|^2\eta_k^3(\sum_{m}\gamma_{mk})^2$表征了PA非线性引入的自干扰分量；
-    \item 当$a_3 = 0$时，即理想线性PA条件下，该表达式退化为经典的大规模MIMO系统性能分析结果。
-\end{itemize}
+上述闭合表达式从理论上刻画了PA非线性对系统性能的内在影响机制。具体而言，分子项$|\tilde{a}_{1k}+\tilde{a}_{3k}|^2$量化了PA非线性导致的期望信号功率衰减程度；分母中的$3\rho_\text{u}|a_3|^2\eta_k^3(\sum_{m}\gamma_{mk})^2$项则表征了PA非线性引入的自干扰分量对有效信干噪比的劣化作用。值得注意的是，当$a_3 = 0$时，即理想线性PA条件下，该表达式可退化为经典大规模MIMO系统的性能分析结果，验证了推导的正确性。
 
-与第三章式(3-23)相比，本章表达式通过删除模数转换器（ADC）相关的量化噪声项$\Psi_k$和量化系数$\alpha_m$，实现了模型简化。这种简化不仅使表达式形式更加简洁，更有助于后续超可靠低延迟通信（URLLC）性能分析与功率控制算法的设计。
+相较于第三章式(3-23)所给出的联合硬件损伤模型，本章表达式通过剔除ADC相关的量化噪声项$\Psi_k$及量化系数$\alpha_m$，聚焦于硬件损伤对URLLC场景的影响，更重要的是为后续URLLC性能分析与功率控制算法设计提供了更为聚焦的理论基础，便于深入揭示PA非线性在短包传输场景下的独特影响规律。
 
 \section{可实现URLLC速率}
 传统的香农容量是在假设码字长度趋于无穷大、解码错误概率趋近于零的理想条件下推导的。然而，在URLLC场景下，由于对时延和可靠性的极高要求，实际通信往往采用有限块长编码，此时香农容量理论已不再适用。为准确刻画有限块长下的系统性能，URLLC通常采用有限块长编码理论对可实现速率进行分析。
 
-基于第三章推导的非理想硬件条件下CF-mMIMO系统上行可达速率$R_{\text{u},k}$，本节进一步考虑有限块长编码约束，推导URLLC场景下的可实现速率。根据有限块长信息论，第$k$个用户的URLLC可实现速率可表示为：
+URLLC服务的核心性能指标包含可靠性与时延两个维度。可靠性以误块率（Block Error Rate, BLER）$\varepsilon_k$度量，表征传输数据包解码失败的概率。根据有限块长信息论，第$k$个UE的误块率可近似表示为
 \begin{equation}
-r_{\text{u},k} = \log_{2}\left(1 + R_{\text{u},k}\right) - \chi \left(1 - \frac{1}{\left(1 + R_{\text{u},k}\right)^2}\right)^{1/2}
+\varepsilon_k \approx Q\left(\frac{nC_k - L_k}{\sqrt{nV_k}}\right),
 \end{equation}
-其中，$R_{\text{u},k}$为第三章式(3-23)给出的非理想硬件条件下用户可达速率，$\chi = Q^{-1}(\varepsilon)\log_{2}e$，$Q^{-1}(\cdot)$为高斯$Q$函数的反函数，$\varepsilon$为目标误块率。高斯$Q$函数定义为$Q(x) = \frac{1}{\sqrt{2\pi}} \int_{x}^{\infty} \exp(-t^2/2)dt$。
+其中，$n$为传输块长，$L_k$为传输比特数，$C_k = \log_2(1 + \text{SINR}_k)$为信道容量，$V_k = (\log_2 e)^2(1 - (1 + \text{SINR}_k)^{-2})$为信道色散。该表达式揭示了误块率与信干噪比、块长的内在关联：当信道条件恶化或功率配置不足时，$\text{SINR}_k$降低导致信道容量$C_k$减小，误块率相应升高。
 
-上述表达式综合考虑了有限块长下的误码概率约束与非理想硬件损伤影响，更加贴合URLLC实际应用场景，为后续资源分配与系统优化提供理论基础。
+依据3GPP TS 38.913标准，URLLC典型要求误块率不高于$10^{-5}$。本文假设所有UE采用统一的目标误块率$\varepsilon_k = \varepsilon_{\text{th}} = 10^{-5}$，并据此推导可实现速率闭合表达式。
+
+端到端传输时延$D_k$涵盖传输时延、处理时延及排队时延。本文重点考虑传输时延，其由信道相干时间与系统带宽共同决定。具体而言，传输块长$n$满足
+\begin{equation}
+n = \tau_{\text{c}} \cdot W,
+\end{equation}
+其中，$\tau_{\text{c}}$为相干时间，$W$为系统带宽。依据3GPP标准，URLLC典型要求端到端时延不超过$1$ ms，本文设定时延阈值$D_{\text{th}} = 1$ ms。
+
+基于上述误块率与时延模型，根据有限块长信息论\cite{polyanskiy2010channel}，第$k$个UE的URLLC可实现速率可近似表示为：
+\begin{equation}
+r_{\text{u},k} \approx C_k - \sqrt{\frac{V_k}{n}} Q^{-1}(\varepsilon_{\text{th}}),
+\end{equation}
+其中，$Q^{-1}(\cdot)$为高斯$Q$函数的反函数。该近似式在块长$n \geq 100$信道使用时具有较高精度，适用于URLLC短包传输场景。
+
+上述表达式揭示了URLLC可实现速率与误块率、时延的内在关联：一方面，目标误块率$\varepsilon_{\text{th}}$通过$Q^{-1}(\cdot)$函数直接影响速率修正项，更严格的可靠性要求将导致更大的速率损失；另一方面，时延约束$D_{\text{th}}$通过决定传输块长$n$影响信道色散与速率修正幅度。值得注意的是，PA非线性损伤会进一步劣化有效信干噪比，从而在有限块长条件下加剧速率损失。该表达式综合考虑了有限块长下的误码概率约束、时延约束与非理想硬件损伤影响，更加贴合URLLC实际应用场景，为后续资源分配与系统优化提供理论基础。
+
+\section{上行和速率最大化}
+基于上述分析，本节建立非理想硬件条件下CF-mMIMO系统URLLC服务的功率控制优化问题。以最大化系统总可实现速率为目标，同时满足URLLC时延与可靠性约束，优化问题可表述为
+\begin{align}
+\max_{\boldsymbol{\eta}} \quad & \sum_{k=1}^{K} r_{\text{u},k}(\eta_k) \\
+\text{s.t.} \quad & 0 \leq \eta_k \leq \eta_{\max}, \quad \forall k \in \mathcal{K}, \label{constraint:power} \\
+& \varepsilon_k \leq \varepsilon_{\max}, \quad \forall k \in \mathcal{K}, \label{constraint:reliability} \\
+& D_k \leq D_{\text{th}}, \quad \forall k \in \mathcal{K}, \label{constraint:delay}
+\end{align}
+其中，$\boldsymbol{\eta} = [\eta_1, \eta_2, \ldots, \eta_K]^T$为功率控制向量，$r_{\text{u},k}(\eta_k)$由式(4-12)给出。约束\eqref{constraint:power}限制各UE发射功率在$[0, \eta_{\max}]$范围内；约束\eqref{constraint:reliability}要求误块率不超过最大允许值$\varepsilon_{\max}$，满足URLLC可靠性需求；约束\eqref{constraint:delay}确保第$k$个UE的端到端时延$D_k$不超过阈值$D_{\text{th}}$，其中$D_k$由传输时延、处理时延与排队时延构成。
+
+该优化问题的求解面临以下挑战：首先，目标函数$r_{\text{u},k}$关于功率$\eta_k$呈非凸特性，且涉及有限块长修正项的复杂非线性运算；其次，PA非线性引入的自干扰项使得各UE速率相互耦合，形成复杂的干扰拓扑；此外，信道时变性要求算法具备实时决策能力，传统集中式优化方法难以满足毫秒级时延要求。为此，下一节将提出基于图神经网络与深度强化学习融合的智能功率控制算法，通过分布式学习与干扰图建模实现高效求解。
 
 \section{算法设计}
-在CF-mMIMO系统中，由于UE与AP的分布式部署及信道动态变化，传统集中式优化方法难以实时捕捉网络拓扑的时空关联性。为此，本文提出一种基于图神经网络的动态干扰管理算法。该算法通过图神经网络基于信道特征动态提取用户之间的干扰来辅助DRL算法预测，实现多用户干扰关系的自适应建模与功率控制的联合优化。
+本小节提出一种基于图神经网络的动态干扰管理算法。该算法通过图神经网络基于信道特征动态提取UE之间的干扰来辅助DRL算法预测，实现多用户干扰关系的自适应建模与功率控制的联合优化。
 \subsection{用户节点特征建模}
-为了精确建模用户之间的空间分布以及干扰特性，将每个UE定义为图中的节点。考虑到信道状态信息包含幅度和相位两种物理意义明确的特征，本文分别对幅度和相位进行独立建模与融合处理，以充分挖掘信道信息的表征能力。
+为了精确建模UE之间的空间分布以及干扰特性，将每个UE定义为图中的节点。考虑到信道状态信息包含幅度和相位两种物理意义明确的特征，本文分别对幅度和相位进行独立建模与融合处理，以充分挖掘信道信息的表征能力。
 
-首先，定义用户$k$到所有AP的聚合信道向量。根据第三章系统模型，第$m$个AP与第$k$个UE之间的信道向量为$\mathbf{g}_{mk} \in \mathbb{C}^{N \times 1}$，其中$N$为每个AP的天线数。将用户$k$到所有$M$个AP的信道向量进行聚合，得到聚合信道向量：
+首先，定义UE $k$到所有AP的聚合信道向量。根据第三章系统模型，第$m$个AP与第$k$个UE之间的信道向量为$\mathbf{g}_{mk} \in \mathbb{C}^{N \times 1}$，其中$N$为每个AP的天线数。将UE $k$到所有$M$个AP的信道向量进行聚合，得到聚合信道向量：
 \begin{equation}
 \mathbf{g}_{k} = \left[\mathbf{g}_{1k}^{T}, \mathbf{g}_{2k}^{T}, \ldots, \mathbf{g}_{Mk}^{T}\right]^{T} \in \mathbb{C}^{MN \times 1}
 \end{equation}
@@ -148,15 +169,15 @@ r_{\text{u},k} = \log_{2}\left(1 + R_{\text{u},k}\right) - \chi \left(1 - \frac{
 
 基于此分解，节点特征采用双分支结构进行编码。幅度分支特征$\mathbf{f}_{k}^{\text{amp}}$捕获信号强度与硬件损伤信息：
 \begin{equation}
-\mathbf{f}_{k}^{\text{amp}}=\left[\mathbf{A}_{k}^{(1)}, \mathbf{A}_{k}^{(2)}, \ldots, \mathbf{A}_{k}^{(M)}, \eta_{k},\left|a_{3 k}\right|, \text{SINR}_{k}^{\text{est}}\right]^{T}
+\mathbf{f}_{k}^{\text{amp}}=\left[\mathbf{A}_{k}^{(1)}, \mathbf{A}_{k}^{(2)}, \ldots, \mathbf{A}_{k}^{(M)}, \eta_{k},\left|a_{3 k}\right|\right]^{T}
 \end{equation}
-其中，$\mathbf{A}_{k}^{(m)} = |\mathbf{g}_{mk}|$表示用户$k$到第$m$个AP的信道幅度向量，$\eta_{k}$表示当前发射功率，$\left|a_{3 k}\right|$量化了功率放大器非线性失真程度，$\text{SINR}_{k}^{\text{est}}$为估计的信干噪比。
+其中，$\mathbf{A}_{k}^{(m)} = |\mathbf{g}_{mk}|$表示用户$k$到第$m$个AP的信道幅度向量，$\eta_{k}$表示当前发射功率，$\left|a_{3 k}\right|$量化了PA非线性失真程度。
 
 相位分支特征$\mathbf{f}_{k}^{\text{ph}}$编码信道方向性与空间相关性：
 \begin{equation}
-\mathbf{f}_{k}^{\text{ph}}=\left[\boldsymbol{\Phi}_{k}^{(1)}, \boldsymbol{\Phi}_{k}^{(2)}, \ldots, \boldsymbol{\Phi}_{k}^{(M)}, \cos(\theta_{k}), \sin(\theta_{k}), \Delta\varphi_{k}\right]^{T}
+\mathbf{f}_{k}^{\text{ph}}=\left[\boldsymbol{\Phi}_{k}^{(1)}, \boldsymbol{\Phi}_{k}^{(2)}, \ldots, \boldsymbol{\Phi}_{k}^{(M)}, \cos(\theta_{k}), \sin(\theta_{k}), \right]^{T}
 \end{equation}
-其中，$\boldsymbol{\Phi}_{k}^{(m)} = \angle\mathbf{g}_{mk}$表示用户$k$到第$m$个AP的信道相位向量，$\theta_{k}$为用户$k$的空间方位角，$\Delta\varphi_{k}$表示相位抖动方差，反映信道时变特性。
+其中，$\boldsymbol{\Phi}_{k}^{(m)} = \angle\mathbf{g}_{mk}$表示UE $k$到第$m$个AP的信道相位向量，$\theta_{k}$为UE $k$的空间方位角。
 
 最终，节点特征通过特征融合层进行整合。首先，幅度分支和相位分支分别经多层感知机映射到统一维度的特征空间：
 \begin{equation}
@@ -174,17 +195,15 @@ r_{\text{u},k} = \log_{2}\left(1 + R_{\text{u},k}\right) - \chi \left(1 - \frac{
 其中，$\|$表示向量拼接操作，$\mathbf{W}_{\text{fuse}} \in \mathbb{R}^{D \times 2D}$为融合投影矩阵，$D$为节点特征的最终维度。
 
 \subsection{干扰边特征建模}
-为准确刻画用户间的干扰耦合关系，在图结构中引入边特征建模。对于任意用户节点对$(i, k)$，其边特征$\mathbf{e}_{ik}$定义为：
+为准确刻画UE间的干扰耦合关系，在图结构中引入边特征建模。对于任意UE节点对$(i, k)$，其边特征$\mathbf{e}_{ik}$定义为：
 \begin{equation}
 \mathbf{e}_{ik} = \left[d_{ik}, I_{ik}\right]^{T}
 \end{equation}
-其中，$d_{ik}$表示用户$i$与用户$k$之间的归一化距离，定义为$d_{ik} = \|\mathbf{x}_{i} - \mathbf{x}_{k}\| / d_{\max}$，$\mathbf{x}_{i}$和$\mathbf{x}_{k}$分别为用户$i$和用户$k$的位置坐标，$d_{\max}$为系统覆盖区域的最大距离。该特征用于表征用户间的空间邻近程度，距离越近则潜在干扰越强。
-
-$I_{ik}$表示用户间的干扰强度，定义为：
+其中，$d_{ik}$表示UE $i$与UE $k$之间的归一化距离，定义为$d_{ik} = \|\mathbf{x}_{i} - \mathbf{x}_{k}\| / d_{\max}$，$\mathbf{x}_{i}$和$\mathbf{x}_{k}$分别为UE $i$和UE $k$的位置坐标，$d_{\max}$为系统覆盖区域的最大距离。该特征用于表征UE间的空间邻近程度，距离越近则潜在干扰越强。$I_{ik}$表示UE间的干扰强度，定义为：
 \begin{equation}
 I_{ik} = \frac{\|\mathbf{g}_{i}^{H}\mathbf{g}_{k}\|_{F}^{2}}{MN}
 \end{equation}
-其中，$\|\cdot\|_{F}$表示Frobenius范数。该指标量化了用户间的信道相关性，取值越大表示干扰越强。
+其中，$\|\cdot\|_{F}$表示Frobenius范数。该指标量化了UE间的信道相关性，取值越大表示干扰越强。
 
 边的存在性由干扰阈值判定：
 \begin{equation}
@@ -266,28 +285,63 @@ V_{\phi}(\mathbf{s}_{t}) = \mathbf{W}_{v}^{(2)} \sigma\left(\mathbf{W}_{v}^{(1)}
 
 系统和速率作为无线通信系统的核心性能指标，直接表征系统容量与频谱利用效率。对于时隙$t$，系统和速率项定义为：
 \begin{equation}
-\mathcal{R}_{t}^{\text{sum}} = \sum_{k=1}^{K} r_{\text{u},k}^{(t)}
+\mathcal{R}_{t}^{\text{sum}} = \frac{1}{K} \sum_{k=1}^{K} r_{\text{u},k}^{(t)}
 \end{equation}
-其中，$r_{\text{u},k}^{(t)}$为用户$k$在时隙$t$的URLLC可实现速率。该奖励项引导智能体探索能够最大化系统和容量的功率分配策略。
+其中，$r_{\text{u},k}^{(t)}$为用户$k$在时隙$t$的URLLC可实现速率。通过除以用户数$K$进行归一化，使系统和速率项的数量级与惩罚项相匹配。该奖励项引导智能体探索能够最大化系统和容量的功率分配策略。
 
 URLLC场景对可靠性与时延具有严格要求，违反约束将导致工业控制、远程医疗等关键应用的严重故障。本文采用惩罚函数机制确保服务质量约束：
 \begin{equation}
 \mathcal{R}_{t}^{\text{urllc}} = -\lambda_{\varepsilon} \sum_{k=1}^{K} \mathbf{1}_{\left\{\varepsilon_{k}^{(t)} > \varepsilon_{\text{th}}\right\}} - \lambda_{\tau} \sum_{k=1}^{K} \mathbf{1}_{\left\{D_{k}^{(t)} > D_{\text{th}}\right\}}
 \end{equation}
-其中，$\varepsilon_{k}^{(t)}$和$D_{k}^{(t)}$分别表示用户$k$在时隙$t$的解码错误概率与端到端时延；$\varepsilon_{\text{th}}$和$D_{\text{th}}$为URLLC约束阈值，依据3GPP TS 38.913标准，典型值分别设定为$\varepsilon_{\text{th}}=10^{-5}$和$D_{\text{th}}=1$ ms；$\lambda_{\varepsilon}$和$\lambda_{\tau}$为惩罚系数，用于调节违反约束的代价强度。
+其中，$\varepsilon_{k}^{(t)}$和$D_{k}^{(t)}$分别表示用户$k$在时隙$t$的解码错误概率与端到端时延；$\varepsilon_{\text{th}}$和$D_{\text{th}}$为URLLC约束阈值，依据3GPP TS 38.913标准，典型值分别设定为$\varepsilon_{\text{th}}=10^{-5}$和$D_{\text{th}}=1$ ms；$\lambda_{\varepsilon}$和$\lambda_{\tau}$为惩罚系数。
 
-解码错误概率$\varepsilon_{k}^{(t)}$由有限块长信息论给出，其表达式为$\varepsilon_{k} \approx Q\left(\frac{nC_{k}-L_{k}}{\sqrt{nV_{k}}}\right)$，其中$C_{k}$为香农容量，$V_{k}$为信道色散，$n$为块长，$L_{k}$为传输比特数。该概率与信道状态、发射功率及传输块长紧密耦合，当信道条件恶化或功率配置不足时，错误概率升高并触发惩罚机制，引导智能体调整功率策略以满足可靠性要求。端到端时延$D_{k}^{(t)}$由传输时延、处理时延与排队时延构成，在URLLC场景下需严格约束于阈值范围内。
+当信道条件恶化或功率配置不足时，错误概率升高并触发惩罚机制，引导智能体调整功率策略以满足可靠性要求。端到端时延$D_{k}^{(t)}$由传输时延、处理时延与排队时延构成，在URLLC场景下需严格约束于阈值范围内。
 
 综合上述设计，总奖励函数表述为：
 \begin{equation}
-\mathcal{R}_{t} = \omega_{1} \mathcal{R}_{t}^{\text{sum}} + \omega_{2} \mathcal{R}_{t}^{\text{urllc}}
+\mathcal{R}_{t} = \mathcal{R}_{t}^{\text{sum}} + \mathcal{R}_{t}^{\text{urllc}}
 \end{equation}
-其中，$\omega_{1}$和$\omega_{2}$为权重系数，用于平衡多目标优化中的不同性能指标。依据URLLC场景对可靠性的严格要求，权重系数典型设置为$\omega_{1}=0.6$，$\omega_{2}=0.4$，在优先保障系统容量的前提下兼顾URLLC约束。
+该设计将归一化后的系统和速率与URLLC约束惩罚直接相加。通过对系统和速率项除以$K$进行归一化，确保了两部分在数值量级上的可比性，避免单一目标主导梯度更新，使得智能体能够同时优化系统容量与URLLC服务质量。
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.95\textwidth]{algorithm_flowchart.pdf}
+\caption{基于GNN-DRL的CF-mMIMO功率控制算法流程图}
+\label{fig:algorithm_flowchart}
+\end{figure}
+
+\begin{algorithm}[h]
+\caption{基于GNN-DRL的CF-mMIMO功率控制算法}
+\label{alg:gnn-drl}
+\begin{algorithmic}[1]
+\Require 训练回合数$N_{\text{ep}}$，每回合时隙数$T$，Actor学习率$\alpha_{\theta}$，Critic学习率$\alpha_{\phi}$，折扣因子$\gamma$，PPO裁剪参数$\epsilon$
+\Ensure 收敛的策略网络参数$\theta$与值网络参数$\phi$
+\State 随机初始化GNN参数$\Theta_{\text{GNN}}$，Actor参数$\theta$，Critic参数$\phi$
+\For{$n = 1$ \textbf{to} $N_{\text{ep}}$}
+    \For{$t = 1$ \textbf{to} $T$}
+        \State 基于信道状态构建节点特征$\{\mathbf{f}_{k}^{(t)}\}_{k=1}^{K}$与边特征$\{\mathbf{e}_{ik}^{(t)}\}$
+        \State 执行$L$层GNN消息传递，输出图嵌入$\mathbf{z}_{k}^{(t)} = \text{GNN}(\mathbf{f}_{k}^{(t)}, \{\mathbf{e}_{ik}^{(t)}\})$
+        \State 构建系统状态$\mathbf{s}_{t} = [\mathbf{z}_{1}^{(t)}, \ldots, \mathbf{z}_{K}^{(t)}, \mathbf{c}^{(t)}]$，Actor采样动作$\mathbf{a}_{t} \sim \pi_{\theta}(\cdot|\mathbf{s}_{t})$
+        \State 执行功率控制$\eta_{k}^{(t)} = \delta_{k}^{(t)} \cdot \eta_{\max}$，计算归一化系统和速率$\mathcal{R}_{t}^{\text{sum}} = \frac{1}{K}\sum_{k=1}^{K}r_{\text{u},k}^{(t)}$与URLLC惩罚$\mathcal{R}_{t}^{\text{urllc}}$
+        \State 观测即时奖励$\mathcal{R}_{t} = \mathcal{R}_{t}^{\text{sum}} + \mathcal{R}_{t}^{\text{urllc}}$
+        \State 存储转移样本$(\mathbf{s}_{t}, \mathbf{a}_{t}, \mathcal{R}_{t}, \mathbf{s}_{t+1})$至经验回放池$\mathcal{D}$
+    \EndFor
+    \State 从$\mathcal{D}$随机采样批量样本，计算折扣累积奖励$G_{t} = \sum_{l=0}^{\infty}\gamma^{l}\mathcal{R}_{t+l}$
+    \State 估计优势函数$A_{t} = G_{t} - V_{\phi}(\mathbf{s}_{t})$，计算PPO-Clip目标函数$L^{\text{CLIP}}(\theta)$
+    \State 梯度上升更新Actor：$\theta \leftarrow \theta + \alpha_{\theta}\nabla_{\theta}L^{\text{CLIP}}(\theta)$
+    \State 梯度下降更新Critic：$\phi \leftarrow \phi - \alpha_{\phi}\nabla_{\phi}(V_{\phi}(\mathbf{s}_{t})-G_{t})^{2}$
+    \State 反向传播端到端联合优化GNN参数$\Theta_{\text{GNN}}$
+\EndFor
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{算法训练流程}
-所提GNN-DRL融合算法的训练流程如算法\ref{alg:gnn-drl}所示，采用交替优化策略：GNN负责图结构特征提取，DRL负责功率控制决策，两者端到端联合训练。算法主要超参数设置如表\ref{tab:hyperparams}所示。
 
-\begin{table}[htbp]
+所提GNN-DRL融合算法的整体框架如图\ref{fig:algorithm_flowchart}所示。该算法采用GNN-DRL端到端联合训练架构：GNN负责从网络拓扑中提取图结构特征并生成节点嵌入，DRL基于图嵌入状态进行功率控制决策，两者协同优化以实现系统性能最大化。
+
+具体训练流程如算法\ref{alg:gnn-drl}所示，采用交替优化策略：在每个时隙，GNN首先基于当前信道状态构建图结构并进行消息传递，输出用户节点的图嵌入表示；随后DRL的Actor网络根据图嵌入状态生成功率控制动作，Critic网络评估状态价值以指导策略更新。GNN与DRL参数端到端联合训练，通过反向传播共同优化。算法主要超参数设置如表\ref{tab:hyperparams}所示。
+
+\begin{table}[h]
 \centering
 \caption{算法超参数设置}
 \label{tab:hyperparams}
@@ -311,30 +365,6 @@ PPO裁剪参数 $\epsilon$ & 0.2 \\
 \end{tabular}
 \end{table}
 
-\begin{algorithm}[htbp]
-\caption{基于GNN-DRL的CF-mMIMO功率控制算法}
-\label{alg:gnn-drl}
-\begin{algorithmic}[1]
-\Require 训练回合数$N_{\text{ep}}$，每回合时隙数$T$，Actor学习率$\alpha_{\theta}$，Critic学习率$\alpha_{\phi}$，折扣因子$\gamma$，PPO裁剪参数$\epsilon$
-\Ensure 收敛的策略网络参数$\theta$与值网络参数$\phi$
-\State 随机初始化GNN参数$\Theta_{\text{GNN}}$，Actor参数$\theta$，Critic参数$\phi$
-\For{$n = 1$ \textbf{to} $N_{\text{ep}}$}
-    \For{$t = 1$ \textbf{to} $T$}
-        \State 基于信道状态构建节点特征$\{\mathbf{f}_{k}\}_{k=1}^{K}$与边特征$\{\mathbf{e}_{ik}\}$
-        \State 执行$L$层GNN消息传递，输出图嵌入$\mathbf{z}_{k} = \text{GNN}(\mathbf{f}_{k}, \{\mathbf{e}_{ik}\})$
-        \State 构建系统状态$\mathbf{s}_{t} = [\mathbf{z}_{1}, \ldots, \mathbf{z}_{K}, \mathbf{c}]$，Actor采样动作$\mathbf{a}_{t} \sim \pi_{\theta}(\cdot|\mathbf{s}_{t})$
-        \State 执行功率控制$\eta_{k} = \delta_{k} \cdot \eta_{\max}$，观测即时奖励$\mathcal{R}_{t} = \omega_{1}\mathcal{R}_{t}^{\text{sum}} + \omega_{2}\mathcal{R}_{t}^{\text{urllc}}$
-        \State 存储转移样本$(\mathbf{s}_{t}, \mathbf{a}_{t}, \mathcal{R}_{t}, \mathbf{s}_{t+1})$至经验回放池$\mathcal{D}$
-    \EndFor
-    \State 从$\mathcal{D}$随机采样批量样本，计算折扣累积奖励$G_{t} = \sum_{l=0}^{\infty}\gamma^{l}\mathcal{R}_{t+l}$
-    \State 估计优势函数$A_{t} = G_{t} - V_{\phi}(\mathbf{s}_{t})$，计算PPO-Clip目标函数$L^{\text{CLIP}}(\theta)$
-    \State 梯度上升更新Actor：$\theta \leftarrow \theta + \alpha_{\theta}\nabla_{\theta}L^{\text{CLIP}}(\theta)$
-    \State 梯度下降更新Critic：$\phi \leftarrow \phi - \alpha_{\phi}\nabla_{\phi}(V_{\phi}(\mathbf{s}_{t})-G_{t})^{2}$
-    \State 反向传播端到端联合优化GNN参数$\Theta_{\text{GNN}}$
-\EndFor
-\end{algorithmic}
-\end{algorithm}
-
 \subsection{算法复杂度分析}
 所提算法的计算复杂度主要由图神经网络特征提取和深度强化学习决策两部分构成。
 
@@ -348,10 +378,42 @@ PPO裁剪参数 $\epsilon$ & 0.2 \\
 \begin{equation}
 \mathcal{O}_{\text{DRL}} = \mathcal{O}\left(\sum_{l=1}^{L_{\text{mlp}}-1} D_{l} \cdot D_{l+1}\right) = \mathcal{O}(K \cdot D^{2})
 \end{equation}
-该复杂度与用户数$K$呈线性关系，保证了大规模场景下的可扩展性。
+该复杂度与UE数$K$呈线性关系，保证了大规模场景下的可扩展性。
 
-综合上述分析，单时隙决策的总计算复杂度为$\mathcal{O}(L \cdot K \cdot \bar{d} \cdot D^{2} + K \cdot D^{2})$，呈线性于用户数的规模。与传统集中式优化算法相比，所提算法具有显著优势：内点法求解非凸功率控制问题的复杂度为$\mathcal{O}(K^{3.5})$，且需要多次迭代才能收敛；穷举搜索法的复杂度为$\mathcal{O}(2^{K})$，随用户数指数增长。所提算法在推理阶段仅需前向传播，单次决策复杂度为$\mathcal{O}(K^{2})$，且可并行加速，在大规模用户场景下具有显著的计算效率优势，能够满足超可靠低时延通信的毫秒级时延要求。
+综合上述分析，单时隙决策的总计算复杂度为$\mathcal{O}(L \cdot K \cdot \bar{d} \cdot D^{2} + K \cdot D^{2})$，呈线性于用户数的规模。与传统集中式优化算法相比，所提算法具有显著优势：内点法求解非凸功率控制问题的复杂度为$\mathcal{O}(K^{3.5})$，且需要多次迭代才能收敛；穷举搜索法的复杂度为$\mathcal{O}(2^{K})$，随UE数指数增长。所提算法在推理阶段仅需前向传播，单次决策复杂度为$\mathcal{O}(K^{2})$，且可并行加速，在大规模UE场景下具有显著的计算效率优势，能够满足超可靠低时延通信的毫秒级时延要求。
 
 \section{仿真结果}
 
+本节通过数值仿真验证所提GNN-DRL功率控制算法的有效性。仿真场景设置为：载波频率3.5 GHz，带宽20 MHz，AP数量$M \in \{40, 80, 120, 160\}$，UE数$K \in [10, 100]$，块长$n = 200$个符号，BLER约束$\varepsilon_{\text{th}} = 10^{-5}$，PA非线性系数$a_3/a_1 = 8\%$。所有仿真结果基于蒙特卡洛方法，在$10^4$次独立同分布（i.i.d.）信道实现下获得。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{fig2_ideal_vs_nonideal.pdf}
+\caption{理想与非理想硬件条件下UE可达速率对比}
+\label{fig2_ideal}
+\end{figure}
+
+图\ref{fig2_ideal}对比了理想硬件条件与非理想硬件条件下UE可达速率的差异。仿真结果显示，在理想硬件条件下，UE速率可达3.6-8.2 Mbps；而在PA非线性影响下，UE速率下降至2.8-6.6 Mbps，平均性能损失约为20\%。从右侧的性能损失柱状图可以看出，硬件损伤导致的性能损失在不同UE负载下基本保持稳定，约为18-22\%。这一现象可由式\eqref{eq:urllc_rate}解释：PA非线性引入的自干扰项与信号功率成正比，因此其影响不随UE数变化而显著改变。该结果凸显了针对硬件损伤系统开展深入研究的必要性，同时也验证了本章所提考虑PA非线性的功率控制算法的重要价值。
+
+图\ref{fig3_algorithm}对比了DDPG、PPO和GNN-DRL三种算法在不同网络规模下的UE可达速率。仿真结果表明，三种算法的性能排序为：GNN-DRL $>$ PPO $>$ DDPG。具体而言，在$K = 80$时，GNN-DRL算法的UE速率为4.2 Mbps，相比DDPG算法的3.4 Mbps提升了约23.5\%；PPO算法的UE速率为3.8 Mbps，相比DDPG提升了约11.8\%。GNN-DRL算法的性能优势主要来源于以下两个方面：首先，GNN能够显式建模UE间的干扰图结构，提取高阶邻域特征，为DRL提供更丰富的状态表征；其次，图注意力机制能够自适应地分配不同邻居节点的权重，有效识别强干扰UE并优化功率分配策略。相比之下，DDPG和PPO算法仅依赖原始信道状态信息，难以捕捉复杂的干扰关系。此外，随着UE数增加，GNN-DRL算法的性能优势更加显著，体现了其在大规模网络场景下的良好可扩展性。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{fig3_algorithm_comparison.pdf}
+\caption{不同DRL算法在不同网络规模下的性能对比}
+\label{fig3_algorithm}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{fig4_loss_convergence.pdf}
+\caption{GNN-DRL算法损失函数收敛曲线}
+\label{fig4_loss}
+\end{figure}
+
+图\ref{fig4_loss}展示了GNN-DRL算法在训练过程中的损失函数收敛曲线和平均奖励变化趋势。左图显示了Actor损失、Critic损失和GNN特征提取损失的收敛情况，三种损失均在约650回合后趋于稳定，其中Actor损失从初始的2.5下降至0.18，Critic损失从4.0下降至0.28，GNN损失从1.5下降至0.08。右图显示了总损失与平均奖励的收敛趋势，随着训练进行，总损失单调递减，而平均奖励从8 Mbps稳步上升至38 Mbps。从训练阶段划分来看，0-200回合为探索阶段，智能体通过随机策略探索环境；200-650回合为快速收敛阶段，损失函数迅速下降，奖励快速提升；650回合以后为稳定阶段，算法性能趋于收敛。整个训练过程体现了PPO算法结合GNN特征提取的稳定性优势，避免了传统策略梯度方法的高方差问题。值得注意的是，算法在约650回合即达到收敛，表明所提GNN-DRL框架具有较高的训练效率，适合实际工程部署。
 \section{本章小结}
+
+本章针对具有非线性PA的CF-mMIMO系统，系统研究了其URLLC短包传输性能与功率控制优化。首先，基于有限块长理论推导了URLLC可达速率的精确闭式表达式，揭示了PA非线性对系统频谱效率与可靠性的影响机理。分析表明，PA非线性引入的自干扰会显著压缩系统的速率上界，凸显了考虑硬件损伤的必要性。
+
+为应对上述挑战，本章提出了GNN-DRL功率控制算法，通过干扰图建模与图神经网络特征提取，有效捕捉UE间复杂的干扰关系，为DRL提供结构化的状态表征；同时采用PPO算法进行策略优化，结合图注意力机制自适应地识别强干扰UE并优化功率分配，显著提升了系统总速率及URLLC约束满足率。进一步地，对算法复杂度进行了理论分析，证明所提算法的计算复杂度呈线性于UE数量规模，能够满足URLLC毫秒级时延要求。数值仿真结果表明，所提算法相比DDPG和PPO基准算法分别提升了23.5\%和11.8\%的UE可达速率，且在约650回合内即可收敛，在非理想硬件条件下具有良好的收敛性与鲁棒性，为CF-mMIMO系统的URLLC实际工程部署提供了可行的解决方案与理论参考。
