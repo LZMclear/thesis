@@ -80,6 +80,13 @@ V \approx (\log_2 e)^2 \left(1 - \frac{1}{(1+\text{SNR})^2}\right).
 
 图傅里叶变换将图信号从节点域映射到谱域，使得在节点域的卷积操作可转化为谱域的逐点乘积。这一性质为定义图卷积操作奠定了理论基础\cite{chaptertwo9}。
 
+\begin{figure}
+\centering
+\includegraphics[width=3.2in] {图卷积}
+\caption{图神经网络工作流程图}
+\label{GNN}
+\end{figure}
+
 \subsection{图卷积网络}
 
 图卷积网络（Graph Convolutional Network，GCN）是GNN的经典架构之一，其核心思想是将卷积操作从规则网格推广到图结构。谱域图卷积的定义基于图傅里叶变换\cite{chaptertwo6}：
@@ -178,28 +185,55 @@ L(\omega) = \mathbb{E}\left[(y_t - Q(s_t, a_t; \omega))^2\right].
 \nabla_{\omega}L(\omega) = \mathbb{E}\left[(y_t - Q(s_t, a_t; \omega))\nabla_{\omega}Q(s_t, a_t; \omega)\right].
 \end{equation}
 
+\begin{figure}
+\centering
+\includegraphics[width=5in] {ddpg}
+\caption{深度强化学习流程图}
+\label{ddpg}
+\end{figure}
+
 \subsection{Actor-Critic框架}
 
-Actor-Critic框架是策略梯度方法的重要改进，结合了值函数逼近和策略梯度\cite{chaptertwo11}。该框架包含两个组件：Actor负责生成动作策略，Critic负责评估当前策略。
+Actor-Critic框架是策略梯度方法的重要改进，结合了值函数逼近和策略梯度\cite{chaptertwo11}。该框架包含两个组件：Actor负责生成动作策略，Critic负责评估当前策略。图\ref{ddpg}展示了基于Actor-Critic架构的深度强化学习通用流程，该流程适用于多种DRL算法（如DDPG、PPO等）。
 
-策略梯度定理\cite{chaptertwo11}指出，策略目标函数$J(\theta)$关于策略参数$\theta$的梯度为：
+如图\ref{ddpg}所示，深度强化学习的训练流程包含以下关键步骤：
+
+\textbf{1. 交互采样阶段}：Actor网络根据当前状态$s_t$做出决策$a_t = \mu(s_t|\theta^{\mu})$，与环境交互后获得奖励$r_t$和下一状态$s_{t+1}$。经验元组$(s_t, a_t, s_{t+1}, r_t)$被存储在缓冲池中，用于后续的批量采样训练。经验回放机制打破了数据的时间相关性，提高了样本利用效率\cite{chaptertwo13}。
+
+\textbf{2. Critic评估阶段}：Critic网络负责评估当前策略的价值。对于基于值函数的方法（如DQN），目标值计算为：
 \begin{equation}
-\nabla_{\theta}J(\theta) = \mathbb{E}_{\pi_{\theta}}\left[\nabla_{\theta}\log\pi_{\theta}(a|s) \cdot Q^{\pi_{\theta}}(s, a)\right].
+y_t = r_t + \gamma \max_{a'}Q(s_{t+1}, a'; \omega^-),
 \end{equation}
+其中，$\omega^-$为目标网络参数。对于Actor-Critic方法，目标值可表示为：
+\begin{equation}
+y_t = r_t + \gamma Q(s_{t+1}, \mu'(s_{t+1}|\theta^{\mu'}); \theta^Q),
+\end{equation}
+其中，$\mu'$为目标Actor网络，$\theta^Q$为目标Critic网络参数。目标网络的使用稳定了训练过程，减少了震荡\cite{chaptertwo12}。
 
-Actor-Critic方法使用Critic估计的值函数替代真实的$Q^{\pi_{\theta}}(s, a)$，形成如下更新规则：
-\begin{itemize}
-\item Critic更新：最小化值函数估计误差，更新参数$\omega$；
-\item Actor更新：沿策略梯度方向更新参数$\theta$，最大化累积奖励。
-\end{itemize}
+Critic的损失函数为均方时序差分误差：
+\begin{equation}
+L(Q_w) \approx \frac{1}{T}\sum_{t=1}^{T}\left(y_t - Q(s_t, a_t; \omega)\right)^2,
+\end{equation}
+其中，$\omega$为Critic网络参数，$T$为批量样本数。通过最小化该损失函数，Critic能够准确估计状态-动作值函数。
 
-优势函数$A(s, a) = Q(s, a) - V(s)$衡量动作$a$相对于平均水平的优劣，使用优势函数可降低方差。近端策略优化（Proximal Policy Optimization，PPO）算法由Schulman等\cite{chaptertwo14}提出，通过裁剪目标函数限制策略更新幅度，确保训练稳定性：
+\textbf{3. Actor策略更新阶段}：Actor网络的更新通过梯度上升最大化Critic估计的Q值。策略梯度定理\cite{chaptertwo11}指出，确定性策略的梯度可表示为：
+\begin{equation}
+\nabla_{\theta^{\mu}}J \approx \frac{1}{T}\sum_{t=1}^{T}\nabla_a Q(s_t, a; \theta^Q)\big|_{a=\mu(s_t)} \cdot \nabla_{\theta^{\mu}}\mu(s_t; \theta^{\mu}),
+\end{equation}
+其中，$\theta^{\mu}$为Actor网络参数，$\theta^Q$为Critic网络参数。该梯度表示策略参数更新方向应使Critic估计的Q值增大。
+
+\textbf{4. 目标网络软更新阶段}：为保证训练的稳定性，目标网络采用软更新方式而非直接复制：
+\begin{align}
+\theta^{Q'} &\leftarrow \tau\theta^Q + (1-\tau)\theta^{Q'}, \\
+\theta^{\mu'} &\leftarrow \tau\theta^{\mu} + (1-\tau)\theta^{\mu'},
+\end{align}
+其中，$\tau \ll 1$为软更新系数。软更新使目标网络参数缓慢跟踪主网络，避免了训练过程中的震荡。
+
+上述流程构成了深度强化学习的通用框架。对于连续动作空间的控制问题，Lillicrap等\cite{chaptertwo15}提出的深度确定性策略梯度（DDPG）算法是该框架的典型实现。此外，Schulman等\cite{chaptertwo14}提出的近端策略优化（PPO）算法通过裁剪目标函数限制策略更新幅度：
 \begin{equation}
 L^{\text{CLIP}}(\theta) = \mathbb{E}\left[\min\left(r_t(\theta)\hat{A}_t, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon)\hat{A}_t\right)\right],
 \end{equation}
-其中，$r_t(\theta) = \frac{\pi_{\theta}(a_t|s_t)}{\pi_{\theta_{\text{old}}}(a_t|s_t)}$为重要性采样比率，$\epsilon$为裁剪参数。
-
-对于连续动作空间的控制问题，Lillicrap等\cite{chaptertwo15}提出了深度确定性策略梯度（DDPG）算法，将DQN扩展到连续动作空间，采用确定性策略梯度定理\cite{chaptertwo16}进行策略优化。
+其中，$r_t(\theta) = \frac{\pi_{\theta}(a_t|s_t)}{\pi_{\theta_{\text{old}}}(a_t|s_t)}$为重要性采样比率，$\epsilon$为裁剪参数，$\hat{A}_t$为优势函数估计。PPO算法在保证训练稳定性的同时，实现了更高效的策略优化。
 
 \section{本章小结}
 
