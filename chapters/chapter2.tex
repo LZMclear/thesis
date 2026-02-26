@@ -6,23 +6,23 @@
 
 \subsection{香农容量的局限性}
 
-传统香农信息论在假设码字长度趋于无穷大、解码错误概率趋近于零的理想条件下，推导出了信道的容量极限\cite{polyanskiy2010channel}。然而，在第五代及未来移动通信网络中，超可靠低延迟通信（Ultra-Reliable and Low-Latency Communications，URLLC）场景对时延和可靠性提出了极为严苛的要求。URLLC通常采用短包传输，码字长度有限，此时传统香农容量理论已不再适用。
+传统香农信息论在假设码字长度趋于无穷大、解码错误概率趋近于零的理想条件下，推导出了信道的容量极限\cite{chaptertwo1}。然而，在第五代及未来移动通信网络中，超可靠低延迟通信（Ultra-Reliable and Low-Latency Communications，URLLC）场景对时延和可靠性提出了极为严苛的要求。URLLC通常采用短包传输，码字长度有限，此时传统香农容量理论已不再适用。
 
-具体而言，香农容量公式假设传输块长$n \to \infty$，且允许错误概率$\varepsilon \to 0$。但在URLLC场景下，实际传输块长通常为几十到几百个符号周期，且要求在极短延迟内完成传输。正如Polyanskiy等\cite{polyanskiy2010channel}所指出的，这种有限块长约束导致实际可达速率显著低于香农容量，因此需要建立新的理论框架来准确刻画有限块长下的系统性能极限。
+具体而言，香农容量公式假设传输块长$n \to \infty$，且允许错误概率$\varepsilon \to 0$。但在URLLC场景下，实际传输块长通常为几十到几百个符号周期，且要求在极短延迟内完成传输。正如Polyanskiy等\cite{chaptertwo1}所指出的，这种有限块长约束导致实际可达速率显著低于香农容量，因此需要建立新的理论框架来准确刻画有限块长下的系统性能极限。
 
 \subsection{有限块长编码理论}
 
-有限块长信息论由Polyanskiy、Poor和Verd\'{u}\cite{polyanskiy2010channel}在2010年系统建立，该理论考虑了有限块长和有限错误概率约束下的信道编码性能。对于加性高斯白噪声（Additive White Gaussian Noise，AWGN）信道，有限块长下的可达速率可近似表示为：
+有限块长信息论由Polyanskiy、Poor和Verd\'{u}\cite{chaptertwo1}在2010年系统建立，该理论考虑了有限块长和有限错误概率约束下的信道编码性能。对于加性高斯白噪声（Additive White Gaussian Noise，AWGN）信道，有限块长下的可达速率可近似表示为：
 \begin{equation}
 r \approx C - \sqrt{\frac{V}{n}}Q^{-1}(\varepsilon) + O\left(\frac{\log n}{n}\right),
 \end{equation}
 其中，$C$为信道容量，$V$为信道色散，$n$为块长，$\varepsilon$为目标错误概率，$Q^{-1}(\cdot)$为高斯Q函数的反函数。
 
-该公式揭示了有限块长下的速率损失主要由信道色散和块长的平方根倒数决定。当块长$n$减小时，速率损失增大；当错误概率$\varepsilon$要求更严格时（即$\varepsilon$更小），$Q^{-1}(\varepsilon)$增大，导致可达速率进一步降低。这一理论为URLLC系统的设计提供了重要的理论指导\cite{sun2019optimizing,she2018cross}。
+该公式揭示了有限块长下的速率损失主要由信道色散和块长的平方根倒数决定。当块长$n$减小时，速率损失增大；当错误概率$\varepsilon$要求更严格时（即$\varepsilon$更小），$Q^{-1}(\varepsilon)$增大，导致可达速率进一步降低。这一理论为URLLC系统的设计提供了重要的理论指导\cite{chaptertwo2,chaptertwo3}。
 
 \subsection{高斯Q函数及其反函数}
 
-高斯Q函数是有限块长信息论中的核心数学工具，定义为标准正态分布的右尾概率\cite{polyanskiy2010channel}：
+高斯Q函数是有限块长信息论中的核心数学工具，定义为标准正态分布的右尾概率\cite{chaptertwo1}：
 \begin{equation}
 Q(x) = \frac{1}{\sqrt{2\pi}} \int_{x}^{\infty} \exp\left(-\frac{t^2}{2}\right)dt.
 \end{equation}
@@ -35,11 +35,11 @@ Q(x) = \frac{1}{\sqrt{2\pi}} \int_{x}^{\infty} \exp\left(-\frac{t^2}{2}\right)dt
 \item 对于大$x$值，可采用Chernoff界进行近似：$Q(x) \approx \frac{1}{\sqrt{2\pi}x}\exp\left(-\frac{x^2}{2}\right)$。
 \end{itemize}
 
-高斯Q函数的反函数$Q^{-1}(\cdot)$在有限块长速率公式中起着关键作用，它将目标错误概率映射为对应的置信水平。在URLLC场景下，典型错误概率要求为$\varepsilon = 10^{-5}$到$10^{-7}$\cite{3gpp2018}，对应的$Q^{-1}(\varepsilon)$值约为$4.26$到$5.20$。
+高斯Q函数的反函数$Q^{-1}(\cdot)$在有限块长速率公式中起着关键作用，它将目标错误概率映射为对应的置信水平。在URLLC场景下，典型错误概率要求为$\varepsilon = 10^{-5}$到$10^{-7}$\cite{chaptertwo4}，对应的$Q^{-1}(\varepsilon)$值约为$4.26$到$5.20$。
 
 \subsection{信道色散}
 
-信道色散（Channel Dispersion）$V$是有限块长信息论中的关键参数，量化了信道容量附近速率波动的方差\cite{polyanskiy2010channel}。对于AWGN信道，信道色散定义为：
+信道色散（Channel Dispersion）$V$是有限块长信息论中的关键参数，量化了信道容量附近速率波动的方差\cite{chaptertwo1}。对于AWGN信道，信道色散定义为：
 \begin{equation}
 V = \mathbb{E}\left[\left(\log\frac{p(Y|X)}{p(Y)} - C\right)^2\right],
 \end{equation}
@@ -50,17 +50,17 @@ V = \mathbb{E}\left[\left(\log\frac{p(Y|X)}{p(Y)} - C\right)^2\right],
 V \approx (\log_2 e)^2 \left(1 - \frac{1}{(1+\text{SNR})^2}\right).
 \end{equation}
 
-当信噪比趋于无穷大时，$V \to (\log_2 e)^2 \approx 2.08$；当信噪比趋于零时，$V \to 0$。信道色散与块长的比值$V/n$决定了有限块长下的速率损失幅度，是URLLC系统性能分析的重要参数\cite{bennis2018ultrareliable}。
+当信噪比趋于无穷大时，$V \to (\log_2 e)^2 \approx 2.08$；当信噪比趋于零时，$V \to 0$。信道色散与块长的比值$V/n$决定了有限块长下的速率损失幅度，是URLLC系统性能分析的重要参数\cite{chaptertwo5}。
 
 \section{图神经网络基础}
 
 \subsection{图论与谱图理论基础}
 
-图神经网络（Graph Neural Network，GNN）是处理非欧几里得结构数据的一类深度学习方法。与传统神经网络处理规则网格数据（如图像、语音）不同，GNN能够有效建模图结构数据，捕获节点间的复杂关系\cite{kipf2017semi}。
+图神经网络（Graph Neural Network，GNN）是处理非欧几里得结构数据的一类深度学习方法。与传统神经网络处理规则网格数据（如图像、语音）不同，GNN能够有效建模图结构数据，捕获节点间的复杂关系\cite{chaptertwo6}。
 
 一个无向图$\mathcal{G}$由节点集合$\mathcal{V}$和边集合$\mathcal{E}$组成，可表示为$\mathcal{G} = (\mathcal{V}, \mathcal{E})$。图的拓扑结构常用邻接矩阵$\mathbf{A} \in \mathbb{R}^{N \times N}$表示，其中$N = |\mathcal{V}|$为节点数，$A_{ij} = 1$表示节点$i$与节点$j$之间存在边，否则$A_{ij} = 0$。
 
-度矩阵$\mathbf{D}$是一个对角矩阵，其对角元素$D_{ii} = \sum_j A_{ij}$表示节点$i$的度数。基于邻接矩阵和度矩阵，可定义图拉普拉斯矩阵\cite{shuman2013emerging}：
+度矩阵$\mathbf{D}$是一个对角矩阵，其对角元素$D_{ii} = \sum_j A_{ij}$表示节点$i$的度数。基于邻接矩阵和度矩阵，可定义图拉普拉斯矩阵\cite{chaptertwo7}：
 \begin{equation}
 \mathbf{L} = \mathbf{D} - \mathbf{A}.
 \end{equation}
@@ -69,7 +69,7 @@ V \approx (\log_2 e)^2 \left(1 - \frac{1}{(1+\text{SNR})^2}\right).
 
 \subsection{图傅里叶变换}
 
-借鉴经典信号处理中的傅里叶变换思想，Bruna等\cite{bruna2014spectral}提出了图傅里叶变换（Graph Fourier Transform，GFT）。对于图上的信号$\mathbf{x} \in \mathbb{R}^N$，其图傅里叶变换定义为：
+借鉴经典信号处理中的傅里叶变换思想，Bruna等\cite{chaptertwo8}提出了图傅里叶变换（Graph Fourier Transform，GFT）。对于图上的信号$\mathbf{x} \in \mathbb{R}^N$，其图傅里叶变换定义为：
 \begin{equation}
 \hat{\mathbf{x}} = \mathbf{U}^T \mathbf{x},
 \end{equation}
@@ -78,27 +78,27 @@ V \approx (\log_2 e)^2 \left(1 - \frac{1}{(1+\text{SNR})^2}\right).
 \mathbf{x} = \mathbf{U} \hat{\mathbf{x}}.
 \end{equation}
 
-图傅里叶变换将图信号从节点域映射到谱域，使得在节点域的卷积操作可转化为谱域的逐点乘积。这一性质为定义图卷积操作奠定了理论基础\cite{defferrard2016convolutional}。
+图傅里叶变换将图信号从节点域映射到谱域，使得在节点域的卷积操作可转化为谱域的逐点乘积。这一性质为定义图卷积操作奠定了理论基础\cite{chaptertwo9}。
 
 \subsection{图卷积网络}
 
-图卷积网络（Graph Convolutional Network，GCN）是GNN的经典架构之一，其核心思想是将卷积操作从规则网格推广到图结构。谱域图卷积的定义基于图傅里叶变换\cite{kipf2017semi}：
+图卷积网络（Graph Convolutional Network，GCN）是GNN的经典架构之一，其核心思想是将卷积操作从规则网格推广到图结构。谱域图卷积的定义基于图傅里叶变换\cite{chaptertwo6}：
 \begin{equation}
 \mathbf{x} *_{\mathcal{G}} \mathbf{g} = \mathbf{U}\left((\mathbf{U}^T\mathbf{x}) \odot (\mathbf{U}^T\mathbf{g})\right),
 \end{equation}
 其中，$\mathbf{g}$为卷积核，$\odot$表示逐元素乘积。
 
-为避免特征分解的高计算复杂度，Kipf和Welling\cite{kipf2017semi}提出了一种简化的图卷积层：
+为避免特征分解的高计算复杂度，Kipf和Welling\cite{chaptertwo6}提出了一种简化的图卷积层：
 \begin{equation}
 \mathbf{H}^{(l+1)} = \sigma\left(\tilde{\mathbf{D}}^{-1/2}\tilde{\mathbf{A}}\tilde{\mathbf{D}}^{-1/2}\mathbf{H}^{(l)}\mathbf{W}^{(l)}\right),
 \end{equation}
 其中，$\tilde{\mathbf{A}} = \mathbf{A} + \mathbf{I}_N$为添加自环的邻接矩阵，$\tilde{D}_{ii} = \sum_j \tilde{A}_{ij}$，$\mathbf{H}^{(l)}$为第$l$层的节点特征矩阵，$\mathbf{W}^{(l)}$为可学习的权重矩阵，$\sigma(\cdot)$为非线性激活函数。
 
-该图卷积操作可理解为：首先对每个节点进行特征变换，然后通过归一化邻接矩阵聚合邻居信息，最后应用非线性激活。这种消息传递机制使每个节点能够捕获其局部邻域的结构信息\cite{kipf2017semi}。
+该图卷积操作可理解为：首先对每个节点进行特征变换，然后通过归一化邻接矩阵聚合邻居信息，最后应用非线性激活。这种消息传递机制使每个节点能够捕获其局部邻域的结构信息\cite{chaptertwo6}。
 
 \subsection{图注意力网络}
 
-图注意力网络（Graph Attention Network，GAT）由Veličković等\cite{velickovic2018graph}提出，引入了注意力机制，使模型能够自适应地学习邻居节点的重要性权重。与GCN使用固定的归一化权重不同，GAT通过计算注意力系数来实现差异化的邻居聚合。
+图注意力网络（Graph Attention Network，GAT）由Veličković等\cite{chaptertwo10}提出，引入了注意力机制，使模型能够自适应地学习邻居节点的重要性权重。与GCN使用固定的归一化权重不同，GAT通过计算注意力系数来实现差异化的邻居聚合。
 
 对于节点$i$和节点$j$，注意力系数$e_{ij}$表示节点$j$对节点$i$的重要性，计算方式为：
 \begin{equation}
@@ -117,18 +117,18 @@ e_{ij} = \text{LeakyReLU}\left(\mathbf{a}^T[\mathbf{W}\mathbf{h}_i \| \mathbf{W}
 \mathbf{h}_i' = \sigma\left(\sum_{j \in \mathcal{N}(i)} \alpha_{ij}\mathbf{W}\mathbf{h}_j\right).
 \end{equation}
 
-为进一步增强表达能力，GAT采用多头注意力机制，使用$K$个独立的注意力头并行计算，然后将结果拼接或取平均\cite{velickovic2018graph}：
+为进一步增强表达能力，GAT采用多头注意力机制，使用$K$个独立的注意力头并行计算，然后将结果拼接或取平均\cite{chaptertwo10}：
 \begin{equation}
 \mathbf{h}_i' = \sigma\left(\frac{1}{K}\sum_{k=1}^{K}\sum_{j \in \mathcal{N}(i)} \alpha_{ij}^{(k)}\mathbf{W}^{(k)}\mathbf{h}_j\right).
 \end{equation}
 
-多头机制使模型能够从不同子空间捕获节点间的多种关系模式，显著提升了模型的表达能力\cite{velickovic2018graph}。
+多头机制使模型能够从不同子空间捕获节点间的多种关系模式，显著提升了模型的表达能力\cite{chaptertwo10}。
 
 \section{深度强化学习基础}
 
 \subsection{马尔可夫决策过程}
 
-深度强化学习（Deep Reinforcement Learning，DRL）是机器学习的重要分支，通过智能体与环境的交互学习最优决策策略。DRL的理论基础是马尔可夫决策过程（Markov Decision Process，MDP）\cite{sutton2018reinforcement}，其由状态空间$\mathcal{S}$、动作空间$\mathcal{A}$、状态转移概率$\mathcal{P}$、奖励函数$\mathcal{R}$和折扣因子$\gamma$五元组定义。
+深度强化学习（Deep Reinforcement Learning，DRL）是机器学习的重要分支，通过智能体与环境的交互学习最优决策策略。DRL的理论基础是马尔可夫决策过程（Markov Decision Process，MDP）\cite{chaptertwo11}，其由状态空间$\mathcal{S}$、动作空间$\mathcal{A}$、状态转移概率$\mathcal{P}$、奖励函数$\mathcal{R}$和折扣因子$\gamma$五元组定义。
 
 MDP的核心假设是马尔可夫性，即下一状态仅依赖于当前状态和动作，与历史无关：
 \begin{equation}
@@ -139,7 +139,7 @@ P(s_{t+1}|s_t, a_t, s_{t-1}, a_{t-1}, \ldots) = P(s_{t+1}|s_t, a_t).
 \begin{equation}
 J(\pi) = \mathbb{E}\left[\sum_{t=0}^{\infty}\gamma^t r_t \Big| \pi\right],
 \end{equation}
-其中，$r_t = \mathcal{R}(s_t, a_t)$为时刻$t$的即时奖励，$\gamma \in [0, 1]$为折扣因子，平衡即时奖励与未来奖励的重要性\cite{sutton2018reinforcement}。
+其中，$r_t = \mathcal{R}(s_t, a_t)$为时刻$t$的即时奖励，$\gamma \in [0, 1]$为折扣因子，平衡即时奖励与未来奖励的重要性\cite{chaptertwo11}。
 
 值函数是评估状态或状态-动作对好坏的重要工具。状态值函数$V^{\pi}(s)$表示从状态$s$出发，遵循策略$\pi$的期望累积奖励：
 \begin{equation}
@@ -151,22 +151,22 @@ V^{\pi}(s) = \mathbb{E}\left[\sum_{t=0}^{\infty}\gamma^t r_t \Big| s_0 = s, \pi\
 Q^{\pi}(s, a) = \mathbb{E}\left[\sum_{t=0}^{\infty}\gamma^t r_t \Big| s_0 = s, a_0 = a, \pi\right].
 \end{equation}
 
-最优值函数$V^*(s)$和最优动作值函数$Q^*(s, a)$定义为所有策略中的最大值，满足贝尔曼最优方程\cite{sutton2018reinforcement}：
+最优值函数$V^*(s)$和最优动作值函数$Q^*(s, a)$定义为所有策略中的最大值，满足贝尔曼最优方程\cite{chaptertwo11}：
 \begin{equation}
 Q^*(s, a) = \mathcal{R}(s, a) + \gamma\mathbb{E}_{s'}\left[\max_{a'}Q^*(s', a')\right].
 \end{equation}
 
 \subsection{深度Q网络}
 
-深度Q网络（Deep Q-Network，DQN）由Mnih等\cite{mnih2015human}提出，将深度学习与Q学习相结合，使用神经网络逼近动作值函数$Q(s, a; \omega)$，其中$\omega$为网络参数。DQN的核心创新包括经验回放和目标网络。
+深度Q网络（Deep Q-Network，DQN）由Mnih等\cite{chaptertwo12}提出，将深度学习与Q学习相结合，使用神经网络逼近动作值函数$Q(s, a; \omega)$，其中$\omega$为网络参数。DQN的核心创新包括经验回放和目标网络。
 
-经验回放（Experience Replay）机制将智能体的交互经验$(s_t, a_t, r_t, s_{t+1})$存储于回放缓冲区，训练时随机采样小批量数据进行更新。这一机制打破了数据的时间相关性，提高了样本利用效率\cite{mnih2013playing}。
+经验回放（Experience Replay）机制将智能体的交互经验$(s_t, a_t, r_t, s_{t+1})$存储于回放缓冲区，训练时随机采样小批量数据进行更新。这一机制打破了数据的时间相关性，提高了样本利用效率\cite{chaptertwo13}。
 
 目标网络（Target Network）使用单独的网络计算目标值，其参数定期从主网络复制而非实时更新。目标值计算为：
 \begin{equation}
 y_t = r_t + \gamma \max_{a'}Q(s_{t+1}, a'; \omega^-),
 \end{equation}
-其中，$\omega^-$为目标网络参数。目标网络的使用稳定了训练过程，减少了震荡\cite{mnih2015human}。
+其中，$\omega^-$为目标网络参数。目标网络的使用稳定了训练过程，减少了震荡\cite{chaptertwo12}。
 
 DQN的损失函数为均方时序差分误差：
 \begin{equation}
@@ -180,9 +180,9 @@ L(\omega) = \mathbb{E}\left[(y_t - Q(s_t, a_t; \omega))^2\right].
 
 \subsection{Actor-Critic框架}
 
-Actor-Critic框架是策略梯度方法的重要改进，结合了值函数逼近和策略梯度\cite{sutton2018reinforcement}。该框架包含两个组件：Actor负责生成动作策略，Critic负责评估当前策略。
+Actor-Critic框架是策略梯度方法的重要改进，结合了值函数逼近和策略梯度\cite{chaptertwo11}。该框架包含两个组件：Actor负责生成动作策略，Critic负责评估当前策略。
 
-策略梯度定理\cite{sutton2018reinforcement}指出，策略目标函数$J(\theta)$关于策略参数$\theta$的梯度为：
+策略梯度定理\cite{chaptertwo11}指出，策略目标函数$J(\theta)$关于策略参数$\theta$的梯度为：
 \begin{equation}
 \nabla_{\theta}J(\theta) = \mathbb{E}_{\pi_{\theta}}\left[\nabla_{\theta}\log\pi_{\theta}(a|s) \cdot Q^{\pi_{\theta}}(s, a)\right].
 \end{equation}
@@ -193,14 +193,14 @@ Actor-Critic方法使用Critic估计的值函数替代真实的$Q^{\pi_{\theta}}
 \item Actor更新：沿策略梯度方向更新参数$\theta$，最大化累积奖励。
 \end{itemize}
 
-优势函数$A(s, a) = Q(s, a) - V(s)$衡量动作$a$相对于平均水平的优劣，使用优势函数可降低方差。近端策略优化（Proximal Policy Optimization，PPO）算法由Schulman等\cite{schulman2017proximal}提出，通过裁剪目标函数限制策略更新幅度，确保训练稳定性：
+优势函数$A(s, a) = Q(s, a) - V(s)$衡量动作$a$相对于平均水平的优劣，使用优势函数可降低方差。近端策略优化（Proximal Policy Optimization，PPO）算法由Schulman等\cite{chaptertwo14}提出，通过裁剪目标函数限制策略更新幅度，确保训练稳定性：
 \begin{equation}
 L^{\text{CLIP}}(\theta) = \mathbb{E}\left[\min\left(r_t(\theta)\hat{A}_t, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon)\hat{A}_t\right)\right],
 \end{equation}
 其中，$r_t(\theta) = \frac{\pi_{\theta}(a_t|s_t)}{\pi_{\theta_{\text{old}}}(a_t|s_t)}$为重要性采样比率，$\epsilon$为裁剪参数。
 
-对于连续动作空间的控制问题，Lillicrap等\cite{lillicrap2016continuous}提出了深度确定性策略梯度（DDPG）算法，将DQN扩展到连续动作空间，采用确定性策略梯度定理\cite{silver2014deterministic}进行策略优化。
+对于连续动作空间的控制问题，Lillicrap等\cite{chaptertwo15}提出了深度确定性策略梯度（DDPG）算法，将DQN扩展到连续动作空间，采用确定性策略梯度定理\cite{chaptertwo16}进行策略优化。
 
 \section{本章小结}
 
-本章系统阐述了后续章节所需的理论基础。首先介绍了有限块长信息论\cite{polyanskiy2010channel}，包括香农容量的局限性、有限块长编码理论、高斯Q函数及信道色散等核心概念，为URLLC场景下的性能分析提供了理论工具。然后详细介绍了图神经网络的数学基础，涵盖谱图理论\cite{shuman2013emerging}、图傅里叶变换\cite{bruna2014spectral}、图卷积网络\cite{kipf2017semi}和图注意力网络\cite{velickovic2018graph}，阐明了GNN处理非欧几里得数据、捕获节点间关系的机制。最后深入探讨了深度强化学习的理论基础，包括马尔可夫决策过程\cite{sutton2018reinforcement}、深度Q网络\cite{mnih2015human}和Actor-Critic框架\cite{schulman2017proximal}，为后续智能资源分配算法的设计奠定了方法论基础。这些理论工具将在后续章节中融合应用，解决CF-mMIMO系统中的复杂优化问题。
+本章系统阐述了后续章节所需的理论基础。首先介绍了有限块长信息论\cite{chaptertwo1}，包括香农容量的局限性、有限块长编码理论、高斯Q函数及信道色散等核心概念，为URLLC场景下的性能分析提供了理论工具。然后详细介绍了图神经网络的数学基础，涵盖谱图理论\cite{chaptertwo7}、图傅里叶变换\cite{chaptertwo8}、图卷积网络\cite{chaptertwo6}和图注意力网络\cite{chaptertwo10}，阐明了GNN处理非欧几里得数据、捕获节点间关系的机制。最后深入探讨了深度强化学习的理论基础，包括马尔可夫决策过程\cite{chaptertwo11}、深度Q网络\cite{chaptertwo12}和Actor-Critic框架\cite{chaptertwo14}，为后续智能资源分配算法的设计奠定了方法论基础。这些理论工具将在后续章节中融合应用，解决CF-mMIMO系统中的复杂优化问题。

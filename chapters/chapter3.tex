@@ -25,17 +25,17 @@ CF‑mMIMO系统通过密集部署大量接入点（Access Point，AP），可�
 
 \subsection{信道估计}
 
-本节采用无相关瑞利衰落信道模型\cite{paperIA11}，第$m$个AP与第$k$个UE之间的信道增益表示为
+本节采用无相关瑞利衰落信道模型\cite{chapterone28}，第$m$个AP与第$k$个UE之间的信道增益表示为
 \begin{equation}
 \mathbf{g}_{mk} = \beta_{mk}^{1/2} \mathbf{h}_{mk},
 \end{equation}
 其中，$\beta_{mk}$综合考虑了几何衰减与阴影衰落，并假定其在相干时间内保持不变；$\mathbf{h}_{mk}$的元素是具有瑞利分布包络的复高斯随机变量。设$\tau_\text{c}$为相干时间长度，$\tau_\text{p}$为每个相干时间的上行训练长度。受训练时长限制，本章采用$\tau_\text{p}<K$的非正交导频，并将使用相同导频序列的UE集合定义为$\mathcal{P}_k$。上行训练阶段，$K$个UE同时向所有AP发送非正交导频序列，第$k$个UE的导频信号可表示为$\sqrt{\tau_\text{p}}\boldsymbol{\varphi}_k\in\mathbb{C}^{\tau_\text{p}\times1}$，其中$\left\|\boldsymbol{\varphi}_k\right\|^2=1$。
 
-为准确建模硬件损伤，本章采用硬件非线性确定性行为模型\cite{paper1}，该模型能够以少量参数表征各类硬件损伤所产生的物理影响。硬件输入输出关系可描述为\cite{paper2}
+为准确建模硬件损伤，本章采用硬件非线性确定性行为模型\cite{chapterthree1}，该模型能够以少量参数表征各类硬件损伤所产生的物理影响。硬件输入输出关系可描述为\cite{chapterthree2}
 \begin{equation}
 x_\text{out}=\sum_{i=0}^{N_p}a_{2i+1}x_\text{in}\left | x_\text{in} \right |^{2i},
 \end{equation}
-其中，$a_{2i+1}$为模型复系数，$2N_p+1$为非线性阶数。该模型综合考虑了功率放大器、本地振荡器、混频器以及其他硬件组件的非线性特性。需要特别注意的是，由于带外分量存在于偶次项，准无记忆多项式中仅包含奇次项以表示带内失真。此外，三次项即可捕捉射频放大器主要非线性来源\cite{paper3,paper4}，因此本章采用$N_p=1$的三次多项式模型。已有研究表明，三次多项式模型可有效逼近实际非线性特性\cite{paper5,paper6}。
+其中，$a_{2i+1}$为模型复系数，$2N_p+1$为非线性阶数。该模型综合考虑了功率放大器、本地振荡器、混频器以及其他硬件组件的非线性特性。需要特别注意的是，由于带外分量存在于偶次项，准无记忆多项式中仅包含奇次项以表示带内失真。此外，三次项即可捕捉射频放大器主要非线性来源\cite{chapterthree3,chapterthree4}，因此本章采用$N_p=1$的三次多项式模型。已有研究表明，三次多项式模型可有效逼近实际非线性特性\cite{chapterthree5,chapterthree6}。
 
 经PA非线性作用后，第$k$个UE输出信号可表示为
 \begin{equation}
@@ -52,13 +52,13 @@ x_\text{out}=\sum_{i=0}^{N_p}a_{2i+1}x_\text{in}\left | x_\text{in} \right |^{2i
 \end{equation}
 其中，$\rho_\text{p}$为导频信号归一化信噪比（Signal-to-Noise Ratio，SNR），$\mathbf{W}_{\text{p},m}\in\mathbb{C}^{N\times\tau_\text{p}}$为第$m$个AP处加性高斯白噪声（Additive White Gaussian Noise，AWGN）矩阵，其第$\varsigma$列满足$[\mathbf{W}_{\text{p},m}]_\varsigma\sim\mathcal{CN}(\mathbf{0},\mathbf{I}_N)$。
 
-为分析低分辨率ADC对系统性能的影响，本章采用加性量化噪声模型（Additive Quantization Noise Model，AQNM），将量化过程引入的失真建模为与信号独立的高斯随机变量。已有研究验证该模型在中低信噪比下具有足够的建模精度\cite{paper7,paper8}。结合式\eqref{eqn-2}，第$m$个AP处ADC的输出可表示为
+为分析低分辨率ADC对系统性能的影响，本章采用加性量化噪声模型（Additive Quantization Noise Model，AQNM），将量化过程引入的失真建模为与信号独立的高斯随机变量。已有研究验证该模型在中低信噪比下具有足够的建模精度\cite{chapterthree7,chapterthree8}。结合式\eqref{eqn-2}，第$m$个AP处ADC的输出可表示为
 \begin{align}
 \label{eqn-3}
 \tilde{\mathbf{Y}}_{\text{p},m}& \triangleq\alpha_m\mathbf{Y}_{\text{p},m}+\tilde{\mathbf{W}}_{\text{p},m}\\
 &=\alpha_m\sqrt{\rho_\text{p}}\sum_{k=1}^{K}(\tilde{a}_1\mathbf{g}_{mk}\boldsymbol{\varphi}_k^H+\tilde{a}_3\mathbf{g}_{mk}\boldsymbol{\varphi}_k^H\left\|\boldsymbol{\varphi}_k\right\|^2)+\alpha_m\mathbf{W}_{\text{p},m}+\tilde{\mathbf{W}}_{\text{p},m},
 \end{align}
-其中，$\alpha_m$由量化比特数$b_m$决定，表示第$m$个AP的ADC量化精度\cite{paper9}，$\tilde{\mathbf{W}}_{\text{p},m}$为加性高斯量化噪声，与$\mathbf{Y}_{\text{p},m}$互不相关，其协方差矩阵为
+其中，$\alpha_m$由量化比特数$b_m$决定，表示第$m$个AP的ADC量化精度\cite{chapterthree9}，$\tilde{\mathbf{W}}_{\text{p},m}$为加性高斯量化噪声，与$\mathbf{Y}_{\text{p},m}$互不相关，其协方差矩阵为
 \begin{align}
 \label{eqn-4}
 \mathbf{R}_{\tilde{\mathbf{W}}_{\text{p},m}}&=\mathbb{E}\{\tilde{\mathbf{W}}_{\text{p},m}\tilde{\mathbf{W}}_{\text{p},m}^H\}\\
@@ -126,7 +126,7 @@ x_\text{out}=\sum_{i=0}^{N_p}a_{2i+1}x_\text{in}\left | x_\text{in} \right |^{2i
 
 随后，基于$r_{\text{u},k}$检测$q_k$的值。下一节将推导UE可达速率的闭式表达式。
 \subsection{可达速率分析}
-本节在综合考虑非线性PA与低分辨率ADC影响的前提下，推导CF-mMIMO系统中上行UE的可达速率。由于每个AP仅能获得信道估计信息，所以CPU无法获取实际的瞬时信道状态。CPU已知信道状态的统计特性，据此计算可达速率\cite{paper6}。结合式\eqref{eqn-14}，可将CPU端的接收信号重新表示为
+本节在综合考虑非线性PA与低分辨率ADC影响的前提下，推导CF-mMIMO系统中上行UE的可达速率。由于每个AP仅能获得信道估计信息，所以CPU无法获取实际的瞬时信道状态。CPU已知信道状态的统计特性，据此计算可达速率\cite{chapterthree6}。结合式\eqref{eqn-14}，可将CPU端的接收信号重新表示为
 \begin{align}\label{eqn-15}
 {r_{\text{u},k}} = {\text{ES}_k} \cdot {q_k} + {\text{BU}_k} \cdot {q_k} + \sum_{k' \ne k}^K {\text{I}_{kk'}} \cdot q_{k^\prime} +\sum_{k' \ne k}^K {\text{NB}_{kk'}} \cdot q_{k^\prime}  + {\text{N}_k} + {\text{Q}_k},
 \end{align}
@@ -464,11 +464,11 @@ MADQIN的详细执行流程总结于算法\ref{DQN}中，详见下页顶部。
 			\end{tabular}
   \end{center}
 \end{table}
-本章采用文献\cite{paper15}中非线性PA模型的参数设置，其中$a_1=13.85$，$a_3=-4.074$。大尺度衰落系数$\beta_{mk}$采用如下建模方式，以更准确反映实际通信环境中的信号衰减特性
+本章采用文献\cite{chapterthree10}中非线性PA模型的参数设置，其中$a_1=13.85$，$a_3=-4.074$。大尺度衰落系数$\beta_{mk}$采用如下建模方式，以更准确反映实际通信环境中的信号衰减特性
 \begin{equation}
 \beta_{mk} = \text{PL}_{mk} \cdot 10^{\frac{\delta_{\text{sh}}^{z_{mk}}}{10}},
 \end{equation}
-其中，$10^{\frac{\delta_{\text{sh}}^{z_{mk}}}{10}}$用于模拟阴影衰落，$z_{mk} \sim \mathcal{CN}(0,1)$。路径损耗$\text{PL}_{mk}$采用文献\cite{paperI4}提出的三斜率模型，具体为
+其中，$10^{\frac{\delta_{\text{sh}}^{z_{mk}}}{10}}$用于模拟阴影衰落，$z_{mk} \sim \mathcal{CN}(0,1)$。路径损耗$\text{PL}_{mk}$采用文献\cite{chapterone7}提出的三斜率模型，具体为
 \begin{equation}
 \text{PL}_{mk} = \left\{\begin{array}{ll}
 -L-35 \log_{10}(d_{mk}), & d_{mk} > d_1 \\
