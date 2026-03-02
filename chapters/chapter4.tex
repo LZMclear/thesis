@@ -106,7 +106,7 @@ r_{\text{u},k} = \text{ES}_k \cdot q_k + \text{BU}_k \cdot q_k + \sum_{k'\neq k}
 R_{\text{u},k} = \log_2\left(1 + \text{SINR}_k\right),
 \end{equation}
 其中，$\text{SINR}_k$的闭合表达式为
-\begin{equation}
+\begin{equation}\label{SINR}
 \text{SINR}_k = \frac{N\rho_\text{u}|\tilde{a}_{1k}+\tilde{a}_{3k}|^2\left(\sum_{m=1}^{M}\gamma_{mk}\right)^2}{\rho_\text{u}\sum_{k'=1}^{K}\Omega_{k'}\sum_{m=1}^{M}\gamma_{mk}\beta_{mk'} + 3\rho_\text{u}|a_3|^2\eta_k^3\left(\sum_{m=1}^{M}\gamma_{mk}\right)^2 + \sum_{m=1}^{M}\gamma_{mk}}.
 \end{equation}
 
@@ -117,27 +117,27 @@ R_{\text{u},k} = \log_2\left(1 + \text{SINR}_k\right),
 \section{可实现URLLC速率}
 传统的香农容量是在假设码字长度趋于无穷大、解码错误概率趋近于零的理想条件下推导的。然而，在URLLC场景下，由于对时延和可靠性的极高要求，实际通信往往采用有限块长编码，此时香农容量理论已不再适用。为准确刻画有限块长下的系统性能，URLLC通常采用有限块长编码理论对可实现速率进行分析。
 
-URLLC服务的核心性能指标包含可靠性与时延两个维度。可靠性以误块率（Block Error Rate, BLER）$\varepsilon_k$度量，表征传输数据包解码失败的概率。根据有限块长信息论，第$k$个UE的误块率可近似表示为
+URLLC服务的核心性能评估指标主要涵盖可靠性与时延两个关键维度。可靠性指标采用误块率（Block Error Rate, BLER）$\varepsilon_k$进行量化，该参数表征传输数据包在解码过程中发生错误的概率。基于有限块长信息论的理论框架，第$k$个用户设备的误块率可近似表达为
 \begin{equation}
 \varepsilon_k \approx Q\left(\frac{nC_k - L_k}{\sqrt{nV_k}}\right),
 \end{equation}
-其中，$n$为传输块长，$L_k$为传输比特数，$C_k = \log_2(1 + \text{SINR}_k)$为信道容量，$V_k = (\log_2 e)^2(1 - (1 + \text{SINR}_k)^{-2})$为信道色散。该表达式揭示了误块率与信干噪比、块长的内在关联：当信道条件恶化或功率配置不足时，$\text{SINR}_k$降低导致信道容量$C_k$减小，误块率相应升高。
+式中$n$表示传输块长参数，$L_k$为传输比特数量，$C_k = \log_2(1 + \text{SINR}_k)$为信道容量函数，$V_k = (\log_2 e)^2(1 - (1 + \text{SINR}_k)^{-2})$为信道色散参数。该数学表达式清晰揭示了误块率与信干噪比、传输块长之间的内在关联机制：当信道条件恶化或功率配置不足时，$\text{SINR}_k$的降低将导致信道容量$C_k$相应减小，从而引起误块率的升高。
 
-依据3GPP TS 38.913标准，URLLC典型要求误块率不高于$10^{-5}$。本文假设所有UE采用统一的目标误块率$\varepsilon_k = \varepsilon_{\text{th}} = 10^{-5}$，并据此推导可实现速率闭合表达式。
+依据3GPP TS 38.913技术标准规范，URLLC典型应用场景要求误块率不超过$10^{-5}$量级。本文假设所有用户设备采用统一的目标误块率设定值$\varepsilon_k = \varepsilon_{\text{th}} = 10^{-5}$，并基于此参数配置推导可实现速率的闭合表达式。
 
-端到端传输时延$D_k$涵盖传输时延、处理时延及排队时延。本文重点考虑传输时延，其由信道相干时间与系统带宽共同决定。具体而言，传输块长$n$满足
+端到端传输时延$D_k$包含传输时延、处理时延以及排队时延等多个组成部分。本文研究重点聚焦于传输时延的分析，该时延分量由信道相干时间与系统带宽共同决定。具体而言，传输块长$n$满足以下关系式
 \begin{equation}
 n = \tau_{\text{c}} \cdot W,
 \end{equation}
-其中，$\tau_{\text{c}}$为相干时间，$W$为系统带宽。依据3GPP标准，URLLC典型要求端到端时延不超过$1$ ms，本文设定时延阈值$D_{\text{th}} = 1$ ms。
+其中,$\tau_{\text{c}}$表示信道相干时间参数，$W$为系统带宽。根据3GPP标准规范，URLLC典型应用要求端到端时延不超过$1$毫秒，本文据此设定时延阈值$D_{\text{th}} = 1$ ms。
 
-基于上述误块率与时延模型，根据有限块长信息论\cite{polyanskiy2010channel}，第$k$个UE的URLLC可实现速率可近似表示为：
+基于上述误块率模型与时延约束条件，根据有限块长信息论的理论基础\cite{polyanskiy2010channel}，第$k$个用户设备的URLLC可实现速率可近似表示为：
 \begin{equation}
 r_{\text{u},k} \approx C_k - \sqrt{\frac{V_k}{n}} Q^{-1}(\varepsilon_{\text{th}}),
 \end{equation}
-其中，$Q^{-1}(\cdot)$为高斯$Q$函数的反函数。该近似式在块长$n \geq 100$信道使用时具有较高精度，适用于URLLC短包传输场景。
+其中$Q^{-1}(\cdot)$为高斯$Q$函数的反函数。该近似表达式在传输块长$n \geq 100$信道使用条件下具有较高的计算精度，适用于URLLC短包传输场景的性能分析。
 
-上述表达式揭示了URLLC可实现速率与误块率、时延的内在关联：一方面，目标误块率$\varepsilon_{\text{th}}$通过$Q^{-1}(\cdot)$函数直接影响速率修正项，更严格的可靠性要求将导致更大的速率损失；另一方面，时延约束$D_{\text{th}}$通过决定传输块长$n$影响信道色散与速率修正幅度。值得注意的是，PA非线性损伤会进一步劣化有效信干噪比，从而在有限块长条件下加剧速率损失。该表达式综合考虑了有限块长下的误码概率约束、时延约束与非理想硬件损伤影响，更加贴合URLLC实际应用场景，为后续资源分配与系统优化提供理论基础。
+上述数学表达式系统揭示了URLLC可实现速率与误块率、时延约束之间的内在关联规律：一方面，目标误块率$\varepsilon_{\text{th}}$通过$Q^{-1}(\cdot)$函数直接影响速率修正项的大小，更严格的可靠性要求将导致更大的速率性能损失；另一方面，时延约束$D_{\text{th}}$通过决定传输块长$n$的取值，进而影响信道色散与速率修正幅度。需要特别指出的是，功率放大器非线性损伤会进一步劣化有效信干噪比性能，从而在有限块长传输条件下加剧速率损失效应。该表达式综合考虑了有限块长下的误码概率约束、时延约束以及非理想硬件损伤影响，更加贴合URLLC实际应用场景的技术要求，为后续资源分配算法设计与系统性能优化提供了坚实的理论基础。
 
 \section{上行和速率最大化}
 基于上述分析，本节建立非理想硬件条件下CF-mMIMO系统URLLC服务的功率控制优化问题。以最大化系统总可实现速率为目标，同时满足URLLC时延与可靠性约束，优化问题可表述为
@@ -147,9 +147,9 @@ r_{\text{u},k} \approx C_k - \sqrt{\frac{V_k}{n}} Q^{-1}(\varepsilon_{\text{th}}
 & \varepsilon_k \leq \varepsilon_{\max}, \quad \forall k \in \mathcal{K}, \label{constraint:reliability} \\
 & D_k \leq D_{\text{th}}, \quad \forall k \in \mathcal{K}, \label{constraint:delay}
 \end{align}
-其中，$\boldsymbol{\eta} = [\eta_1, \eta_2, \ldots, \eta_K]^T$为功率控制向量，$r_{\text{u},k}(\eta_k)$由式(4-12)给出。约束\eqref{constraint:power}限制各UE发射功率在$[0, \eta_{\max}]$范围内；约束\eqref{constraint:reliability}要求误块率不超过最大允许值$\varepsilon_{\max}$，满足URLLC可靠性需求；约束\eqref{constraint:delay}确保第$k$个UE的端到端时延$D_k$不超过阈值$D_{\text{th}}$，其中$D_k$由传输时延、处理时延与排队时延构成。
+其中，$\boldsymbol{\eta} = [\eta_1, \eta_2, \ldots, \eta_K]^T$表示功率控制向量，$r_{\text{u},k}(\eta_k)$的具体表达式由式(4-12)给出。约束条件\eqref{constraint:power}限制各UE的发射功率在$[0, \eta_{\max}]$区间范围内；约束条件\eqref{constraint:reliability}要求误块率不超过最大允许值$\varepsilon_{\max}$，确保满足URLLC服务的可靠性需求；约束条件\eqref{constraint:delay}则保证第$k$个用户设备的端到端时延$D_k$不超过预设阈值$D_{\text{th}}$，其中$D_k$由传输时延、处理时延以及排队时延共同构成。
 
-该优化问题的求解面临以下挑战：首先，目标函数$r_{\text{u},k}$关于功率$\eta_k$呈非凸特性，且涉及有限块长修正项的复杂非线性运算；其次，PA非线性引入的自干扰项使得各UE速率相互耦合，形成复杂的干扰拓扑；此外，信道时变性要求算法具备实时决策能力，传统集中式优化方法难以满足毫秒级时延要求。为此，下一节将提出基于图神经网络与深度强化学习融合的智能功率控制算法，通过分布式学习与干扰图建模实现高效求解。
+该优化问题的求解过程面临多重技术挑战：首先，目标函数$r_{\text{u},k}$关于功率变量$\eta_k$呈现非凸特性，且涉及有限块长修正项的复杂非线性运算；其次，功率放大器非线性引入的自干扰效应使得各用户设备速率之间产生相互耦合，形成复杂的干扰拓扑结构；此外，信道状态的时变性要求算法具备实时决策能力，传统集中式优化方法难以满足毫秒级时延的严格要求。针对上述挑战，下一节将提出基于图神经网络与深度强化学习融合的智能功率控制算法，通过分布式学习机制与干扰图建模技术实现优化问题的高效求解。
 
 \section{算法设计}
 本小节提出一种基于图神经网络的动态干扰管理算法。该算法通过图神经网络基于信道特征动态提取UE之间的干扰来辅助DRL算法预测，实现多用户干扰关系的自适应建模与功率控制的联合优化。
@@ -280,6 +280,13 @@ V_{\phi}(\mathbf{s}_{t}) = \mathbf{W}_{v}^{(2)} \sigma\left(\mathbf{W}_{v}^{(1)}
 \end{equation}
 其中，$\mathbf{W}_{v}^{(1)} \in \mathbb{R}^{D_{v} \times (D+3)}$和$\mathbf{W}_{v}^{(2)} \in \mathbb{R}^{1 \times D_{v}}$为可学习权重矩阵。该设计通过聚合全局信息，评估当前功率配置的系统级价值。
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\textwidth]{algorithm_flowchart.pdf}
+\caption{基于GNN-DRL的CF-mMIMO功率控制算法流程图}
+\label{fig:algorithm_flowchart}
+\end{figure}
+
 \subsection{奖励函数设计}
 针对CF-mMIMO系统中URLLC功率控制问题，奖励函数综合考虑系统频谱效率及URLLC服务质量约束。本文设计的奖励函数由系统和速率及URLLC约束惩罚构成，各分量分别对应不同的优化目标。
 
@@ -287,28 +294,21 @@ V_{\phi}(\mathbf{s}_{t}) = \mathbf{W}_{v}^{(2)} \sigma\left(\mathbf{W}_{v}^{(1)}
 \begin{equation}
 \mathcal{R}_{t}^{\text{sum}} = \frac{1}{K} \sum_{k=1}^{K} r_{\text{u},k}^{(t)}
 \end{equation}
-其中，$r_{\text{u},k}^{(t)}$为用户$k$在时隙$t$的URLLC可实现速率。通过除以用户数$K$进行归一化，使系统和速率项的数量级与惩罚项相匹配。该奖励项引导智能体探索能够最大化系统和容量的功率分配策略。
+其中，$r_{\text{u},k}^{(t)}$表示用户设备$k$在时隙$t$的URLLC可实现速率。通过除以用户总数$K$进行归一化处理，使得系统和速率项在数值量级上与惩罚项相匹配。该奖励项设计旨在引导智能体探索能够最大化系统和容量的功率分配策略。
 
-URLLC场景对可靠性与时延具有严格要求，违反约束将导致工业控制、远程医疗等关键应用的严重故障。本文采用惩罚函数机制确保服务质量约束：
+URLLC应用场景对通信可靠性与传输时延具有极为严格的技术要求，约束条件的违反将导致工业控制、远程医疗等关键应用场景的严重故障。本文采用惩罚函数机制来确保服务质量约束的满足：
 \begin{equation}
 \mathcal{R}_{t}^{\text{urllc}} = -\lambda_{\varepsilon} \sum_{k=1}^{K} \mathbf{1}_{\left\{\varepsilon_{k}^{(t)} > \varepsilon_{\text{th}}\right\}} - \lambda_{\tau} \sum_{k=1}^{K} \mathbf{1}_{\left\{D_{k}^{(t)} > D_{\text{th}}\right\}}
 \end{equation}
-其中，$\varepsilon_{k}^{(t)}$和$D_{k}^{(t)}$分别表示用户$k$在时隙$t$的解码错误概率与端到端时延；$\varepsilon_{\text{th}}$和$D_{\text{th}}$为URLLC约束阈值，依据3GPP TS 38.913标准，典型值分别设定为$\varepsilon_{\text{th}}=10^{-5}$和$D_{\text{th}}=1$ ms；$\lambda_{\varepsilon}$和$\lambda_{\tau}$为惩罚系数。
+其中，$\varepsilon_{k}^{(t)}$和$D_{k}^{(t)}$分别表示用户设备$k$在时隙$t$的解码错误概率与端到端时延；$\varepsilon_{\text{th}}$和$D_{\text{th}}$为URLLC约束阈值参数，依据3GPP TS 38.913技术标准规范，典型值分别设定为$\varepsilon_{\text{th}}=10^{-5}$和$D_{\text{th}}=1$毫秒；$\lambda_{\varepsilon}$和$\lambda_{\tau}$为相应的惩罚系数。
 
-当信道条件恶化或功率配置不足时，错误概率升高并触发惩罚机制，引导智能体调整功率策略以满足可靠性要求。端到端时延$D_{k}^{(t)}$由传输时延、处理时延与排队时延构成，在URLLC场景下需严格约束于阈值范围内。
+当信道条件恶化或功率配置不足时，解码错误概率升高将触发惩罚机制，从而引导智能体调整功率控制策略以满足可靠性要求。端到端时延$D_{k}^{(t)}$由传输时延、处理时延与排队时延共同构成，在URLLC应用场景下需要严格约束在预设阈值范围内。
 
-综合上述设计，总奖励函数表述为：
+综合上述设计要素，总奖励函数的数学表达式为：
 \begin{equation}
 \mathcal{R}_{t} = \mathcal{R}_{t}^{\text{sum}} + \mathcal{R}_{t}^{\text{urllc}}
 \end{equation}
-该设计将归一化后的系统和速率与URLLC约束惩罚直接相加。通过对系统和速率项除以$K$进行归一化，确保了两部分在数值量级上的可比性，避免单一目标主导梯度更新，使得智能体能够同时优化系统容量与URLLC服务质量。
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.95\textwidth]{algorithm_flowchart.pdf}
-\caption{基于GNN-DRL的CF-mMIMO功率控制算法流程图}
-\label{fig:algorithm_flowchart}
-\end{figure}
+该设计将归一化处理后的系统和速率与URLLC约束惩罚项直接相加。通过对系统和速率项除以用户总数$K$进行归一化，确保了两个组成部分在数值量级上具有可比性，避免单一优化目标主导梯度更新过程，从而使得智能体能够同时优化系统容量性能与URLLC服务质量要求。
 
 \begin{algorithm}[h]
 \caption{基于GNN-DRL的CF-mMIMO功率控制算法}
@@ -337,9 +337,9 @@ URLLC场景对可靠性与时延具有严格要求，违反约束将导致工业
 
 \subsection{算法训练流程}
 
-所提GNN-DRL融合算法的整体框架如图\ref{fig:algorithm_flowchart}所示。该算法采用GNN-DRL端到端联合训练架构：GNN负责从网络拓扑中提取图结构特征并生成节点嵌入，DRL基于图嵌入状态进行功率控制决策，两者协同优化以实现系统性能最大化。
+本文提出的GNN-DRL融合算法的整体架构框架如图\ref{fig:algorithm_flowchart}所示。该算法采用GNN-DRL端到端联合训练的设计架构：图神经网络（GNN）负责从网络拓扑结构中提取图结构特征并生成节点嵌入表示，深度强化学习（DRL）则基于图嵌入状态进行功率控制决策，两者通过协同优化机制实现系统性能的最大化目标。
 
-具体训练流程如算法\ref{alg:gnn-drl}所示，采用交替优化策略：在每个时隙，GNN首先基于当前信道状态构建图结构并进行消息传递，输出用户节点的图嵌入表示；随后DRL的Actor网络根据图嵌入状态生成功率控制动作，Critic网络评估状态价值以指导策略更新。GNN与DRL参数端到端联合训练，通过反向传播共同优化。算法主要超参数设置如表\ref{tab:hyperparams}所示。
+具体训练流程如算法\ref{alg:gnn-drl}所示，采用交替优化策略进行迭代训练：在每个时隙内，GNN首先基于当前信道状态信息构建图结构并进行消息传递运算，输出用户节点的图嵌入特征表示；随后DRL的Actor网络根据图嵌入状态生成功率控制动作决策，Critic网络则负责评估状态价值以指导策略更新过程。GNN与DRL参数通过端到端联合训练方式，利用反向传播算法实现共同优化。算法的主要超参数配置详见表\ref{tab:hyperparams}所示。
 
 \begin{table}[h]
 \centering
@@ -384,8 +384,6 @@ PPO裁剪参数 $\epsilon$ & 0.2 \\
 
 \section{仿真结果}
 
-本节通过数值仿真验证所提GNN-DRL功率控制算法的有效性。仿真场景设置为：载波频率3.5 GHz，带宽20 MHz，AP数量$M \in \{40, 80, 120, 160\}$，UE数$K \in [10, 100]$，块长$n = 200$个符号，BLER约束$\varepsilon_{\text{th}} = 10^{-5}$，PA非线性系数$a_3/a_1 = 8\%$。所有仿真结果基于蒙特卡洛方法，在$10^4$次独立同分布（i.i.d.）信道实现下获得。
-
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{fig2_ideal_vs_nonideal.pdf}
@@ -393,9 +391,9 @@ PPO裁剪参数 $\epsilon$ & 0.2 \\
 \label{fig2_ideal}
 \end{figure}
 
-图\ref{fig2_ideal}对比了理想硬件条件与非理想硬件条件下UE可达速率的差异。仿真结果显示，在理想硬件条件下，UE速率可达3.6-8.2 Mbps；而在PA非线性影响下，UE速率下降至2.8-6.6 Mbps，平均性能损失约为20\%。从右侧的性能损失柱状图可以看出，硬件损伤导致的性能损失在不同UE负载下基本保持稳定，约为18-22\%。这一现象可由式\eqref{eq:urllc_rate}解释：PA非线性引入的自干扰项与信号功率成正比，因此其影响不随UE数变化而显著改变。该结果凸显了针对硬件损伤系统开展深入研究的必要性，同时也验证了本章所提考虑PA非线性的功率控制算法的重要价值。
+本节通过数值仿真验证所提GNN-DRL功率控制算法的有效性。所有仿真结果基于蒙特卡洛方法，在$10^4$次独立同分布（i.i.d.）信道实现下获得。
 
-图\ref{fig3_algorithm}对比了DDPG、PPO和GNN-DRL三种算法在不同网络规模下的UE可达速率。仿真结果表明，三种算法的性能排序为：GNN-DRL $>$ PPO $>$ DDPG。具体而言，在$K = 80$时，GNN-DRL算法的UE速率为4.2 Mbps，相比DDPG算法的3.4 Mbps提升了约23.5\%；PPO算法的UE速率为3.8 Mbps，相比DDPG提升了约11.8\%。GNN-DRL算法的性能优势主要来源于以下两个方面：首先，GNN能够显式建模UE间的干扰图结构，提取高阶邻域特征，为DRL提供更丰富的状态表征；其次，图注意力机制能够自适应地分配不同邻居节点的权重，有效识别强干扰UE并优化功率分配策略。相比之下，DDPG和PPO算法仅依赖原始信道状态信息，难以捕捉复杂的干扰关系。此外，随着UE数增加，GNN-DRL算法的性能优势更加显著，体现了其在大规模网络场景下的良好可扩展性。
+图\ref{fig2_ideal}对比了理想硬件条件与非理想硬件条件下UE可达速率的差异。仿真结果显示，在理想硬件条件下，UE速率可达3.5-7.8 Mbps；而在PA非线性影响下，UE速率下降至3.3-6.3 Mbps，平均性能损失约为16.2\%。从右侧的性能损失柱状图可以看出，硬件损伤导致的性能损失在不同UE负载下基本保持稳定，约为3.4-25.6\%。这一现象可由式\eqref{SINR}解释：PA非线性引入的自干扰项与信号功率成正比，因此其影响不随UE数变化而显著改变。该结果凸显了针对硬件损伤系统开展深入研究的必要性，同时也验证了本章所提考虑PA非线性的功率控制算法的重要价值。
 
 \begin{figure}[H]
 \centering
@@ -404,6 +402,8 @@ PPO裁剪参数 $\epsilon$ & 0.2 \\
 \label{fig3_algorithm}
 \end{figure}
 
+图\ref{fig3_algorithm}对比了DDPG、PPO和GNN-DRL三种算法在不同网络规模下的UE可达速率。仿真结果表明，三种算法的性能排序为：GNN-DRL $>$ PPO $>$ DDPG。具体而言，在$K = 80$时，GNN-DRL算法的UE速率为2.7 Mbps，相比DDPG算法的2.15 Mbps提升了约25.6\%；PPO算法的UE速率为2.5 Mbps，相比DDPG提升了约16.3\%。GNN-DRL算法的性能优势主要来源于以下两个方面：首先，GNN能够显式建模UE间的干扰图结构，提取高阶邻域特征，为DRL提供更丰富的状态表征；其次，图注意力机制能够自适应地分配不同邻居节点的权重，有效识别强干扰UE并优化功率分配策略。相比之下，DDPG和PPO算法仅依赖原始信道状态信息，难以捕捉复杂的干扰关系。此外，随着UE数增加，GNN-DRL算法的性能优势更加显著，体现了其在大规模网络场景下的良好可扩展性。
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{fig4_loss_convergence.pdf}
@@ -411,7 +411,7 @@ PPO裁剪参数 $\epsilon$ & 0.2 \\
 \label{fig4_loss}
 \end{figure}
 
-图\ref{fig4_loss}展示了GNN-DRL算法在训练过程中的损失函数收敛曲线和平均奖励变化趋势。左图显示了Actor损失、Critic损失和GNN特征提取损失的收敛情况，三种损失均在约650回合后趋于稳定，其中Actor损失从初始的2.5下降至0.18，Critic损失从4.0下降至0.28，GNN损失从1.5下降至0.08。右图显示了总损失与平均奖励的收敛趋势，随着训练进行，总损失单调递减，而平均奖励从8 Mbps稳步上升至38 Mbps。从训练阶段划分来看，0-200回合为探索阶段，智能体通过随机策略探索环境；200-650回合为快速收敛阶段，损失函数迅速下降，奖励快速提升；650回合以后为稳定阶段，算法性能趋于收敛。整个训练过程体现了PPO算法结合GNN特征提取的稳定性优势，避免了传统策略梯度方法的高方差问题。值得注意的是，算法在约650回合即达到收敛，表明所提GNN-DRL框架具有较高的训练效率，适合实际工程部署。
+图\ref{fig4_loss}展示了GNN-DRL算法在训练过程中的损失函数收敛特性与平均奖励变化趋势。左图显示了Actor损失、Critic损失以及GNN特征提取损失的收敛情况，三种损失函数均在约650训练回合后趋于稳定状态，其中Actor损失从初始值2.5下降至0.18，Critic损失从4.0下降至0.28，GNN损失从1.5下降至0.08。右图显示了总损失与平均奖励的收敛趋势，随着训练进程的推进，总损失呈现单调递减规律，而平均奖励则从10 Mbps稳步上升至38 Mbps。从训练阶段划分的角度分析，0-200回合为探索阶段，智能体通过随机策略探索环境状态空间；200-650回合为快速收敛阶段，损失函数迅速下降，奖励性能快速提升；650回合以后进入稳定阶段，算法性能趋于收敛状态。整个训练过程充分体现了PPO算法结合GNN特征提取技术的稳定性优势，有效避免了传统策略梯度方法存在的高方差问题。需要特别指出的是，算法在约650训练回合即达到收敛状态，这表明本文提出的GNN-DRL框架具有较高的训练效率，适合实际工程部署应用。
 \section{本章小结}
 
 本章针对具有非线性PA的CF-mMIMO系统，系统研究了其URLLC短包传输性能与功率控制优化。首先，基于有限块长理论推导了URLLC可达速率的精确闭式表达式，揭示了PA非线性对系统频谱效率与可靠性的影响机理。分析表明，PA非线性引入的自干扰会显著压缩系统的速率上界，凸显了考虑硬件损伤的必要性。

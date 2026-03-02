@@ -1,41 +1,41 @@
 \chapter{相关理论与技术基础}\label{chap:theory}
 
-本章系统阐述后续章节所涉及的理论基础与关键技术，为后续算法设计与系统优化奠定理论支撑。首先介绍有限块长信息论的基本概念，阐述其在超可靠低延迟通信场景下的重要性；然后详细介绍图神经网络的基本原理，包括谱图理论、图卷积网络与图注意力网络；最后深入探讨深度强化学习的理论基础，涵盖马尔可夫决策过程、深度Q网络及Actor-Critic框架等核心内容。
+本章旨在系统梳理后续章节所需的理论基础与关键技术体系，为算法设计与系统优化提供坚实的理论依据。首先，重点介绍有限块长信息论的基本理论框架，阐明其在超可靠低延迟通信场景中的关键作用；其次，详细阐述图神经网络的核心原理，涵盖谱图理论、图卷积网络以及图注意力网络等关键技术；最后，深入分析深度强化学习的理论基础，包括马尔可夫决策过程、深度Q网络和Actor-Critic框架等核心概念。
 
 \section{有限块长信息论基础}
 
 \subsection{香农容量的局限性}
 
-传统香农信息论在假设码字长度趋于无穷大、解码错误概率趋近于零的理想条件下，推导出了信道的容量极限\cite{chaptertwo1}。然而，在第五代及未来移动通信网络中，超可靠低延迟通信（Ultra-Reliable and Low-Latency Communications，URLLC）场景对时延和可靠性提出了极为严苛的要求。URLLC通常采用短包传输，码字长度有限，此时传统香农容量理论已不再适用。
+传统香农信息论基于码字长度趋于无穷大、解码错误概率趋近于零的理想假设，建立了信道容量极限的理论框架\cite{chaptertwo1}。然而，在5G及未来移动通信网络中，超可靠低延迟通信（Ultra-Reliable and Low-Latency Communications，URLLC）场景对传输时延和通信可靠性提出了极为严格的技术要求。URLLC业务通常采用短包传输模式，码字长度受到显著限制，此时传统香农容量理论的适用性面临挑战。
 
-具体而言，香农容量公式假设传输块长$n \to \infty$，且允许错误概率$\varepsilon \to 0$。但在URLLC场景下，实际传输块长通常为几十到几百个符号周期，且要求在极短延迟内完成传输。正如Polyanskiy等\cite{chaptertwo1}所指出的，这种有限块长约束导致实际可达速率显著低于香农容量，因此需要建立新的理论框架来准确刻画有限块长下的系统性能极限。
+从数学表达来看，香农容量公式建立在传输块长$n \to \infty$且错误概率$\varepsilon \to 0$的理想条件下。但在实际URLLC应用场景中，传输块长通常仅为几十至几百个符号周期，同时需要在极短时延内完成数据传输。正如Polyanskiy等学者\cite{chaptertwo1}的研究表明，这种有限块长约束将导致实际可达速率明显低于香农容量极限，因此亟需构建新的理论体系来精确描述有限块长约束下的系统性能边界。
 
 \subsection{有限块长编码理论}
 
-有限块长信息论由Polyanskiy、Poor和Verd\'{u}\cite{chaptertwo1}在2010年系统建立，该理论考虑了有限块长和有限错误概率约束下的信道编码性能。对于加性高斯白噪声（Additive White Gaussian Noise，AWGN）信道，有限块长下的可达速率可近似表示为：
+有限块长信息论由Polyanskiy、Poor和Verd\'{u}三位学者于2010年系统构建\cite{chaptertwo1}，该理论体系专门针对有限块长和有限错误概率约束下的信道编码性能进行分析。对于加性高斯白噪声（Additive White Gaussian Noise，AWGN）信道，有限块长条件下的可达速率可近似表达为：
 \begin{equation}
 r \approx C - \sqrt{\frac{V}{n}}Q^{-1}(\varepsilon) + O\left(\frac{\log n}{n}\right),
 \end{equation}
-其中，$C$为信道容量，$V$为信道色散，$n$为块长，$\varepsilon$为目标错误概率，$Q^{-1}(\cdot)$为高斯Q函数的反函数。
+式中$C$表示信道容量，$V$为信道色散参数，$n$为传输块长，$\varepsilon$为目标错误概率，$Q^{-1}(\cdot)$代表高斯Q函数的反函数。
 
-该公式揭示了有限块长下的速率损失主要由信道色散和块长的平方根倒数决定。当块长$n$减小时，速率损失增大；当错误概率$\varepsilon$要求更严格时（即$\varepsilon$更小），$Q^{-1}(\varepsilon)$增大，导致可达速率进一步降低。这一理论为URLLC系统的设计提供了重要的理论指导\cite{chaptertwo2,chaptertwo3}。
+该数学表达式清晰揭示了有限块长传输条件下的速率损失机制，主要由信道色散与块长平方根倒数的乘积决定。当传输块长$n$减小时，速率损失呈现增大趋势；当对错误概率$\varepsilon$的要求更为严格时（即$\varepsilon$取值更小），$Q^{-1}(\varepsilon)$函数值相应增大，从而导致可达速率进一步降低。这一理论框架为URLLC系统的设计与性能分析提供了重要的理论依据\cite{chaptertwo2,chaptertwo3}。
 
 \subsection{高斯Q函数及其反函数}
 
-高斯Q函数是有限块长信息论中的核心数学工具，定义为标准正态分布的右尾概率\cite{chaptertwo1}：
+高斯Q函数作为有限块长信息论中的核心数学工具，其定义为标准正态分布的右尾概率函数\cite{chaptertwo1}：
 \begin{equation}
 Q(x) = \frac{1}{\sqrt{2\pi}} \int_{x}^{\infty} \exp\left(-\frac{t^2}{2}\right)dt.
 \end{equation}
 
-该函数在通信理论中广泛应用，用于计算误码率、中断概率等性能指标。高斯Q函数具有以下重要性质：
+该函数在通信理论领域具有广泛应用，主要用于计算误码率、中断概率等关键性能指标。高斯Q函数具备以下重要数学特性：
 \begin{itemize}
-\item $Q(0) = 0.5$，即标准正态分布的中位数；
-\item $Q(x)$是单调递减函数，当$x \to \infty$时，$Q(x) \to 0$；
-\item $Q(-x) = 1 - Q(x)$，具有对称性；
-\item 对于大$x$值，可采用Chernoff界进行近似：$Q(x) \approx \frac{1}{\sqrt{2\pi}x}\exp\left(-\frac{x^2}{2}\right)$。
+\item $Q(0) = 0.5$，对应标准正态分布的中位数位置；
+\item $Q(x)$为严格单调递减函数，当$x \to \infty$时，$Q(x) \to 0$；
+\item 满足对称关系$Q(-x) = 1 - Q(x)$；
+\item 对于较大$x$值，可采用Chernoff界进行近似计算：$Q(x) \approx \frac{1}{\sqrt{2\pi}x}\exp\left(-\frac{x^2}{2}\right)$。
 \end{itemize}
 
-高斯Q函数的反函数$Q^{-1}(\cdot)$在有限块长速率公式中起着关键作用，它将目标错误概率映射为对应的置信水平。在URLLC场景下，典型错误概率要求为$\varepsilon = 10^{-5}$到$10^{-7}$\cite{chaptertwo4}，对应的$Q^{-1}(\varepsilon)$值约为$4.26$到$5.20$。
+高斯Q函数的反函数$Q^{-1}(\cdot)$在有限块长速率表达式中扮演关键角色，其功能是将目标错误概率映射为相应的置信水平。在URLLC应用场景中，典型错误概率要求通常设定为$\varepsilon = 10^{-5}$至$10^{-7}$\cite{chaptertwo4}，对应的$Q^{-1}(\varepsilon)$函数值约为$4.26$至$5.20$区间。
 
 \subsection{信道色散}
 
@@ -69,16 +69,16 @@ V \approx (\log_2 e)^2 \left(1 - \frac{1}{(1+\text{SNR})^2}\right).
 
 \subsection{图傅里叶变换}
 
-借鉴经典信号处理中的傅里叶变换思想，Bruna等\cite{chaptertwo8}提出了图傅里叶变换（Graph Fourier Transform，GFT）。对于图上的信号$\mathbf{x} \in \mathbb{R}^N$，其图傅里叶变换定义为：
+基于经典信号处理中傅里叶变换的理论框架，Bruna等学者\cite{chaptertwo8}提出了图傅里叶变换（Graph Fourier Transform，GFT）的概念。对于定义在图结构上的信号向量$\mathbf{x} \in \mathbb{R}^N$，其图傅里叶变换的数学表达式为：
 \begin{equation}
 \hat{\mathbf{x}} = \mathbf{U}^T \mathbf{x},
 \end{equation}
-其中，$\hat{\mathbf{x}}$为信号在谱域的表示。逆图傅里叶变换为：
+式中$\hat{\mathbf{x}}$表示信号在谱域的特征表示。相应的逆图傅里叶变换定义为：
 \begin{equation}
 \mathbf{x} = \mathbf{U} \hat{\mathbf{x}}.
 \end{equation}
 
-图傅里叶变换将图信号从节点域映射到谱域，使得在节点域的卷积操作可转化为谱域的逐点乘积。这一性质为定义图卷积操作奠定了理论基础\cite{chaptertwo9}。
+图傅里叶变换的核心功能是将图信号从节点空间映射到谱域空间，这一变换使得原本在节点域进行的卷积运算可以转化为谱域中的逐元素乘积运算。该数学性质为图卷积操作的理论构建提供了重要基础\cite{chaptertwo9}。
 
 \begin{figure}
 \centering
@@ -89,29 +89,29 @@ V \approx (\log_2 e)^2 \left(1 - \frac{1}{(1+\text{SNR})^2}\right).
 
 \subsection{图卷积网络}
 
-图卷积网络（Graph Convolutional Network，GCN）是GNN的经典架构之一，其核心思想是将卷积操作从规则网格推广到图结构。谱域图卷积的定义基于图傅里叶变换\cite{chaptertwo6}：
+图卷积网络（Graph Convolutional Network，GCN）作为图神经网络的重要架构，其核心设计理念是将传统卷积运算从规则网格结构推广至非规则的图拓扑结构。谱域图卷积的数学定义建立在图傅里叶变换基础之上\cite{chaptertwo6}：
 \begin{equation}
 \mathbf{x} *_{\mathcal{G}} \mathbf{g} = \mathbf{U}\left((\mathbf{U}^T\mathbf{x}) \odot (\mathbf{U}^T\mathbf{g})\right),
 \end{equation}
-其中，$\mathbf{g}$为卷积核，$\odot$表示逐元素乘积。
+式中$\mathbf{g}$表示卷积核参数，$\odot$运算符代表逐元素乘积运算。
 
-为避免特征分解的高计算复杂度，Kipf和Welling\cite{chaptertwo6}提出了一种简化的图卷积层：
+为克服特征分解带来的高计算复杂度问题，Kipf和Welling\cite{chaptertwo6}提出了一种计算效率更高的简化图卷积层结构：
 \begin{equation}
 \mathbf{H}^{(l+1)} = \sigma\left(\tilde{\mathbf{D}}^{-1/2}\tilde{\mathbf{A}}\tilde{\mathbf{D}}^{-1/2}\mathbf{H}^{(l)}\mathbf{W}^{(l)}\right),
 \end{equation}
-其中，$\tilde{\mathbf{A}} = \mathbf{A} + \mathbf{I}_N$为添加自环的邻接矩阵，$\tilde{D}_{ii} = \sum_j \tilde{A}_{ij}$，$\mathbf{H}^{(l)}$为第$l$层的节点特征矩阵，$\mathbf{W}^{(l)}$为可学习的权重矩阵，$\sigma(\cdot)$为非线性激活函数。
+其中$\tilde{\mathbf{A}} = \mathbf{A} + \mathbf{I}_N$为添加自连接边的邻接矩阵，$\tilde{D}_{ii} = \sum_j \tilde{A}_{ij}$为度矩阵对角元素，$\mathbf{H}^{(l)}$表示第$l$层的节点特征矩阵，$\mathbf{W}^{(l)}$为可训练权重矩阵，$\sigma(\cdot)$为非线性激活函数。
 
 该图卷积操作可理解为：首先对每个节点进行特征变换，然后通过归一化邻接矩阵聚合邻居信息，最后应用非线性激活。这种消息传递机制使每个节点能够捕获其局部邻域的结构信息\cite{chaptertwo6}。
 
 \subsection{图注意力网络}
 
-图注意力网络（Graph Attention Network，GAT）由Veličković等\cite{chaptertwo10}提出，引入了注意力机制，使模型能够自适应地学习邻居节点的重要性权重。与GCN使用固定的归一化权重不同，GAT通过计算注意力系数来实现差异化的邻居聚合。
+图注意力网络（Graph Attention Network，GAT）由Veličković等学者\cite{chaptertwo10}提出，该架构创新性地引入了注意力机制，使得模型能够自适应地学习邻居节点的重要性分配权重。与图卷积网络采用固定归一化权重的设计思路不同，GAT通过动态计算注意力系数来实现差异化的邻居信息聚合策略。
 
-对于节点$i$和节点$j$，注意力系数$e_{ij}$表示节点$j$对节点$i$的重要性，计算方式为：
+对于任意两个节点$i$和$j$，注意力系数$e_{ij}$定量表征节点$j$对节点$i$的重要程度，其计算表达式为：
 \begin{equation}
 e_{ij} = \text{LeakyReLU}\left(\mathbf{a}^T[\mathbf{W}\mathbf{h}_i \| \mathbf{W}\mathbf{h}_j]\right),
 \end{equation}
-其中，$\mathbf{h}_i$和$\mathbf{h}_j$为节点特征，$\mathbf{W}$为线性变换矩阵，$\mathbf{a}$为注意力向量，$\|$表示向量拼接。
+式中$\mathbf{h}_i$和$\mathbf{h}_j$分别表示节点特征向量，$\mathbf{W}$为线性变换矩阵，$\mathbf{a}$为注意力参数向量，$\|$运算符表示向量拼接操作。
 
 注意力系数通过softmax函数归一化：
 \begin{equation}
@@ -194,7 +194,7 @@ L(\omega) = \mathbb{E}\left[(y_t - Q(s_t, a_t; \omega))^2\right].
 
 \subsection{Actor-Critic框架}
 
-Actor-Critic框架是策略梯度方法的重要改进，结合了值函数逼近和策略梯度\cite{chaptertwo11}。该框架包含两个组件：Actor负责生成动作策略，Critic负责评估当前策略。图\ref{ddpg}展示了基于Actor-Critic架构的深度强化学习通用流程，该流程适用于多种DRL算法（如DDPG、PPO等）。
+Actor-Critic框架作为策略梯度方法的重要演进，创新性地融合了值函数逼近技术与策略梯度优化机制\cite{chaptertwo11}。该框架采用双网络架构设计：Actor网络专门负责生成动作策略，而Critic网络则承担策略性能评估功能。图\ref{ddpg}展示了基于Actor-Critic架构的深度强化学习通用工作流程，该流程设计具有广泛的适用性，可支持多种深度强化学习算法（如DDPG、PPO等）的实现。
 
 如图\ref{ddpg}所示，深度强化学习的训练流程包含以下关键步骤：
 
@@ -237,4 +237,4 @@ L^{\text{CLIP}}(\theta) = \mathbb{E}\left[\min\left(r_t(\theta)\hat{A}_t, \text{
 
 \section{本章小结}
 
-本章系统阐述了后续章节所需的理论基础。首先介绍了有限块长信息论\cite{chaptertwo1}，包括香农容量的局限性、有限块长编码理论、高斯Q函数及信道色散等核心概念，为URLLC场景下的性能分析提供了理论工具。然后详细介绍了图神经网络的数学基础，涵盖谱图理论\cite{chaptertwo7}、图傅里叶变换\cite{chaptertwo8}、图卷积网络\cite{chaptertwo6}和图注意力网络\cite{chaptertwo10}，阐明了GNN处理非欧几里得数据、捕获节点间关系的机制。最后深入探讨了深度强化学习的理论基础，包括马尔可夫决策过程\cite{chaptertwo11}、深度Q网络\cite{chaptertwo12}和Actor-Critic框架\cite{chaptertwo14}，为后续智能资源分配算法的设计奠定了方法论基础。这些理论工具将在后续章节中融合应用，解决CF-mMIMO系统中的复杂优化问题。
+本章系统梳理了后续章节研究所依赖的理论基础与技术体系。首先，重点阐述了有限块长信息论\cite{chaptertwo1}的核心内容，涵盖香农容量理论的适用局限性、有限块长编码理论框架、高斯Q函数特性以及信道色散参数等关键概念，为URLLC场景的系统性能分析构建了完整的理论工具集。其次，深入探讨了图神经网络的数学理论基础，系统介绍了谱图理论\cite{chaptertwo7}、图傅里叶变换\cite{chaptertwo8}、图卷积网络\cite{chaptertwo6}和图注意力网络\cite{chaptertwo10}等核心技术，阐明了GNN处理非欧几里得数据结构、有效捕获节点间复杂关系的运行机制。最后，全面分析了深度强化学习的理论框架，包括马尔可夫决策过程\cite{chaptertwo11}、深度Q网络\cite{chaptertwo12}和Actor-Critic框架\cite{chaptertwo14}等核心方法，为后续智能资源分配算法的设计与实现奠定了坚实的方法论基础。这些理论工具将在后续章节中进行有机融合与创新应用，共同致力于解决CF-mMIMO系统中的复杂优化挑战。
