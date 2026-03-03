@@ -110,18 +110,18 @@ x_\text{out}=\sum_{i=0}^{N_p}a_{2i+1}x_\text{in}\left | x_\text{in} \right |^{2i
 {{\mathbf{y}}_{\text{u},m}} = \sqrt {{\rho _\text{u}}} \sum_{k = 1}^K ({\tilde{a}_{1k}}{{\mathbf{g}}_{mk}}{q_k} + {\tilde{a}_{3k}}{{\mathbf{g}}_{mk}}{q_k}{\left| {{q_k}} \right|^2}) + {\mathbf{w}}_{\text{u},m},
 \end{equation}
 其中，$\mathbf{w}_{\text{u},m}\sim \mathcal{CN}(\mathbf{0},\mathbf{I}_N)$表示加性噪声。随后，第$m$个AP的接收信号经ADC量化，其量化输出可表示为
-\begin{align}\label{eqn-12}{\mathbf{\tilde y}_{\text{u},m}} &= {\alpha _m}{{\mathbf{y}}_{\text{u},m}} + {{\mathbf{\tilde w}}_{\text{u},m}} \\
-&= {\alpha _m}\sqrt {{\rho _\text{u}}} \sum_{k = 1}^K ({\tilde{a}_{1k}}{{\mathbf{g}}_{mk}}{q_k} + {\tilde{a}_{3k}}{{\mathbf{g}}_{mk}}{q_k}{\left| {{q_k}} \right|^2}) + {\alpha _m}{{\mathbf{w}}_{\text{u},m}} + {{\mathbf{\tilde w}}_{\text{u},m}},
+\begin{align}\label{eqn-12}{\tilde{\mathbf y}_{\text{u},m}} &= {\alpha _m}{{\mathbf{y}}_{\text{u},m}} + {{\mathbf{\tilde w}}_{\text{u},m}} \\
+&= {\alpha _m}\sqrt {{\rho _\text{u}}} \sum_{k = 1}^K ({\tilde{a}_{1k}}{{\mathbf{g}}_{mk}}{q_k} + {\tilde{a}_{3k}}{{\mathbf{g}}_{mk}}{q_k}{\left| {{q_k}} \right|^2}) + {\alpha _m}{{\mathbf{w}}_{\text{u},m}} + {{\tilde{\mathbf w}}_{\text{u},m}},
 \end{align}
 其中，$\boldsymbol{\tilde w}_{\text{u},m}$表示量化噪声，其协方差矩阵可表示为
 \begin{align}{\mathbf{R}_{{\mathbf{\tilde w}_{\text{u},m}}}} \approx {\alpha _m}(1 - {\alpha _m})\text{diag}(\mathbb{E}\left\{ {{{\mathbf{y}}_{\text{u},m}}{\mathbf{y}}_{\text{u},m}^H} \right\}).\end{align}
 
 为检测$q_k$，每个AP采用分布式处理方式，通过低复杂度的匹配滤波器合并计算本地数据估计值，随后经前传链路将信号汇总至CPU进行聚合与译码。因此，CPU处的接收信号可表示为
 \begin{align}\label{eqn-14}
-{r_{\text{u},k}} &= \sum_{m = 1}^M {\mathbf{\hat{g}}}_{mk}^H{{\mathbf{\tilde y}}_{\text{u},m}}\nonumber\\
+{r_{\text{u},k}} &= \sum_{m = 1}^M {\mathbf{\hat{g}}}_{mk}^H{{\tilde{\mathbf y}}_{\text{u},m}}\nonumber\\
 & = \sqrt {{\rho _\text{u}}}  \sum_{m = 1}^M {\alpha _m}\sum_{k' = 1}^K {\mathbf{\hat g}}_{mk}^H{\tilde{a}_{1k'}}{{\mathbf{g}}_{mk'}}q_{k'}  
 \nonumber\\& \quad+ \sqrt {{\rho _\text{u}}} \sum_{m = 1}^M {\alpha _m}\sum_{k' = 1}^K {\mathbf{\hat g}}_{mk}^H{\tilde{a}_{3k'}}{{\mathbf{g}}_{mk'}}q_{k'} {\left| {q_{k'} } \right|^2}
-+ \sum_{m = 1}^M {\mathbf{\hat g}}_{mk}^H{\alpha _m}{{\mathbf{w}}_{\text{u},m}} + \sum_{m = 1}^M {{\mathbf{\hat g}}^H_{mk}}{{\mathbf{\tilde w}}_{\text{u},m}}.
++ \sum_{m = 1}^M {\mathbf{\hat g}}_{mk}^H{\alpha _m}{{\mathbf{w}}_{\text{u},m}} + \sum_{m = 1}^M {{\mathbf{\hat g}}^H_{mk}}{{\tilde{\mathbf w}}_{\text{u},m}}.
 \end{align}	
 
 随后，基于$r_{\text{u},k}$检测$q_k$的值。下一节将推导UE可达速率的闭式表达式。
@@ -132,7 +132,7 @@ x_\text{out}=\sum_{i=0}^{N_p}a_{2i+1}x_\text{in}\left | x_\text{in} \right |^{2i
 \end{align}
 式中，$\text{ES}_k$、$\text{BU}_k$、$\text{I}_{kk'}$、$\text{NB}_{kk'}$、$\text{N}_k$和$\text{Q}_k$分别表示第$k$个UE的期望信号确定性分量、波束成形增益不确定性、第$k'$个UE产生的干扰、第$k$个UE由PA非线性引入的干扰、加性噪声以及量化噪声。
 
-首先计算期望信号$\text{ES}_k$。由于$\mathbf{\tilde{g}}_{mk}$和$\mathbf{\hat{g}}_{mk}$相互独立，有
+首先计算期望信号$\text{ES}_k$。由于$\tilde{\mathbf{g}}_{mk}$和$\hat{\mathbf{g}}_{mk}$相互独立，有
 \begin{align}
 {\text{ES}_k} &= { {\sqrt {{\rho _\text{u}}} \mathbb{E} \left\{ {\sum_{m = 1}^M {\alpha _m}({\tilde{a}_{1k}}{\mathbf{\hat g}}_{mk}^H{{\mathbf{g}}_{mk}} + {\tilde{a}_{3k}}{\mathbf{\hat g}}_{mk}^H{{\mathbf{g}}_{mk}}{{\left| {{q_k}} \right|}^2})} \right\} }}\nonumber\\
  &= \sqrt {{\rho _\text{u}}} {{\mathbb{E} \left\{ {\sum_{m = 1}^M {\alpha _m}(N{\tilde{a}_{1k}}{\gamma _{mk}} + N{\tilde{a}_{3k}}{\gamma _{mk}}{{\left| {{q_k}} \right|}^2})} \right\}}}\nonumber\\
@@ -464,11 +464,11 @@ MADQIN的详细执行流程总结于算法\ref{DQN}中，详见下页顶部。
 			\end{tabular}
   \end{center}
 \end{table}
-本章采用文献\cite{chapterthree10}中非线性PA模型的参数设置，其中$a_1=13.85$，$a_3=-4.074$。大尺度衰落系数$\beta_{mk}$采用如下建模方式，以更准确反映实际通信环境中的信号衰减特性
+本章采用文献\textcite{chapterthree10}中非线性PA模型的参数设置，其中$a_1=13.85$，$a_3=-4.074$。大尺度衰落系数$\beta_{mk}$采用如下建模方式，以更准确反映实际通信环境中的信号衰减特性
 \begin{equation}
 \beta_{mk} = \text{PL}_{mk} \cdot 10^{\frac{\delta_{\text{sh}}^{z_{mk}}}{10}},
 \end{equation}
-其中，$10^{\frac{\delta_{\text{sh}}^{z_{mk}}}{10}}$用于模拟阴影衰落，$z_{mk} \sim \mathcal{CN}(0,1)$。路径损耗$\text{PL}_{mk}$采用文献\cite{chapterone7}提出的三斜率模型，具体为
+其中，$10^{\frac{\delta_{\text{sh}}^{z_{mk}}}{10}}$用于模拟阴影衰落，$z_{mk} \sim \mathcal{CN}(0,1)$。路径损耗$\text{PL}_{mk}$采用文献\textcite{chapterone7}提出的三斜率模型，具体为
 \begin{equation}
 \text{PL}_{mk} = \left\{\begin{array}{ll}
 -L-35 \log_{10}(d_{mk}), & d_{mk} > d_1 \\
