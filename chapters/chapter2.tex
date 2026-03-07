@@ -1,33 +1,33 @@
 \chapter{相关理论与技术基础}\label{chap:theory}
 
-本章旨在系统梳理后续章节所需的理论基础与关键技术体系，为算法设计与系统优化提供坚实的理论依据。首先，重点介绍有限块长信息论的基本理论框架，阐明其在超可靠低延迟通信场景中的关键作用；其次，详细阐述图神经网络的核心原理，涵盖谱图理论、图卷积网络以及图注意力网络等关键技术；最后，深入分析深度强化学习的理论基础，包括马尔可夫决策过程、深度Q网络和Actor-Critic框架等核心概念。
+本章旨在系统梳理后续章节所需的理论基础与关键技术体系。首先，重点介绍FBL信息论的基本理论框架，阐明其在URLLC场景中的关键作用；其次，详细阐述GNN的核心原理，涵盖谱图理论、GCN以及GAT等关键技术；最后，深入分析DRL的理论基础，包括MDP、DQN和Actor-Critic框架等核心概念。
 
 \section{有限块长信息论基础}
 
 \subsection{香农容量的局限性}
 
-传统香农信息论基于码字长度趋于无穷大、解码错误概率趋近于零的理想假设，建立了信道容量极限的理论框架\cite{chaptertwo1}。然而，在5G及未来移动通信网络中，超可靠低延迟通信（Ultra-Reliable and Low-Latency Communications，URLLC）场景对传输时延和通信可靠性提出了极为严格的技术要求。URLLC业务通常采用短包传输模式，码字长度受到显著限制，此时传统香农容量理论的适用性面临挑战。
+传统香农信息论基于码字长度趋于无穷大、解码错误概率趋近于零的理想假设，建立了信道容量极限的理论框架\cite{chaptertwo1}。然而，在5G及未来移动通信网络中，URLLC场景对传输时延和通信可靠性提出了极为严格的技术要求。URLLC业务通常采用短包传输模式，码字长度受到显著限制，此时传统香农容量理论的适用性面临挑战。
 
-从数学表达来看，香农容量公式建立在传输块长$n \to \infty$且错误概率$\varepsilon \to 0$的理想条件下。但在实际URLLC应用场景中，传输块长通常仅为几十至几百个符号周期，同时需要在极短时延内完成数据传输。正如Polyanskiy等学者\cite{chaptertwo1}的研究表明，这种有限块长约束将导致实际可达速率明显低于香农容量极限，因此亟需构建新的理论体系来精确描述有限块长约束下的系统性能边界。
+香农容量公式建立在传输块长$n \to \infty$且错误概率$\varepsilon \to 0$的理想条件下。但在实际URLLC应用场景中，传输块长通常仅为几十至几百个符号周期，同时需要在极短时延内完成数据传输。正如Polyanskiy等学者~\cite{chaptertwo1}的研究表明，这种FBL约束将导致实际可达速率明显低于香农容量极限，因此亟需构建新的理论体系来精确描述FBL约束下的系统性能边界。
 
 \subsection{有限块长编码理论}
 
-有限块长信息论由Polyanskiy、Poor和Verd\'{u}三位学者于2010年系统构建\cite{chaptertwo1}，该理论体系专门针对有限块长和有限错误概率约束下的信道编码性能进行分析。对于加性高斯白噪声（Additive White Gaussian Noise，AWGN）信道，有限块长条件下的可达速率可近似表达为：
+有限块长信息论由Polyanskiy、Poor和Verd\'{u}三位学者于2010年系统构建\cite{chaptertwo1}，该理论体系专门针对有限块长和有限错误概率约束下的信道编码性能进行分析。对于加性高斯白噪声（Additive White Gaussian Noise，AWGN）信道，FBL条件下的可达速率可近似表达为：
 \begin{equation}
 r \approx C - \sqrt{\frac{V}{n}}Q^{-1}(\varepsilon) + O\left(\frac{\log n}{n}\right),
 \end{equation}
-式中$C$表示信道容量，$V$为信道色散参数，$n$为传输块长，$\varepsilon$为目标错误概率，$Q^{-1}(\cdot)$代表高斯Q函数的反函数。
+其中，$C$表示信道容量，$V$为信道色散参数，$n$为传输块长，$\varepsilon$为目标错误概率，$Q^{-1}(\cdot)$代表高斯$Q$函数的反函数。
 
-该数学表达式清晰揭示了有限块长传输条件下的速率损失机制，主要由信道色散与块长平方根倒数的乘积决定。当传输块长$n$减小时，速率损失呈现增大趋势；当对错误概率$\varepsilon$的要求更为严格时（即$\varepsilon$取值更小），$Q^{-1}(\varepsilon)$函数值相应增大，从而导致可达速率进一步降低。这一理论框架为URLLC系统的设计与性能分析提供了重要的理论依据\cite{chaptertwo2,chaptertwo3}。
+该数学表达式清晰揭示了FBL传输条件下的速率损失机制，主要由信道色散与块长平方根倒数的乘积决定。当传输块长$n$减小时，速率损失呈现增大趋势；当对错误概率$\varepsilon$的要求更为严格时（即$\varepsilon$取值更小），$Q^{-1}(\varepsilon)$函数值相应增大，从而导致可达速率进一步降低。这一理论框架为URLLC系统的设计与性能分析提供了重要的理论依据\cite{chaptertwo2,chaptertwo3}。
 
-\subsection{高斯Q函数及其反函数}
+\subsection{高斯$Q$函数及其反函数}
 
-高斯Q函数作为有限块长信息论中的核心数学工具，其定义为标准正态分布的右尾概率函数\cite{chaptertwo1}：
+高斯$Q$函数作为有限块长信息论中的核心数学工具，其定义为标准正态分布的右尾概率函数\cite{chaptertwo1}：
 \begin{equation}
 Q(x) = \frac{1}{\sqrt{2\pi}} \int_{x}^{\infty} \exp\left(-\frac{t^2}{2}\right)dt.
 \end{equation}
 
-该函数在通信理论领域具有广泛应用，主要用于计算误码率、中断概率等关键性能指标。高斯Q函数具备以下重要数学特性：
+该函数在通信理论领域具有广泛应用，主要用于计算误码率、中断概率等关键性能指标。高斯$Q$函数具备以下重要数学特性：
 \begin{itemize}
 \item $Q(0) = 0.5$，对应标准正态分布的中位数位置；
 \item $Q(x)$为严格单调递减函数，当$x \to \infty$时，$Q(x) \to 0$；
@@ -35,13 +35,13 @@ Q(x) = \frac{1}{\sqrt{2\pi}} \int_{x}^{\infty} \exp\left(-\frac{t^2}{2}\right)dt
 \item 对于较大$x$值，可采用Chernoff界进行近似计算：$Q(x) \approx \frac{1}{\sqrt{2\pi}x}\exp\left(-\frac{x^2}{2}\right)$。
 \end{itemize}
 
-高斯Q函数的反函数$Q^{-1}(\cdot)$在有限块长速率表达式中扮演关键角色，其功能是将目标错误概率映射为相应的置信水平。在URLLC应用场景中，典型错误概率要求通常设定为$\varepsilon = 10^{-5}$至$10^{-7}$\cite{chaptertwo4}，对应的$Q^{-1}(\varepsilon)$函数值约为$4.26$至$5.20$区间。
+高斯$Q$函数的反函数$Q^{-1}(\cdot)$在有限块长速率表达式中扮演关键角色，其功能是将目标错误概率映射为相应的置信水平。在URLLC应用场景中，典型错误概率要求通常设定为$\varepsilon = 10^{-5}$至$10^{-7}$\cite{chaptertwo4}，对应的$Q^{-1}(\varepsilon)$函数值约为$4.26$至$5.20$区间。
 
 \subsection{信道色散}
 
-信道色散（Channel Dispersion）$V$是有限块长信息论中的关键参数，量化了信道容量附近速率波动的方差\cite{chaptertwo1}。对于AWGN信道，信道色散定义为：
+信道色散$V$是有限块长信息论中的关键参数，量化了信道容量附近速率波动的方差\cite{chaptertwo1}。对于AWGN信道，信道色散定义为：
 \begin{equation}
-V = \mathbb{E}\left[\left(\log\frac{p(Y|X)}{p(Y)} - C\right)^2\right],
+V = \mathbb{E}\left\{\left(\log\frac{p(Y|X)}{p(Y)} - C\right)^2\right\},
 \end{equation}
 其中，$p(Y|X)$为信道转移概率，$p(Y)$为输出分布，$C$为信道容量。
 
@@ -50,13 +50,13 @@ V = \mathbb{E}\left[\left(\log\frac{p(Y|X)}{p(Y)} - C\right)^2\right],
 V \approx (\log_2 e)^2 \left(1 - \frac{1}{(1+\text{SNR})^2}\right).
 \end{equation}
 
-当信噪比趋于无穷大时，$V \to (\log_2 e)^2 \approx 2.08$；当信噪比趋于零时，$V \to 0$。信道色散与块长的比值$V/n$决定了有限块长下的速率损失幅度，是URLLC系统性能分析的重要参数\cite{chaptertwo5}。
+当信噪比趋于无穷大时，$V \to (\log_2 e)^2 \approx 2.08$；当信噪比趋于零时，$V \to 0$。信道色散与块长的比值$V/n$决定了FBL下的速率损失幅度，是URLLC系统性能分析的重要参数\cite{chaptertwo5}。
 
 \section{图神经网络基础}
 
 \subsection{图论与谱图理论基础}
 
-图神经网络（Graph Neural Network，GNN）是处理非欧几里得结构数据的一类深度学习方法。与传统神经网络处理规则网格数据（如图像、语音）不同，GNN能够有效建模图结构数据，捕获节点间的复杂关系\cite{chaptertwo6}。
+GNN是处理非欧几里得结构数据的一类深度学习方法。与传统神经网络处理规则网格数据（如图像、语音）不同，GNN能够有效建模图结构数据，捕获节点间的复杂关系\cite{chaptertwo6}。
 
 一个无向图$\mathcal{G}$由节点集合$\mathcal{V}$和边集合$\mathcal{E}$组成，可表示为$\mathcal{G} = (\mathcal{V}, \mathcal{E})$。图的拓扑结构常用邻接矩阵$\mathbf{A} \in \mathbb{R}^{N \times N}$表示，其中$N = |\mathcal{V}|$为节点数，$A_{ij} = 1$表示节点$i$与节点$j$之间存在边，否则$A_{ij} = 0$。
 
@@ -89,7 +89,7 @@ V \approx (\log_2 e)^2 \left(1 - \frac{1}{(1+\text{SNR})^2}\right).
 
 \subsection{图卷积网络}
 
-图卷积网络（Graph Convolutional Network，GCN）作为图神经网络的重要架构，其核心设计理念是将传统卷积运算从规则网格结构推广至非规则的图拓扑结构。谱域图卷积的数学定义建立在图傅里叶变换基础之上\cite{chaptertwo6}：
+GCN作为GNN的重要架构，其核心设计理念是将传统卷积运算从规则网格结构推广至非规则的图拓扑结构。谱域图卷积的数学定义建立在图傅里叶变换基础之上\cite{chaptertwo6}：
 \begin{equation}
 \mathbf{x} *_{\mathcal{G}} \mathbf{g} = \mathbf{U}\left((\mathbf{U}^T\mathbf{x}) \odot (\mathbf{U}^T\mathbf{g})\right),
 \end{equation}
@@ -105,7 +105,7 @@ V \approx (\log_2 e)^2 \left(1 - \frac{1}{(1+\text{SNR})^2}\right).
 
 \subsection{图注意力网络}
 
-图注意力网络（Graph Attention Network，GAT）由Veličković等学者\cite{chaptertwo10}提出，该架构创新性地引入了注意力机制，使得模型能够自适应地学习邻居节点的重要性分配权重。与图卷积网络采用固定归一化权重的设计思路不同，GAT通过动态计算注意力系数来实现差异化的邻居信息聚合策略。
+GAT由Veličković等学者\cite{chaptertwo10}提出，该架构创新性地引入了注意力机制，使得模型能够自适应地学习邻居节点的重要性分配权重。与GCN采用固定归一化权重的设计思路不同，GAT通过动态计算注意力系数来实现差异化的邻居信息聚合策略。
 
 对于任意两个节点$i$和$j$，注意力系数$e_{ij}$定量表征节点$j$对节点$i$的重要程度，其计算表达式为：
 \begin{equation}
@@ -135,7 +135,7 @@ e_{ij} = \text{LeakyReLU}\left(\mathbf{a}^T[\mathbf{W}\mathbf{h}_i \| \mathbf{W}
 
 \subsection{马尔可夫决策过程}
 
-深度强化学习（Deep Reinforcement Learning，DRL）是机器学习的重要分支，通过智能体与环境的交互学习最优决策策略。DRL的理论基础是马尔可夫决策过程（Markov Decision Process，MDP）\cite{chaptertwo11}，其由状态空间$\mathcal{S}$、动作空间$\mathcal{A}$、状态转移概率$\mathcal{P}$、奖励函数$\mathcal{R}$和折扣因子$\gamma$五元组定义。
+DRL是机器学习的重要分支，通过智能体与环境的交互学习最优决策策略。DRL的理论基础是马尔可夫决策过程（Markov Decision Process，MDP）\cite{chaptertwo11}，其由状态空间$\mathcal{S}$、动作空间$\mathcal{A}$、状态转移概率$\mathcal{P}$、奖励函数$\mathcal{R}$和折扣因子$\gamma$五元组定义。
 
 MDP的核心假设是马尔可夫性，即下一状态仅依赖于当前状态和动作，与历史无关：
 \begin{equation}
@@ -144,32 +144,32 @@ P(s_{t+1}|s_t, a_t, s_{t-1}, a_{t-1}, \ldots) = P(s_{t+1}|s_t, a_t).
 
 智能体的目标是找到一个策略$\pi: \mathcal{S} \to \mathcal{A}$（或$\pi(a|s)$为随机策略），使得累积折扣奖励最大化：
 \begin{equation}
-J(\pi) = \mathbb{E}\left[\sum_{t=0}^{\infty}\gamma^t r_t \Big| \pi\right],
+J(\pi) = \mathbb{E}\left\{\sum_{t=0}^{\infty}\gamma^t r_t \Big| \pi\right\},
 \end{equation}
 其中，$r_t = \mathcal{R}(s_t, a_t)$为时刻$t$的即时奖励，$\gamma \in [0, 1]$为折扣因子，平衡即时奖励与未来奖励的重要性\cite{chaptertwo11}。
 
 值函数是评估状态或状态-动作对好坏的重要工具。状态值函数$V^{\pi}(s)$表示从状态$s$出发，遵循策略$\pi$的期望累积奖励：
 \begin{equation}
-V^{\pi}(s) = \mathbb{E}\left[\sum_{t=0}^{\infty}\gamma^t r_t \Big| s_0 = s, \pi\right].
+V^{\pi}(s) = \mathbb{E}\left\{\sum_{t=0}^{\infty}\gamma^t r_t \Big| s_0 = s, \pi\right\}.
 \end{equation}
 
 动作值函数$Q^{\pi}(s, a)$表示在状态$s$执行动作$a$后，遵循策略$\pi$的期望累积奖励：
 \begin{equation}
-Q^{\pi}(s, a) = \mathbb{E}\left[\sum_{t=0}^{\infty}\gamma^t r_t \Big| s_0 = s, a_0 = a, \pi\right].
+Q^{\pi}(s, a) = \mathbb{E}\left\{\sum_{t=0}^{\infty}\gamma^t r_t \Big| s_0 = s, a_0 = a, \pi\right\}.
 \end{equation}
 
 最优值函数$V^*(s)$和最优动作值函数$Q^*(s, a)$定义为所有策略中的最大值，满足贝尔曼最优方程\cite{chaptertwo11}：
 \begin{equation}
-Q^*(s, a) = \mathcal{R}(s, a) + \gamma\mathbb{E}_{s'}\left[\max_{a'}Q^*(s', a')\right].
+Q^*(s, a) = \mathcal{R}(s, a) + \gamma\mathbb{E}_{s'}\left\{\max_{a'}Q^*(s', a')\right\}.
 \end{equation}
 
-\subsection{深度Q网络}
+\subsection{深度$Q$网络}
 
-深度Q网络（Deep Q-Network，DQN）由Mnih等\cite{chaptertwo12}提出，将深度学习与Q学习相结合，使用神经网络逼近动作值函数$Q(s, a; \omega)$，其中$\omega$为网络参数。DQN的核心创新包括经验回放和目标网络。
+DQN由Mnih等\cite{chaptertwo12}提出，将深度学习与Q学习相结合，使用神经网络逼近动作值函数$Q(s, a; \omega)$，其中$\omega$为网络参数。DQN的核心创新包括经验回放和目标网络。
 
 经验回放（Experience Replay）机制将智能体的交互经验$(s_t, a_t, r_t, s_{t+1})$存储于回放缓冲区，训练时随机采样小批量数据进行更新。这一机制打破了数据的时间相关性，提高了样本利用效率\cite{chaptertwo13}。
 
-目标网络（Target Network）使用单独的网络计算目标值，其参数定期从主网络复制而非实时更新。目标值计算为：
+目标网络使用单独的网络计算目标值，其参数定期从主网络复制而非实时更新。目标值计算为：
 \begin{equation}
 y_t = r_t + \gamma \max_{a'}Q(s_{t+1}, a'; \omega^-),
 \end{equation}
@@ -177,12 +177,12 @@ y_t = r_t + \gamma \max_{a'}Q(s_{t+1}, a'; \omega^-),
 
 DQN的损失函数为均方时序差分误差：
 \begin{equation}
-L(\omega) = \mathbb{E}\left[(y_t - Q(s_t, a_t; \omega))^2\right].
+L(\omega) = \mathbb{E}\left\{(y_t - Q(s_t, a_t; \omega))^2\right\}.
 \end{equation}
 
 通过梯度下降更新网络参数：
 \begin{equation}
-\nabla_{\omega}L(\omega) = \mathbb{E}\left[(y_t - Q(s_t, a_t; \omega))\nabla_{\omega}Q(s_t, a_t; \omega)\right].
+\nabla_{\omega}L(\omega) = \mathbb{E}\left\{(y_t - Q(s_t, a_t; \omega))\nabla_{\omega}Q(s_t, a_t; \omega)\right\}.
 \end{equation}
 
 \begin{figure}
@@ -194,9 +194,9 @@ L(\omega) = \mathbb{E}\left[(y_t - Q(s_t, a_t; \omega))^2\right].
 
 \subsection{Actor-Critic框架}
 
-Actor-Critic框架作为策略梯度方法的重要演进，创新性地融合了值函数逼近技术与策略梯度优化机制\cite{chaptertwo11}。该框架采用双网络架构设计：Actor网络专门负责生成动作策略，而Critic网络则承担策略性能评估功能。图\ref{ddpg}展示了基于Actor-Critic架构的深度强化学习通用工作流程，该流程设计具有广泛的适用性，可支持多种深度强化学习算法（如DDPG、PPO等）的实现。
+Actor-Critic框架作为策略梯度方法的重要演进，创新性地融合了值函数逼近技术与策略梯度优化机制\cite{chaptertwo11}。该框架采用双网络架构设计：Actor网络专门负责生成动作策略，而Critic网络则承担策略性能评估功能。图\ref{ddpg}展示了基于Actor-Critic架构的DRL通用工作流程，该流程设计具有广泛的适用性，可支持多种DRL算法（如DDPG、PPO等）的实现。
 
-如图\ref{ddpg}所示，深度强化学习的训练流程包含以下关键步骤：
+如图\ref{ddpg}所示，DRL的训练流程包含以下关键步骤：
 
 \textbf{1. 交互采样阶段}：Actor网络根据当前状态$s_t$做出决策$a_t = \mu(s_t|\theta^{\mu})$，与环境交互后获得奖励$r_t$和下一状态$s_{t+1}$。经验元组$(s_t, a_t, s_{t+1}, r_t)$被存储在缓冲池中，用于后续的批量采样训练。经验回放机制打破了数据的时间相关性，提高了样本利用效率\cite{chaptertwo13}。
 
@@ -229,12 +229,12 @@ L(Q_w) \approx \frac{1}{T}\sum_{t=1}^{T}\left(y_t - Q(s_t, a_t; \omega)\right)^2
 \end{align}
 其中，$\tau \ll 1$为软更新系数。软更新使目标网络参数缓慢跟踪主网络，避免了训练过程中的震荡。
 
-上述流程构成了深度强化学习的通用框架。对于连续动作空间的控制问题，Lillicrap等\cite{chaptertwo15}提出的深度确定性策略梯度（DDPG）算法是该框架的典型实现。此外，Schulman等\cite{chaptertwo14}提出的近端策略优化（PPO）算法通过裁剪目标函数限制策略更新幅度：
+上述流程构成了DRL的通用框架。对于连续动作空间的控制问题，Lillicrap等\cite{chaptertwo15}提出的DDPG算法是该框架的典型实现。此外，Schulman等\cite{chaptertwo14}提出的PPO算法通过裁剪目标函数限制策略更新幅度：
 \begin{equation}
-L^{\text{CLIP}}(\theta) = \mathbb{E}\left[\min\left(r_t(\theta)\hat{A}_t, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon)\hat{A}_t\right)\right],
+L^{\text{CLIP}}(\theta) = \mathbb{E}\left\{\min\left(r_t(\theta)\hat{A}_t, \text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon)\hat{A}_t\right)\right\},
 \end{equation}
 其中，$r_t(\theta) = \frac{\pi_{\theta}(a_t|s_t)}{\pi_{\theta_{\text{old}}}(a_t|s_t)}$为重要性采样比率，$\epsilon$为裁剪参数，$\hat{A}_t$为优势函数估计。PPO算法在保证训练稳定性的同时，实现了更高效的策略优化。
 
 \section{本章小结}
 
-本章系统梳理了后续章节研究所依赖的理论基础与技术体系。首先，重点阐述了有限块长信息论\cite{chaptertwo1}的核心内容，涵盖香农容量理论的适用局限性、有限块长编码理论框架、高斯Q函数特性以及信道色散参数等关键概念，为URLLC场景的系统性能分析构建了完整的理论工具集。其次，深入探讨了图神经网络的数学理论基础，系统介绍了谱图理论\cite{chaptertwo7}、图傅里叶变换\cite{chaptertwo8}、图卷积网络\cite{chaptertwo6}和图注意力网络\cite{chaptertwo10}等核心技术，阐明了GNN处理非欧几里得数据结构、有效捕获节点间复杂关系的运行机制。最后，全面分析了深度强化学习的理论框架，包括马尔可夫决策过程\cite{chaptertwo11}、深度Q网络\cite{chaptertwo12}和Actor-Critic框架\cite{chaptertwo14}等核心方法，为后续智能资源分配算法的设计与实现奠定了坚实的方法论基础。这些理论工具将在后续章节中进行有机融合与创新应用，共同致力于解决CF-mMIMO系统中的复杂优化挑战。
+本章系统梳理了后续章节研究所依赖的理论基础与技术体系。首先，重点阐述了FBL信息论\textcite{chaptertwo1}的核心内容，涵盖香农容量理论的适用局限性、FBL编码理论框架、高斯$Q$函数特性以及信道色散参数等关键概念，为URLLC场景的系统性能分析构建了完整的理论工具集。其次，深入探讨了GNN的数学理论基础，系统介绍了谱图理论、图傅里叶变换、GCN和GAT等核心技术，阐明了GNN处理非欧几里得数据结构、有效捕获节点间复杂关系的运行机制。最后，全面分析了DRL的理论框架，包括MDP、DQN和Actor-Critic框架等核心方法，为后续智能资源分配算法的设计与实现奠定了坚实的方法论基础。这些理论工具将在后续章节中进行有机融合与创新应用，共同致力于解决CF-mMIMO系统中的复杂优化挑战。
