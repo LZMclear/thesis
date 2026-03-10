@@ -27,7 +27,7 @@ CF‑mMIMO系统通过密集部署大量AP，可实现无缝通信覆盖，显�
 \begin{equation}
 \mathbf{g}_{mk} = \beta_{mk}^{1/2} \mathbf{h}_{mk},
 \end{equation}
-其中，$\beta_{mk}$综合考虑了几何衰减与阴影衰落，并假定其在相干时间内保持不变；$\mathbf{h}_{mk}$的元素是具有瑞利分布包络的复高斯随机变量。设$\tau_\text{c}$为相干时间长度，$\tau_\text{p}$为每个相干时间的上行训练长度。受训练时长限制，本章采用$\tau_\text{p}<K$的非正交导频，并将使用相同导频序列的UE集合定义为$\mathcal{P}_k$。上行训练阶段，$K$个UE同时向所有AP发送非正交导频序列，则第$k$个UE的导频信号可表示为$\sqrt{\tau_\text{p}}\boldsymbol{\varphi}_k\in\mathbb{C}^{\tau_\text{p}\times1}$，其中$\left\|\boldsymbol{\varphi}_k\right\|^2=1$。
+其中，$\beta_{mk}$综合考虑了几何衰减与阴影衰落，并假定其在相干时间内保持不变；$\mathbf{h}_{mk}$的元素是具有瑞利分布包络的复高斯随机变量。设$\tau_\text{c}$为相干时间长度，$\tau_\text{p}$为每个相干时间的上行训练长度。受相干时长限制，本章采用$\tau_\text{p}<K$的非正交导频，并将使用相同导频序列的UE集合定义为$\mathcal{P}_k$。上行训练阶段，$K$个UE同时向所有AP发送非正交导频序列，则第$k$个UE的导频信号可表示为$\sqrt{\tau_\text{p}}\boldsymbol{\varphi}_k\in\mathbb{C}^{\tau_\text{p}\times1}$，其中$\left\|\boldsymbol{\varphi}_k\right\|^2=1$。
 
 为准确建模硬件损伤，本章采用硬件非线性确定性行为模型\cite{chapterthree1}，该模型能够以少量参数表征各类硬件损伤所产生的物理影响。硬件输入输出关系可描述为\cite{chapterthree2}
 \begin{equation}
@@ -71,7 +71,6 @@ x_\text{out}=\sum_{i=0}^{N_p}a_{2i+1}x_\text{in}\left | x_\text{in} \right |^{2i
 &=\alpha_m\sqrt{\rho_\text{p}}\sum_{k'\in\mathcal{P}_k}^{K}(\tilde{a}_1+\tilde{a}_3\tau_\text{p})\mathbf{g}_{mk'}\nonumber\\
 &\quad+\alpha_m\mathbf{W}_{\text{p},m}\boldsymbol{\varphi}_k+\tilde{\mathbf{W}}_{\text{p},m}\boldsymbol{\varphi}_k.
 \end{align}
-综上所述，可得如下引理。
 \begin{lemma}\label{lemma1}
 	\rm{采用MMSE方法，估计信道$\mathbf{g}_{mk}$可以计算为}
 	\setlength\arraycolsep{1pt}   % 调整eqnarray等号两边空白
@@ -145,10 +144,9 @@ x_\text{out}=\sum_{i=0}^{N_p}a_{2i+1}x_\text{in}\left | x_\text{in} \right |^{2i
 \begin{equation}\label{eqn-23}
 		R_{\text{u}, k}=\log _{2}\left(1+\frac{N^{2} \rho_\text{u}\left|\tilde{a}_{1 k}+\tilde{a}_{3 k}\right|^{2}\left(\sum\limits_{m=1}^{M} \alpha_{m} \gamma_{m k}\right)^{2}}{N^{2} \rho_\text{u} \sum\limits_{k'=1}^{K}\left(\Omega_{k^{\prime}} \sum\limits_{m=1}^{M} \alpha_{m}^{2} \gamma_{m k} \beta_{m k'}\right)+N^{2} \sum\limits_{m=1}^{M} \alpha_{m}^{2} \gamma_{m k}+\Upsilon _k+\Psi _k }\right),
 \end{equation}
-其中
-\begin{equation}\label{eqn-omega}\begin{aligned}\Omega _k = \left( {{{\left| {{a_1}} \right|}^2}{\eta _{k}} + 2a_1^*{a_3}{\eta _{k}^2}+ 2{a_1}a_3^ * \eta _{k}^2 + 6{{\left| {{a_3}} \right|}^2}\eta _{k}^3} \right), \end{aligned}\end{equation}
+\begin{equation}\label{eqn-omega}\begin{aligned}\text{其中}\quad\quad \Omega _k = \left( {{{\left| {{a_1}} \right|}^2}{\eta _{k}} + 2a_1^*{a_3}{\eta _{k}^2}+ 2{a_1}a_3^ * \eta _{k}^2 + 6{{\left| {{a_3}} \right|}^2}\eta _{k}^3} \right), \end{aligned}\end{equation}
 \begin{equation}\Upsilon _k=3 N^{2} \rho_\text{u}\left|a_{3}\right|^{2} \eta_{k}^{3}\left(\sum\limits_{m=1}^{M} \alpha_{m}^{2} \gamma_{m k}\right)^{2},\end{equation}
-\begin{equation}\Psi _k={N}{\rho _\text{u}}\mathop \sum \limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( {\mathop \sum \limits_{k = 1}^K {\beta _{mk}}\Omega _k + 1} \right){\gamma _{mk}},
+\begin{equation}\Psi _k={N}{\rho _\text{u}}\mathop \sum \limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( {\mathop \sum \limits_{k = 1}^K {\beta _{mk}}\Omega _k + 1} \right){\gamma _{mk}}.
 \end{equation}
 \end{theorem}
 \begin{proof}\renewcommand{\qedsymbol}{}
@@ -161,13 +159,13 @@ x_\text{out}=\sum_{i=0}^{N_p}a_{2i+1}x_\text{in}\left | x_\text{in} \right |^{2i
 
 此外，加性噪声$\text{N}_k$的方差为
 \begin{align}\label{eqn-46}
-\mathbb{E}\left\{\left|\text{N}_{k}\right|^{2}\right\}&=\sum_{m=1}^{M} \mathbb{E}\left\{\alpha_{m}^{2}\left\|\hat{\mathbf{g}}_{m k}\right\|^{2}\right\} \mathbb{E}\left\{\left\|\mathbf{w}_{\text{u}, m}\right\|^{2}\right\} \nonumber\\
-&=N^{2} \sum_{m=1}^{M} \alpha_{m}^{2} \gamma_{m k}.
+\mathbb{E}\left\{\left|\text{N}_{k}\right|^{2}\right\}=\sum_{m=1}^{M} \mathbb{E}\left\{\alpha_{m}^{2}\left\|\hat{\mathbf{g}}_{m k}\right\|^{2}\right\} \mathbb{E}\left\{\left\|\mathbf{w}_{\text{u}, m}\right\|^{2}\right\} \nonumber
+=N^{2} \sum_{m=1}^{M} \alpha_{m}^{2} \gamma_{m k}.
 \end{align}
 
 量化噪声的方差为
 \begin{align}
-\mathbb{E}\left\{ {{{\left| {{\text{Q}_k}} \right|}^2}} \right\} &= \mathbb{E}\left\{ {\left| {\mathop \sum \limits_{m = 1}^M {\mathbf{\hat g}}_{mk}^H{\mathbf{\tilde w}}_{\text{u},m}} \right|^2} \right\}\nonumber\\
+\mathbb{E}\left\{ {{{\left| {{\text{Q}_k}} \right|}^2}} \right\} &= \mathbb{E}\left\{ {\left| {\mathop \sum \limits_{m = 1}^M {\mathbf{\hat g}}_{mk}^H{\tilde{\mathbf w}}_{\text{u},m}} \right|^2} \right\}\nonumber\\
  &= N\sum_{m=1}^{M}\alpha_m (1-\alpha_m )\mathbb{E} \left \{ \mathbf{y}_{\text{u},m} \mathbf{y}_{\text{u},m}^H \right \} \gamma _{mk}\nonumber \\
  &= {N}{\rho _\text{u}}\mathop \sum \limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( {\mathop \sum \limits_{k = 1}^K {\beta _{mk}}\Omega _k + 1} \right){\gamma _{mk}},
 \end{align}
@@ -213,9 +211,7 @@ ${\rho _\text{u}}\mathop \sum \limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\lef
 
 \section{上行和速率最大化}
 
-在CF-mMIMO系统中，由于各AP会接收所有UE发送的信号，UE间的相互干扰将显著影响目标UE的上行可达速率。因此，合理调控各UE的发射功率，平衡目标信号与干扰信号之间的关系，对于提升系统整体性能具有重要意义。
-
-基于上述背景及闭式解中的可调参数，本章建立了上行功率控制优化模型。该模型以非负功率集合为约束，目标在于最大化系统总速率，并要求每个功率变量不超过预设的最大限值。依据式\eqref{eqn-23}，上行总速率最大化问题可表述为
+在CF-mMIMO系统中，由于各AP会接收所有UE发送的信号，UE间的相互干扰将显著影响目标UE的上行可达速率。基于上述背景及闭式解中的可调参数，本章建立了上行功率控制优化模型。该模型以非负功率集合为约束，目标在于最大化系统总速率，并要求每个功率变量不超过预设的最大限值。依据式\eqref{eqn-23}，上行总速率最大化问题可表述为
 \begin{align} \label{P1}
 \mathcal{P}_1:& \quad \underset{\left \{ \eta _k \right \} }{\text{max}} \quad  {\sum_{k=1}^{K}} R_{\text{u},k}\\
 \text{s.t.}&\quad {\left| {{a_1}} \right|^2}{\eta _k} + 2(a_1^ * {a_3} + {a_1}a_3^ * )\eta _k^2 + 6{\left| {{a_3}} \right|^2}\eta _k^3 \le 1, \forall k.
@@ -223,7 +219,7 @@ ${\rho _\text{u}}\mathop \sum \limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\lef
 
 优化问题$\mathcal{P}_1$的目标函数与约束条件均呈现非凸特性，属于NP-hard问题。传统基于模型的优化方法（如凸松弛、迭代逼近等）在处理此类问题时面临双重挑战：一方面，非凸性导致难以精确量化所得解与全局最优解之间的性能差距；另一方面，高计算复杂度使其难以满足实时性要求。更为关键的是，基于模型的方法依赖固定的数学假设与先验知识，自适应能力有限，难以灵活应对未来异构业务需求的多样性及无线环境的动态时变特性。
 
-从问题结构角度分析，CSI $\mathbf{g}_{mk}$作为刻画无线信道特性的关键统计量，蕴含了确定最优功率控制策略的重要信息，与功率控制系数$\eta_k$之间存在潜在的映射关系。鉴于此，本章引入数据驱动的DRL方法，通过端到端的学习方式直接挖掘并实现该映射关系，从而有效规避传统方法的计算瓶颈，显著提升系统的自适应与优化能力。
+从问题结构角度分析，$\mathbf{g}_{mk}$作为刻画无线信道特性的关键统计量，蕴含了确定最优功率控制策略的重要信息，与功率控制系数$\eta_k$之间存在潜在的映射关系。鉴于此，本章引入数据驱动的DRL方法，通过端到端的学习方式直接挖掘并实现该映射关系，从而有效规避传统方法的计算瓶颈，显著提升系统的自适应与优化能力。
 
 进一步地，基于式\eqref{eqn-23}的推导结果可知，用户速率随ADC量化系数$\alpha_m$的增大呈单调递增趋势。结合量化噪声项的影响，可通过动态调整ADC量化比特数以实现系统总速率最大化。为此，本章采用改进型深度Q学习算法作为优化工具，以用户总速率最大化为目标，将ADC量化精度分配问题形式化为
 \begin{align}\label{P2}
@@ -382,13 +378,13 @@ Critic网络参数的更新则通过最小化以下损失函数实现
 		\end{algorithmic}
 \end{algorithm}
 
-\footnotetext[1]{He初始化是一种针对ReLU激活函数设计的神经网络权重初始化方法，旨在加速训练收敛并提升网络性能。}
-
 \section{MADQIN算法设计}
+
+\footnotetext[1]{He初始化是一种针对ReLU激活函数设计的神经网络权重初始化方法，旨在加速训练收敛并提升网络性能。}
 
 \begin{figure}
 \centering
-\includegraphics[width=3.8in] {fig3}
+\includegraphics[width=4in] {fig3}
 \caption{MADQIN网络架构图}
 \label{fig3}
 \end{figure}
@@ -411,6 +407,8 @@ MADQIN的输入输出设计与DMAGNN-AC保持一致。不同于传统贪心策�
 \begin{equation}
 a := \left [ a^* + \mathbf{n} \right ]^{b_m^{\text{max}}}_{b_m^{\text{min}}}.
 \end{equation}
+
+MADQIN的详细执行流程总结于算法\ref{DQN}中。
 
 \begin{algorithm}[t]
     \renewcommand{\algorithmicrequire}{\textbf{输入：}}
@@ -443,8 +441,6 @@ a := \left [ a^* + \mathbf{n} \right ]^{b_m^{\text{max}}}_{b_m^{\text{min}}}.
        
 		\end{algorithmic}
 \end{algorithm}
-
-MADQIN的详细执行流程总结于算法\ref{DQN}中。
 
 \section{数值结果与分析}
 
@@ -484,7 +480,7 @@ MADQIN的详细执行流程总结于算法\ref{DQN}中。
 \end{equation}
 其中，$d_{mk}$表示第$m$个AP与第$k$个UE之间的距离。需注意，当$d_{mk} < d_1$时不考虑阴影效应。
 
-\begin{table}[H]
+\begin{table}[t]
   \begin{center}
     \caption{神经网络参数设置}\label{table2}
     \begin{tabular}{@{}lll@{}}
@@ -507,18 +503,18 @@ MADQIN的详细执行流程总结于算法\ref{DQN}中。
 
 为验证所提算法性能，本章将其与传统全功率发射和原始DRL方案进行对比。实验结果表明，在各类环境下，所提算法均能在约2000步内收敛至理想性能。两种算法的主要参数配置见表\ref{table2}。
 
-\begin{figure}[H]
+\begin{figure}[t]
 \centering
-\includegraphics[width=4in]{MonteCarlo}
+\includegraphics[width=3.8in]{MonteCarlo}
 \caption{$K=20$，$N=20$时，不同AP数量下的上行可达和速率}
 \label{MonteCarlo}
 \end{figure}
 
 首先，图\ref{MonteCarlo}展示了上行可达和速率随AP数量变化的关系。本章还对式\eqref{eqn-23}的“分析结果”与式\eqref{eqn-22}的“仿真结果”进行了对比分析。仿真结果基于蒙特卡洛方法，在$10^4$次独立同分布（independent and identically distributed，i.i.d.）信道实现下获得。结果显示，仿真与分析结果高度一致，充分验证了理论推导的准确性。
 
-\begin{figure}[t]
+\begin{figure}[h]
 \centering
-\includegraphics[width=4in]{fig4}
+\includegraphics[width=3.8in]{fig4}
 \caption{$N=4$，$b_m=10$时，全功率传输下UE速率的累积分布图}
 \label{fig4}
 \end{figure}
@@ -542,18 +538,18 @@ MADQIN的详细执行流程总结于算法\ref{DQN}中。
 ${\rho _\text{u}}\sum\limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( \sum\limits_{k = 1}^K {\beta _{mk}}\Omega _k + 1 \right){\gamma _{mk}}$
 足够大时，其对UE速率的影响趋于减弱。此外，图\ref{fig5}与图\ref{fig6}的峰值速率基本一致，说明单纯提升ADC分辨率或AP天线数均无法突破系统固有的速率上限。
 
-\begin{figure}[H]
+\begin{figure}[h]
 \centering
-\includegraphics[width=4in] {fig7}
+\includegraphics[width=3.8in] {fig7}
 \caption{$b_m$ = 10时，采用非线性PAs和低分辨率ADCs的CF-mMIMO系统与理想硬件场景下UE速率对比图}
 \label{fig7}
 \end{figure}
 
 图\ref{fig7}对比了理想与非理想硬件条件下，CF-mMIMO系统在不同AP数量和天线数量下的可达UE速率。结果显示，在理想硬件条件下，随着AP和天线数量增加，UE和速率最高可超过90 bits/s/Hz；而在非线性PAs和低分辨率ADCs影响下，峰值速率被限制在30 bits/s/Hz左右。可见，硬件损伤导致系统速率下降近70\%，凸显了针对硬件损伤系统开展深入研究的必要性。
 
-\begin{figure}[H]
+\begin{figure}[t]	
 \centering
-\includegraphics[width=4in]{compare}
+\includegraphics[width=3.8in]{compare}
 \caption{$b_m$ = 10, $K$ = 20时，不同硬件损伤条件下UE速率对比图}
 \label{compare}
 \end{figure}
@@ -562,7 +558,7 @@ ${\rho _\text{u}}\sum\limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( \sum\l
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=4in]{fig10}
+\includegraphics[width=3.8in]{fig10}
 \caption{$b_m$ = 10, $N$ = 4时，DMAGNN‑AC、全功率传输、DDPG算法的优化性能对比图}
 \label{fig10}
 \end{figure}
@@ -580,16 +576,21 @@ ${\rho _\text{u}}\sum\limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( \sum\l
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=4in]{fig8}
-\caption{DMAGNN-AC算法的收敛性。}
-\label{fig8}
-\end{figure}
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=4in]{fig9}
-\caption{MADQIN算法的收敛性。}
-\label{fig9}
+% 第一张图
+\begin{minipage}{0.48\textwidth}
+  \centering
+  \includegraphics[width=3.5in]{fig8}
+  \caption{DMAGNN-AC算法的收敛性}
+  \label{fig8}
+\end{minipage}
+\hfill
+% 第二张图
+\begin{minipage}{0.48\textwidth}
+  \centering
+  \includegraphics[width=3.5in]{fig9}
+  \caption{MADQIN算法的收敛性}
+  \label{fig9}
+\end{minipage}
 \end{figure}
 
 图\ref{fig8}和图\ref{fig9}分别给出了两种算法在迭代过程中的损失函数值。为使结果更具普适性，本章对三组损失结果进行了对照。可以看出，两种算法在迭代1200轮后均呈现出明显的收敛趋势，充分证明了两种算法均具备优异的性能稳定性。

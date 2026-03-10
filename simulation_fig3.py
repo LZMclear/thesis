@@ -12,7 +12,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # 设置中文字体
-plt.rcParams['font.sans-serif'] = ['Times New Roman']
+plt.rcParams['font.sans-serif'] = ['SimSun']
 plt.rcParams['axes.unicode_minus'] = False
 
 # 设置坐标轴刻度标签字体大小

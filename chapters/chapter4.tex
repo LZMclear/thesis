@@ -274,13 +274,6 @@ V_{\phi}(\mathbf{s}_{t}) = \mathbf{W}_{v}^{(2)} \sigma\left(\mathbf{W}_{v}^{(1)}
 \end{equation}
 其中，$\mathbf{W}_{v}^{(1)} \in \mathbb{R}^{D_{v} \times (D+3)}$和$\mathbf{W}_{v}^{(2)} \in \mathbb{R}^{1 \times D_{v}}$为可学习权重矩阵。该设计通过聚合全局信息，评估当前功率配置的系统级价值。
 
-\begin{figure}[t]
-\centering
-\includegraphics[width=0.95\textwidth]{algorithm_flowchart.pdf}
-\caption{基于GNN-DRL的CF-mMIMO功率控制算法流程图}
-\label{fig:algorithm_flowchart}
-\end{figure}
-
 \subsection{奖励函数设计}
 针对CF-mMIMO系统中URLLC功率控制问题，奖励函数综合考虑系统频谱效率及URLLC服务质量约束。本文设计的奖励函数由系统和速率及URLLC约束惩罚构成，各分量分别对应不同的优化目标。
 
@@ -303,6 +296,17 @@ URLLC应用场景对通信可靠性与传输时延具有极为严格的技术要
 \mathcal{R}_{t} = \mathcal{R}_{t}^{\text{sum}} + \mathcal{R}_{t}^{\text{urllc}}
 \end{equation}
 该设计将归一化处理后的系统和速率与URLLC约束惩罚项直接相加。通过对系统和速率项除以用户总数$K$进行归一化，确保了两个组成部分在数值量级上具有可比性，避免单一优化目标主导梯度更新过程，从而使得智能体能够同时优化系统容量性能与URLLC服务质量要求。
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.95\textwidth]{algorithm_flowchart.pdf}
+\caption{基于GNN-DRL的CF-mMIMO功率控制算法流程图}
+\label{fig:algorithm_flowchart}
+\end{figure}
+
+\subsection{算法训练流程}
+
+本文提出的GNN-DRL融合算法的整体架构框架如图\ref{fig:algorithm_flowchart}所示。该算法采用GNN-DRL端到端联合训练的设计架构：GNN负责从网络拓扑结构中提取图结构特征并生成节点嵌入表示，DRL则基于图嵌入状态进行功率控制决策，两者通过协同优化机制实现系统性能的最大化目标。
 
 \begin{algorithm}[h]
 \caption{基于GNN-DRL的CF-mMIMO功率控制算法}
@@ -328,10 +332,6 @@ URLLC应用场景对通信可靠性与传输时延具有极为严格的技术要
 \EndFor
 \end{algorithmic}
 \end{algorithm}
-
-\subsection{算法训练流程}
-
-本文提出的GNN-DRL融合算法的整体架构框架如图\ref{fig:algorithm_flowchart}所示。该算法采用GNN-DRL端到端联合训练的设计架构：GNN负责从网络拓扑结构中提取图结构特征并生成节点嵌入表示，DRL则基于图嵌入状态进行功率控制决策，两者通过协同优化机制实现系统性能的最大化目标。
 
 具体训练流程如算法\ref{alg:gnn-drl}所示，采用交替优化策略进行迭代训练：在每个时隙内，GNN首先基于当前信道状态信息构建图结构并进行消息传递运算，输出用户节点的图嵌入特征表示；随后DRL的Actor网络根据图嵌入状态生成功率控制动作决策，Critic网络则负责评估状态价值以指导策略更新过程。GNN与DRL参数通过端到端联合训练方式，利用反向传播算法实现共同优化。算法的主要超参数配置详见表\ref{tab:hyperparams}所示。
 
@@ -389,9 +389,9 @@ PPO裁剪参数 $\epsilon$ & 0.2 \\
 
 图\ref{fig2_ideal}对比了理想硬件条件与非理想硬件条件下UE可达速率的差异。仿真结果显示，在理想硬件条件下，UE速率可达3.5-7.8 Mbps；而在PA非线性影响下，UE速率下降至3.3-6.3 Mbps，平均性能损失约为16.2\%。从右侧的性能损失柱状图可以看出，硬件损伤导致的性能损失在不同UE负载下基本保持稳定，约为3.4-25.6\%。这一现象可由式\eqref{SINR}解释：PA非线性引入的自干扰项与信号功率成正比，因此其影响不随UE数变化而显著改变。该结果凸显了针对硬件损伤系统开展深入研究的必要性，同时也验证了本章所提考虑PA非线性的功率控制算法的重要价值。
 
-\begin{figure}[t]
+\begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{fig3_algorithm_comparison.pdf}
+\includegraphics[width=0.6\textwidth]{fig3_algorithm_comparison.pdf}
 \caption{不同DRL算法在不同网络规模下的性能对比}
 \label{fig3_algorithm}
 \end{figure}
