@@ -10,14 +10,14 @@ CF‑mMIMO系统通过密集部署大量AP，可实现无缝通信覆盖，显�
 
 为突破上述瓶颈，近年来相关研究引入图表示方法来建模多用户系统中的干扰关系与空间相关性。GNN能够将原始CSI映射为低维图嵌入，显式保留用户间空间相关特征，从而为DRL提供更具表征能力的状态空间。同时，GNN对动态图结构（如用户移动导致的拓扑时变）的处理能力与DRL的环境交互机制天然兼容，二者深度融合可显著提升系统的移动性管理与网络协同优化能力。基于此，本章提出一种高性价比、工程可实现的CF‑mMIMO通信方案，充分挖掘系统性能潜力，并构建自适应网络优化框架，通过解耦功率分配问题，有效克服传统DRL在高维非结构化状态空间下的表征瓶颈。
 
-\begin{figure}
+\section{系统模型}
+
+\begin{figure}[h]
 \centering
 \includegraphics[width=3.2in] {fig1}
 \caption{带有非线性PAs和低分辨率ADCs的CF-mMIMO系统模型。}
 \label{fig1}
 \end{figure}
-
-\section{系统模型}
 
 本章考虑如图\ref{fig1}所示的上行CF-mMIMO系统，该系统由$M$个配备$N$根天线的AP和$K$个单天线UE组成。所有AP均通过回程链路与CPU相连。系统采用时分双工（Time Division Duplexing，TDD）协议进行数据传输。由于本章仅关注上行数据传输阶段，相干时间间隔被划分为两个阶段：1）上行链路训练；2）上行数据传输。
 
@@ -149,7 +149,7 @@ x_\text{out}=\sum_{i=0}^{N_p}a_{2i+1}x_\text{in}\left | x_\text{in} \right |^{2i
 \begin{equation}\Psi _k={N}{\rho _\text{u}}\mathop \sum \limits_{m = 1}^M {\alpha _m}(1 - {\alpha _m})\left( {\mathop \sum \limits_{k = 1}^K {\beta _{mk}}\Omega _k + 1} \right){\gamma _{mk}}.
 \end{equation}
 \end{theorem}
-\begin{proof}\renewcommand{\qedsymbol}{}
+\begin{proof}
 首先计算期望信号$\text{ES}_k$。由于$\tilde{\mathbf{g}}_{mk}$和$\hat{\mathbf{g}}_{mk}$相互独立，有
 \begin{align}
 {\text{ES}_k} &= { {\sqrt {{\rho _\text{u}}} \mathbb{E} \left\{ {\sum_{m = 1}^M {\alpha _m}({\tilde{a}_{1k}}{\mathbf{\hat g}}_{mk}^H{{\mathbf{g}}_{mk}} + {\tilde{a}_{3k}}{\mathbf{\hat g}}_{mk}^H{{\mathbf{g}}_{mk}}{{\left| {{q_k}} \right|}^2})} \right\} }}\nonumber\\
@@ -340,7 +340,7 @@ Critic网络参数的更新则通过最小化以下损失函数实现
 其中$y^t = r^t + \gamma C(s^{t+1}, a^{t+1}; \omega_c')$，$\gamma$为折扣因子。
 
 该算法的详细实现过程见算法\ref{DDPG}。
-
+\renewcommand{\thealgorithm}{3-1}
 \begin{algorithm}[t]
     \renewcommand{\algorithmicrequire}{\textbf{输入:}}
     \renewcommand{\algorithmicensure}{\textbf{输出:}}
@@ -409,7 +409,7 @@ a := \left [ a^* + \mathbf{n} \right ]^{b_m^{\text{max}}}_{b_m^{\text{min}}}.
 \end{equation}
 
 MADQIN的详细执行流程总结于算法\ref{DQN}中。
-
+\renewcommand{\thealgorithm}{3-2}
 \begin{algorithm}[t]
     \renewcommand{\algorithmicrequire}{\textbf{输入：}}
     \renewcommand{\algorithmicensure}{\textbf{输出：}}
@@ -480,7 +480,7 @@ MADQIN的详细执行流程总结于算法\ref{DQN}中。
 \end{equation}
 其中，$d_{mk}$表示第$m$个AP与第$k$个UE之间的距离。需注意，当$d_{mk} < d_1$时不考虑阴影效应。
 
-\begin{table}[t]
+\begin{table}[h]
   \begin{center}
     \caption{神经网络参数设置}\label{table2}
     \begin{tabular}{@{}lll@{}}

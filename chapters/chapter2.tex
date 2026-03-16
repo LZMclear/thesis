@@ -185,14 +185,14 @@ L(\omega) = \mathbb{E}\left\{(y_t - Q(s_t, a_t; \omega))^2\right\}.
 \nabla_{\omega}L(\omega) = \mathbb{E}\left\{(y_t - Q(s_t, a_t; \omega))\nabla_{\omega}Q(s_t, a_t; \omega)\right\}.
 \end{equation}
 
-\begin{figure}
+\subsection{Actor-Critic框架}
+
+\begin{figure}[t]
 \centering
 \includegraphics[width=5in] {ddpg}
 \caption{深度强化学习流程图}
 \label{ddpg}
 \end{figure}
-
-\subsection{Actor-Critic框架}
 
 Actor-Critic框架作为策略梯度方法的重要演进，创新性地融合了值函数逼近技术与策略梯度优化机制\cite{chaptertwo11}。该框架采用双网络架构设计：Actor网络专门负责生成动作策略，而Critic网络则承担策略性能评估功能。图\ref{ddpg}展示了基于Actor-Critic架构的DRL通用工作流程，该流程设计具有广泛的适用性，可支持多种DRL算法（如DDPG、PPO等）的实现。
 

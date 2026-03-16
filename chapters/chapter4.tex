@@ -1,4 +1,4 @@
-\chapter{非理想硬件条件下去蜂窝大规模MIMO系统的URLLC服务资源分配策略}\label{chap:MIMOLP}
+\chapter{基于GNN-DRL的非理想CF-mMIMO系统URLLC功率控制方法}\label{chap:MIMOLP}
 
 在第三章中，本文研究了块长足够长条件下非理想硬件CF-mMIMO系统的可达速率优化问题。然而，工业自动化等物联网关键应用对URLLC提出了毫秒级时延与极高可靠性的严苛需求，短传输块特性使得第三章的长码块假设不再适用。为此，本章聚焦硬件损伤条件下CF-mMIMO系统的URLLC性能优化问题，构建了PA的损伤模型，推导了FBL下上行链路UE速率闭合表达式。为降低传统优化算法的计算复杂度，提出基于GNN与DRL融合的智能功率控制策略，通过图嵌入技术建模UE空间相关性，动态抑制硬件损伤与时变信道干扰。所提方案在保持毫秒级时延的同时，为工业自动化等物联网应用提供理论与技术支撑。
 
@@ -154,18 +154,18 @@ r_{\text{u},k} \approx C_k - \sqrt{\frac{V_k}{n}} Q^{-1}(\varepsilon_{\text{th}}
 
 首先，定义UE $k$到所有AP的聚合信道向量。根据第三章系统模型，第$m$个AP与第$k$个UE之间的信道向量为$\mathbf{g}_{mk} \in \mathbb{C}^{N \times 1}$，其中$N$为每个AP的天线数。将UE $k$到所有$M$个AP的信道向量进行聚合，得到聚合信道向量：
 \begin{equation}
-\mathbf{g}_{k} = \left[\mathbf{g}_{1k}^{T}, \mathbf{g}_{2k}^{T}, \ldots, \mathbf{g}_{Mk}^{T}\right]^{T} \in \mathbb{C}^{MN \times 1}
+\mathbf{g}_{k} = \left[\mathbf{g}_{1k}^{T}, \mathbf{g}_{2k}^{T}, \ldots, \mathbf{g}_{Mk}^{T}\right]^{T} \in \mathbb{C}^{MN \times 1}.
 \end{equation}
 
 对聚合信道向量$\mathbf{g}_{k}$进行幅度-相位分解：
 \begin{equation}
-\mathbf{g}_{k} = \mathbf{A}_{k} \odot \exp(j\boldsymbol{\Phi}_{k})
+\mathbf{g}_{k} = \mathbf{A}_{k} \odot \exp(j\boldsymbol{\Phi}_{k}),
 \end{equation}
 其中，$\mathbf{A}_{k} = |\mathbf{g}_{k}|$表示信道幅度向量，$\boldsymbol{\Phi}_{k} = \angle\mathbf{g}_{k}$表示信道相位向量，$\odot$表示逐元素乘法。
 
 基于此分解，节点特征采用双分支结构进行编码。幅度分支特征$\mathbf{f}_{k}^{\text{amp}}$捕获信号强度与硬件损伤信息：
 \begin{equation}
-\mathbf{f}_{k}^{\textnormal{amp}}=\left[\mathbf{A}_{k}^{(1)}, \mathbf{A}_{k}^{(2)}, \ldots, \mathbf{A}_{k}^{(M)}, \eta_{k},\left|a_{3 k}\right|\right]^{T}
+\mathbf{f}_{k}^{\textnormal{amp}}=\left[\mathbf{A}_{k}^{(1)}, \mathbf{A}_{k}^{(2)}, \ldots, \mathbf{A}_{k}^{(M)}, \eta_{k},\left|a_{3 k}\right|\right]^{T},
 \end{equation}
 其中，$\mathbf{A}_{k}^{(m)} = |\mathbf{g}_{mk}|$表示用户$k$到第$m$个AP的信道幅度向量，$\eta_{k}$表示当前发射功率，$\left|a_{3 k}\right|$量化了PA非线性失真程度。
 
@@ -177,27 +177,27 @@ r_{\text{u},k} \approx C_k - \sqrt{\frac{V_k}{n}} Q^{-1}(\varepsilon_{\text{th}}
 
 最终，节点特征通过特征融合层进行整合。首先，幅度分支和相位分支分别经多层感知机映射到统一维度的特征空间：
 \begin{equation}
-\mathbf{h}_{k}^{\text{amp}} = \mathbf{W}_{\text{amp}}^{(2)} \sigma\left(\mathbf{W}_{\text{amp}}^{(1)} \mathbf{f}_{k}^{\text{amp}} + \mathbf{b}_{\text{amp}}^{(1)}\right) + \mathbf{b}_{\text{amp}}^{(2)}
+\mathbf{h}_{k}^{\text{amp}} = \mathbf{W}_{\text{amp}}^{(2)} \sigma\left(\mathbf{W}_{\text{amp}}^{(1)} \mathbf{f}_{k}^{\text{amp}} + \mathbf{b}_{\text{amp}}^{(1)}\right) + \mathbf{b}_{\text{amp}}^{(2)},
 \end{equation}
 \begin{equation}
-\mathbf{h}_{k}^{\text{ph}} = \mathbf{W}_{\text{ph}}^{(2)} \sigma\left(\mathbf{W}_{\text{ph}}^{(1)} \mathbf{f}_{k}^{\text{ph}} + \mathbf{b}_{\text{ph}}^{(1)}\right) + \mathbf{b}_{\text{ph}}^{(2)}
+\mathbf{h}_{k}^{\text{ph}} = \mathbf{W}_{\text{ph}}^{(2)} \sigma\left(\mathbf{W}_{\text{ph}}^{(1)} \mathbf{f}_{k}^{\text{ph}} + \mathbf{b}_{\text{ph}}^{(1)}\right) + \mathbf{b}_{\text{ph}}^{(2)},
 \end{equation}
 其中，$\mathbf{W}_{\text{amp}}^{(1)}, \mathbf{W}_{\text{amp}}^{(2)}$和$\mathbf{W}_{\text{ph}}^{(1)}, \mathbf{W}_{\text{ph}}^{(2)}$分别为两个分支MLP的权重矩阵，$\mathbf{b}$为偏置向量，$\sigma(\cdot)$为ReLU激活函数。
 
 然后，通过拼接与投影操作实现双分支信息融合：
 \begin{equation}
-\mathbf{f}_{k} = \mathbf{W}_{\text{fuse}} \left[\mathbf{h}_{k}^{\text{amp}} \| \mathbf{h}_{k}^{\text{ph}}\right] + \mathbf{b}_{\text{fuse}}
+\mathbf{f}_{k} = \mathbf{W}_{\text{fuse}} \left[\mathbf{h}_{k}^{\text{amp}} \| \mathbf{h}_{k}^{\text{ph}}\right] + \mathbf{b}_{\text{fuse}},
 \end{equation}
 其中，$\|$表示向量拼接操作，$\mathbf{W}_{\text{fuse}} \in \mathbb{R}^{D \times 2D}$为融合投影矩阵，$D$为节点特征的最终维度。
 
 \subsection{干扰边特征建模}
 为准确刻画UE间的干扰耦合关系，在图结构中引入边特征建模。对于任意UE节点对$(i, k)$，其边特征$\mathbf{e}_{ik}$定义为：
 \begin{equation}
-\mathbf{e}_{ik} = \left[d_{ik}, I_{ik}\right]^{T}
+\mathbf{e}_{ik} = \left[d_{ik}, I_{ik}\right]^{T},
 \end{equation}
 其中，$d_{ik}$表示UE $i$与UE $k$之间的归一化距离，定义为$d_{ik} = \|\mathbf{x}_{i} - \mathbf{x}_{k}\| / d_{\max}$，$\mathbf{x}_{i}$和$\mathbf{x}_{k}$分别为UE $i$和UE $k$的位置坐标，$d_{\max}$为系统覆盖区域的最大距离。该特征用于表征UE间的空间邻近程度，距离越近则潜在干扰越强。$I_{ik}$表示UE间的干扰强度，定义为：
 \begin{equation}
-I_{ik} = \frac{\|\mathbf{g}_{i}^{H}\mathbf{g}_{k}\|_{F}^{2}}{MN}
+I_{ik} = \frac{\|\mathbf{g}_{i}^{H}\mathbf{g}_{k}\|_{F}^{2}}{MN},
 \end{equation}
 其中，$\|\cdot\|_{F}$表示Frobenius范数。该指标量化了UE间的信道相关性，取值越大表示干扰越强。
 
@@ -215,25 +215,25 @@ I_{ik} = \frac{\|\mathbf{g}_{i}^{H}\mathbf{g}_{k}\|_{F}^{2}}{MN}
 
 在第$l$层消息传递中，节点$k$首先通过线性变换将其特征映射到新的特征空间：
 \begin{equation}
-\mathbf{h}_{k}^{\prime(l)} = \mathbf{W}^{(l)}\mathbf{h}_{k}^{(l)}
+\mathbf{h}_{k}^{\prime(l)} = \mathbf{W}^{(l)}\mathbf{h}_{k}^{(l)},
 \end{equation}
 其中，$\mathbf{h}_{k}^{(l)}$为节点$k$在第$l$层的隐藏状态（$\mathbf{h}_{k}^{(0)} = \mathbf{f}_{k}$），$\mathbf{W}^{(l)} \in \mathbb{R}^{D \times D}$为可学习的权重矩阵。
 
 然后，计算节点$k$与邻居节点$i$之间的注意力系数。为充分利用边特征信息，采用边增强的注意力机制：
 \begin{equation}
-e_{ik}^{(l)} = \text{LeakyReLU}\left(\mathbf{a}^{(l)T}\left[\mathbf{h}_{i}^{\prime(l)} \| \mathbf{h}_{k}^{\prime(l)} \| \mathbf{W}_{e}^{(l)}\mathbf{e}_{ik}\right]\right)
+e_{ik}^{(l)} = \text{LeakyReLU}\left(\mathbf{a}^{(l)T}\left[\mathbf{h}_{i}^{\prime(l)} \| \mathbf{h}_{k}^{\prime(l)} \| \mathbf{W}_{e}^{(l)}\mathbf{e}_{ik}\right]\right),
 \end{equation}
 其中，$\|$表示向量拼接操作，$\mathbf{a}^{(l)}$为注意力向量，$\mathbf{W}_{e}^{(l)}$为边特征变换矩阵。该设计将节点特征与边特征联合建模，使注意力系数能够感知用户间的干扰强度。
 
 注意力系数通过softmax函数归一化：
 \begin{equation}
-\alpha_{ik}^{(l)} = \frac{\exp(e_{ik}^{(l)})}{\sum_{j \in \mathcal{N}(k) \cup \{k\}}\exp(e_{jk}^{(l)})}
+\alpha_{ik}^{(l)} = \frac{\exp(e_{ik}^{(l)})}{\sum_{j \in \mathcal{N}(k) \cup \{k\}}\exp(e_{jk}^{(l)})},
 \end{equation}
 其中，$\mathcal{N}(k)$为节点$k$的邻居节点集合，自环的引入使节点能够保留自身特征信息。
 
 为增强模型的表达能力，采用多头注意力机制。设$H$为注意力头数，各头独立计算注意力系数并进行特征聚合：
 \begin{equation}
-\mathbf{h}_{k}^{(l+1)} = \sigma\left(\frac{1}{H}\sum_{h=1}^{H}\sum_{i \in \mathcal{N}(k) \cup \{k\}} \alpha_{ik}^{(l,h)} \mathbf{W}^{(l,h)}\mathbf{h}_{i}^{(l)}\right)
+\mathbf{h}_{k}^{(l+1)} = \sigma\left(\frac{1}{H}\sum_{h=1}^{H}\sum_{i \in \mathcal{N}(k) \cup \{k\}} \alpha_{ik}^{(l,h)} \mathbf{W}^{(l,h)}\mathbf{h}_{i}^{(l)}\right),
 \end{equation}
 其中，$\alpha_{ik}^{(l,h)}$和$\mathbf{W}^{(l,h)}$分别为第$h$个注意力头的注意力系数和权重矩阵，$\sigma(\cdot)$为ReLU激活函数。多头机制使模型能够从不同子空间捕获节点间的关联特征。
 
@@ -244,33 +244,33 @@ e_{ik}^{(l)} = \text{LeakyReLU}\left(\mathbf{a}^{(l)T}\left[\mathbf{h}_{i}^{\pri
 
 系统状态由各用户的图嵌入向量与全局上下文特征组成。对于时隙$t$，状态定义为：
 \begin{equation}
-\mathbf{s}_{t} = \left[\mathbf{z}_{1}^{(t)}, \mathbf{z}_{2}^{(t)}, \ldots, \mathbf{z}_{K}^{(t)}, \mathbf{c}^{(t)}\right]
+\mathbf{s}_{t} = \left[\mathbf{z}_{1}^{(t)}, \mathbf{z}_{2}^{(t)}, \ldots, \mathbf{z}_{K}^{(t)}, \mathbf{c}^{(t)}\right],
 \end{equation}
 其中，$\mathbf{z}_{k}^{(t)} \in \mathbb{R}^{D}$为用户$k$在时隙$t$经GNN提取的图嵌入，融合了信道状态、干扰关系及拓扑结构信息；$\mathbf{c}^{(t)} = \left[\bar{r}^{(t)}, \bar{\eta}^{(t)}, \bar{I}^{(t)}\right]$为全局上下文特征，分别表示系统平均速率、平均发射功率和平均干扰强度。
 
 动作空间定义为各用户发射功率的调整系数：
 \begin{equation}
-\mathbf{a}_{t} = \left[\delta_{1}^{(t)}, \delta_{2}^{(t)}, \ldots, \delta_{K}^{(t)}\right], \quad \delta_{k}^{(t)} \in [0, 1]
+\mathbf{a}_{t} = \left[\delta_{1}^{(t)}, \delta_{2}^{(t)}, \ldots, \delta_{K}^{(t)}\right], \quad \delta_{k}^{(t)} \in [0, 1].
 \end{equation}
 实际发射功率为$\eta_{k}^{(t)} = \delta_{k}^{(t)} \cdot \eta_{\max}$，其中$\eta_{\max}$为最大发射功率约束。
 
 Actor网络负责输出功率控制策略。对于用户$k$，其策略均值由图嵌入经全连接层变换得到：
 \begin{equation}
-\mu_{k}^{(t)} = \mathbf{W}_{\mu}^{(2)} \sigma\left(\mathbf{W}_{\mu}^{(1)} \mathbf{z}_{k}^{(t)} + \mathbf{b}_{\mu}^{(1)}\right) + \mathbf{b}_{\mu}^{(2)}
+\mu_{k}^{(t)} = \mathbf{W}_{\mu}^{(2)} \sigma\left(\mathbf{W}_{\mu}^{(1)} \mathbf{z}_{k}^{(t)} + \mathbf{b}_{\mu}^{(1)}\right) + \mathbf{b}_{\mu}^{(2)},
 \end{equation}
 其中，$\mathbf{W}_{\mu}^{(1)} \in \mathbb{R}^{D_{\mu} \times D}$和$\mathbf{W}_{\mu}^{(2)} \in \mathbb{R}^{1 \times D_{\mu}}$为可学习权重矩阵，$D_{\mu}$为隐藏层维度。策略分布采用高斯分布建模：
 \begin{equation}
-\pi_{\theta}(\mathbf{a}_{t}|\mathbf{s}_{t}) = \prod_{k=1}^{K} \mathcal{N}\left(\delta_{k}; \mu_{k}^{(t)}, \sigma^{2}\right)
+\pi_{\theta}(\mathbf{a}_{t}|\mathbf{s}_{t}) = \prod_{k=1}^{K} \mathcal{N}\left(\delta_{k}; \mu_{k}^{(t)}, \sigma^{2}\right),
 \end{equation}
 其中，标准差$\sigma$为可学习参数，控制探索程度。
 
 Critic网络评估当前状态的期望累积奖励。首先对所有用户的图嵌入进行全局平均池化：
 \begin{equation}
-\bar{\mathbf{z}}^{(t)} = \frac{1}{K}\sum_{k=1}^{K}\mathbf{z}_{k}^{(t)}
+\bar{\mathbf{z}}^{(t)} = \frac{1}{K}\sum_{k=1}^{K}\mathbf{z}_{k}^{(t)},
 \end{equation}
 然后，将池化后的嵌入与全局上下文特征拼接，经多层感知机输出状态值：
 \begin{equation}
-V_{\phi}(\mathbf{s}_{t}) = \mathbf{W}_{v}^{(2)} \sigma\left(\mathbf{W}_{v}^{(1)} \left[\bar{\mathbf{z}}^{(t)} \| \mathbf{c}^{(t)}\right] + \mathbf{b}_{v}^{(1)}\right) + \mathbf{b}_{v}^{(2)}
+V_{\phi}(\mathbf{s}_{t}) = \mathbf{W}_{v}^{(2)} \sigma\left(\mathbf{W}_{v}^{(1)} \left[\bar{\mathbf{z}}^{(t)} \| \mathbf{c}^{(t)}\right] + \mathbf{b}_{v}^{(1)}\right) + \mathbf{b}_{v}^{(2)},
 \end{equation}
 其中，$\mathbf{W}_{v}^{(1)} \in \mathbb{R}^{D_{v} \times (D+3)}$和$\mathbf{W}_{v}^{(2)} \in \mathbb{R}^{1 \times D_{v}}$为可学习权重矩阵。该设计通过聚合全局信息，评估当前功率配置的系统级价值。
 
@@ -279,13 +279,13 @@ V_{\phi}(\mathbf{s}_{t}) = \mathbf{W}_{v}^{(2)} \sigma\left(\mathbf{W}_{v}^{(1)}
 
 系统和速率作为无线通信系统的核心性能指标，直接表征系统容量与频谱利用效率。对于时隙$t$，系统和速率项定义为：
 \begin{equation}
-\mathcal{R}_{t}^{\text{sum}} = \frac{1}{K} \sum_{k=1}^{K} r_{\text{u},k}^{(t)}
+\mathcal{R}_{t}^{\text{sum}} = \frac{1}{K} \sum_{k=1}^{K} r_{\text{u},k}^{(t)},
 \end{equation}
 其中，$r_{\text{u},k}^{(t)}$表示用户设备$k$在时隙$t$的URLLC可实现速率。通过除以用户总数$K$进行归一化处理，使得系统和速率项在数值量级上与惩罚项相匹配。该奖励项设计旨在引导智能体探索能够最大化系统和容量的功率分配策略。
 
 URLLC应用场景对通信可靠性与传输时延具有极为严格的技术要求，约束条件的违反将导致工业控制、远程医疗等关键应用场景的严重故障。本文采用惩罚函数机制来确保服务质量约束的满足：
 \begin{equation}
-\mathcal{R}_{t}^{\text{urllc}} = -\lambda_{\varepsilon} \sum_{k=1}^{K} \mathbf{1}_{\left\{\varepsilon_{k}^{(t)} > \varepsilon_{\text{th}}\right\}} - \lambda_{\tau} \sum_{k=1}^{K} \mathbf{1}_{\left\{D_{k}^{(t)} > D_{\text{th}}\right\}}
+\mathcal{R}_{t}^{\text{urllc}} = -\lambda_{\varepsilon} \sum_{k=1}^{K} \mathbf{1}_{\left\{\varepsilon_{k}^{(t)} > \varepsilon_{\text{th}}\right\}} - \lambda_{\tau} \sum_{k=1}^{K} \mathbf{1}_{\left\{D_{k}^{(t)} > D_{\text{th}}\right\}},
 \end{equation}
 其中，$\varepsilon_{k}^{(t)}$和$D_{k}^{(t)}$分别表示用户设备$k$在时隙$t$的解码错误概率与端到端时延；$\varepsilon_{\text{th}}$和$D_{\text{th}}$为URLLC约束阈值参数，依据3GPP TS 38.913技术标准规范，分别设定为$\varepsilon_{\text{th}}=10^{-5}$和$D_{\text{th}}=1$毫秒；$\lambda_{\varepsilon}$和$\lambda_{\tau}$为相应的惩罚系数。
 
@@ -293,9 +293,8 @@ URLLC应用场景对通信可靠性与传输时延具有极为严格的技术要
 
 综合上述设计要素，总奖励函数的数学表达式为：
 \begin{equation}
-\mathcal{R}_{t} = \mathcal{R}_{t}^{\text{sum}} + \mathcal{R}_{t}^{\text{urllc}}
+\mathcal{R}_{t} = \mathcal{R}_{t}^{\text{sum}} + \mathcal{R}_{t}^{\text{urllc}}.
 \end{equation}
-该设计将归一化处理后的系统和速率与URLLC约束惩罚项直接相加。通过对系统和速率项除以用户总数$K$进行归一化，确保了两个组成部分在数值量级上具有可比性，避免单一优化目标主导梯度更新过程，从而使得智能体能够同时优化系统容量性能与URLLC服务质量要求。
 
 \begin{figure}[t]
 \centering
@@ -304,10 +303,12 @@ URLLC应用场景对通信可靠性与传输时延具有极为严格的技术要
 \label{fig:algorithm_flowchart}
 \end{figure}
 
+该设计将归一化处理后的系统和速率与URLLC约束惩罚项直接相加。通过对系统和速率项除以用户总数$K$进行归一化，确保了两个组成部分在数值量级上具有可比性，避免单一优化目标主导梯度更新过程，从而使得智能体能够同时优化系统容量性能与URLLC服务质量要求。
+
 \subsection{算法训练流程}
 
 本文提出的GNN-DRL融合算法的整体架构框架如图\ref{fig:algorithm_flowchart}所示。该算法采用GNN-DRL端到端联合训练的设计架构：GNN负责从网络拓扑结构中提取图结构特征并生成节点嵌入表示，DRL则基于图嵌入状态进行功率控制决策，两者通过协同优化机制实现系统性能的最大化目标。
-
+\renewcommand{\thealgorithm}{4-1}
 \begin{algorithm}[h]
 \caption{基于GNN-DRL的CF-mMIMO功率控制算法}
 \label{alg:gnn-drl}
@@ -364,13 +365,13 @@ PPO裁剪参数 $\epsilon$ & 0.2 \\
 
 在图神经网络特征提取阶段，设用户数为$K$，平均邻居数为$\bar{d}$，隐藏层维度为$D$，消息传递层数为$L$。每层图注意力网络包含三个计算步骤：首先是线性变换，将节点特征映射到新的特征空间，复杂度为$\mathcal{O}(KD^{2})$；其次是边增强注意力计算，利用边特征计算注意力系数，复杂度为$\mathcal{O}(K\bar{d}D)$；最后是特征聚合，根据注意力权重对邻居特征进行加权求和，复杂度为$\mathcal{O}(K\bar{d}D)$。因此，图神经网络单次前向传播的计算复杂度为：
 \begin{equation}
-\mathcal{O}_{\text{GNN}} = \mathcal{O}\left(L \cdot K \cdot \bar{d} \cdot D^{2}\right)
+\mathcal{O}_{\text{GNN}} = \mathcal{O}\left(L \cdot K \cdot \bar{d} \cdot D^{2}\right).
 \end{equation}
 由于采用稀疏图结构（$\bar{d} \ll K$），该复杂度远低于全连接网络的$\mathcal{O}(K^{2}D^{2})$，能够有效控制计算开销。
 
 在深度强化学习决策阶段，Actor网络和Critic网络均为多层感知机结构。设网络层数为$L_{\text{mlp}}$，各层维度为$\{D_{l}\}_{l=1}^{L_{\text{mlp}}}$，则深度强化学习部分的计算复杂度为：
 \begin{equation}
-\mathcal{O}_{\text{DRL}} = \mathcal{O}\left(\sum_{l=1}^{L_{\text{mlp}}-1} D_{l} \cdot D_{l+1}\right) = \mathcal{O}(K \cdot D^{2})
+\mathcal{O}_{\text{DRL}} = \mathcal{O}\left(\sum_{l=1}^{L_{\text{mlp}}-1} D_{l} \cdot D_{l+1}\right) = \mathcal{O}(K \cdot D^{2}).
 \end{equation}
 该复杂度与UE数$K$呈线性关系，保证了大规模场景下的可扩展性。
 
